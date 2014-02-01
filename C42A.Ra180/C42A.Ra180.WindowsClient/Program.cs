@@ -16,7 +16,7 @@ namespace C42A.Ra180.WindowsClient
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new Ra180Form());
         }
     }
 }

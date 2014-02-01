@@ -43,10 +43,10 @@ namespace C42A.Ra180.Tests
         }
 
         [Test]
-        [TestCase(Ra180Knapp.Från, Ra180Mod.Från)]
-        [TestCase(Ra180Knapp.Klar, Ra180Mod.Klar)]
-        [TestCase(Ra180Knapp.Skydd, Ra180Mod.Skydd)]
-        [TestCase(Ra180Knapp.DRelä, Ra180Mod.DRelä)]
+        [TestCase(Ra180Knapp.ModFrån, Ra180Mod.Från)]
+        [TestCase(Ra180Knapp.ModKlar, Ra180Mod.Klar)]
+        [TestCase(Ra180Knapp.ModSkydd, Ra180Mod.Skydd)]
+        [TestCase(Ra180Knapp.ModDRelä, Ra180Mod.DRelä)]
         public void ShouldSetModToKlarOnKeyKlar(Ra180Knapp knapp, Ra180Mod expected)
         {
             var sut = GetSystemUnderTest();
@@ -93,7 +93,7 @@ namespace C42A.Ra180.Tests
         public void ShouldDisplayTime()
         {
             var sut = GetSystemUnderTest();
-            sut.SendKeys(Ra180Knapp.Klar);
+            sut.SendKeys(Ra180Knapp.ModKlar);
             sut.SendKeys(Ra180Knapp.Knapp1);
 
             Assert.That(sut.Display, Is.EqualTo("T:000000"), "#1");
@@ -112,7 +112,7 @@ namespace C42A.Ra180.Tests
         public void ShouldSetDateAndTime()
         {
             var sut = GetSystemUnderTest();
-            sut.SendKeys(Ra180Knapp.Klar);
+            sut.SendKeys(Ra180Knapp.ModKlar);
             sut.SendKeys(Ra180Knapp.Knapp1);
             sut.SendKeys(Ra180Knapp.ÄND);
             Assert.That(sut.Display, Is.EqualTo("T:"), "#1");
@@ -125,10 +125,10 @@ namespace C42A.Ra180.Tests
             sut.SendKeys(Ra180Knapp.Knapp6);
             Assert.That(sut.Display, Is.EqualTo("T:215036"), "#2");
 
-            sut.SendKeys(Ra180Knapp.RETUR);
+            sut.SendKeys(Ra180Knapp.ENT);
             Assert.That(sut.Display, Is.EqualTo("T:215036"), "#3");
 
-            sut.SendKeys(Ra180Knapp.RETUR);
+            sut.SendKeys(Ra180Knapp.ENT);
             Assert.That(sut.Display, Is.EqualTo("DAT:0101"), "#4");
             sut.SendKeys(Ra180Knapp.ÄND);
             Assert.That(sut.Display, Is.EqualTo("DAT:"), "#5");
@@ -138,18 +138,18 @@ namespace C42A.Ra180.Tests
             sut.SendKeys(Ra180Knapp.Knapp9);
             Assert.That(sut.Display, Is.EqualTo("DAT:0129"), "#6");
 
-            sut.SendKeys(Ra180Knapp.RETUR);
+            sut.SendKeys(Ra180Knapp.ENT);
             Assert.That(sut.Display, Is.EqualTo("DAT:0129"), "#7");
 
-            sut.SendKeys(Ra180Knapp.RETUR);
+            sut.SendKeys(Ra180Knapp.ENT);
             Assert.That(sut.Display, Is.EqualTo("  (TID) "), "#8");
 
-            sut.SendKeys(Ra180Knapp.RETUR);
+            sut.SendKeys(Ra180Knapp.ENT);
             Assert.That(sut.Display, Is.EqualTo(null), "#9");
 
             sut.SendKeys(Ra180Knapp.Knapp1);
             Assert.That(sut.Display, Is.EqualTo("T:215036"), "#10");
-            sut.SendKeys(Ra180Knapp.RETUR);
+            sut.SendKeys(Ra180Knapp.ENT);
             Assert.That(sut.Display, Is.EqualTo("DAT:0129"), "#11");
             sut.SendKeys(Ra180Knapp.SLT);
             Assert.That(sut.Display, Is.EqualTo(null), "#12");
@@ -160,7 +160,7 @@ namespace C42A.Ra180.Tests
         public void ShouldAbortTidInput()
         {
             var sut = GetSystemUnderTest();
-            sut.SendKeys(Ra180Knapp.Klar);
+            sut.SendKeys(Ra180Knapp.ModKlar);
             sut.SendKeys(Ra180Knapp.Knapp1);
             sut.SendKeys(Ra180Knapp.ÄND);
             Assert.That(sut.Display, Is.EqualTo("T:"), "#1");

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.SqlServer.Server;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace C42A.Ra180.Infrastructure
 {
@@ -10,11 +12,53 @@ namespace C42A.Ra180.Infrastructure
         private int _kanal = 1;
         private int _volym = 4;
         private Ra180Menu _currentMenu;
+        private Ra180Hemligt _hemligt;
+        private Ra180Mod _mod;
 
         public int Kanal { get { return _kanal; }}
-        public Ra180Mod Mod { get; private set; }
+
+        public Ra180Mod Mod
+        {
+            get { return _mod; }
+            private set
+            {
+                if (_mod == value) return;
+
+                var mod = _mod;
+                _mod = value;
+                if (mod == Ra180Mod.Från)
+                {
+                    Task.Factory.StartNew(() =>
+                    {
+                        var interval = TimeSpan.FromSeconds(2);
+                        Action wait = () => Thread.Sleep(interval);
+                        SetDisplay("TEST");
+                        wait();
+                        SetDisplay("TEST OK");
+                        wait();
+                        SetDisplay("NOLLSTÄ");
+                        wait();
+                        SetDisplay(null);
+                    });
+                }
+            }
+        }
+
         public int Volym { get { return _volym; } }
         public string Display { get; private set; }
+
+        public Ra180Unit()
+        {
+            Now = new DateTimeOffset(2016, 01, 01, 00, 00, 00, TimeSpan.Zero);
+        }
+
+        public event EventHandler DisplayChanged;
+
+        protected virtual void OnDisplayChanged()
+        {
+            var handler = DisplayChanged;
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
 
         public void SendKeys(Ra180Knapp knapp)
         {
@@ -47,6 +91,7 @@ namespace C42A.Ra180.Infrastructure
         internal void SetDisplay(string text)
         {
             Display = text;
+            OnDisplayChanged();
         }
 
         internal void SetNow(DateTimeOffset now)
@@ -58,10 +103,10 @@ namespace C42A.Ra180.Infrastructure
         {
             var keymaps = new Dictionary<Ra180Knapp, Action>
             {
-                {Ra180Knapp.Från, () => Mod = Ra180Mod.Från},
-                {Ra180Knapp.Klar, () => Mod = Ra180Mod.Klar},
-                {Ra180Knapp.Skydd, () => Mod = Ra180Mod.Skydd},
-                {Ra180Knapp.DRelä, () => Mod = Ra180Mod.DRelä},
+                {Ra180Knapp.ModFrån, () => Mod = Ra180Mod.Från},
+                {Ra180Knapp.ModKlar, () => Mod = Ra180Mod.Klar},
+                {Ra180Knapp.ModSkydd, () => Mod = Ra180Mod.Skydd},
+                {Ra180Knapp.ModDRelä, () => Mod = Ra180Mod.DRelä},
                 {Ra180Knapp.Volym1, () => _volym = 1},
                 {Ra180Knapp.Volym2, () => _volym = 2},
                 {Ra180Knapp.Volym3, () => _volym = 3},
@@ -92,6 +137,11 @@ namespace C42A.Ra180.Infrastructure
             _currentMenu = null;
             SetDisplay(null);
         }
+    }
+
+    internal class Ra180Hemligt
+    {
+
     }
 
     internal abstract class Ra180Menu
@@ -151,7 +201,7 @@ namespace C42A.Ra180.Infrastructure
                 case Ra180Knapp.ÄND:
                     OnÄND();
                     break;
-                case Ra180Knapp.RETUR:
+                case Ra180Knapp.ENT:
                     OnRETURN();
                     break;
                 case Ra180Knapp.SLT:

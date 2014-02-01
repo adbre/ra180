@@ -9,9 +9,9 @@ namespace C42A.Ra180.Infrastructure
         OPM = 1,
         EFF = 2,
         ÄND = 4,
-        LJUS = 8,
+        BEL = 8,
         SLT = 16,
-        RETUR = 32,
+        ENT = 32,
 
         Knapp1 = 64,
         Knapp2 = 128,
@@ -22,9 +22,9 @@ namespace C42A.Ra180.Infrastructure
         Knapp7 = 4096,
         Knapp8 = 8192,
         Knapp9 = 16384,
-        KnappStjärna = 32768,
+        KnappAsterix = 32768,
         Knapp0 = 65536,
-        KnappBrädgård = 131072,
+        KnappHashtag = 131072,
 
         Volym1 = 262144,
         Volym2 = 524288,
@@ -44,9 +44,9 @@ namespace C42A.Ra180.Infrastructure
         Kanal7 = 4294967296,
         Kanal8 = 8589934592,
 
-        Från = 17179869184,
-        Klar = 34359738368,
-        Skydd = 68719476736,
-        DRelä = 137438953472,
+        ModFrån = 17179869184,
+        ModKlar = 34359738368,
+        ModSkydd = 68719476736,
+        ModDRelä = 137438953472,
     }
 }
