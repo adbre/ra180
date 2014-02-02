@@ -14,7 +14,8 @@ namespace C42A.Ra180.Tests
 
         private Ra180Unit GetSystemUnderTest()
         {
-            return new Ra180Unit();
+            var taskFactory = new DummyTaskFactory();
+            return new Ra180Unit(taskFactory);
         }
 
         [Test]
@@ -155,7 +156,6 @@ namespace C42A.Ra180.Tests
             Assert.That(sut.Display, Is.EqualTo(null), "#12");
         }
 
-
         [Test]
         public void ShouldAbortTidInput()
         {
@@ -173,6 +173,128 @@ namespace C42A.Ra180.Tests
 
             sut.SendKeys(Ra180Knapp.SLT);
             Assert.That(sut.Display, Is.EqualTo(null), "#3");
+        }
+
+        [Test]
+        public void ShouldNavigateRda()
+        {
+            var sut = GetSystemUnderTest();
+            sut.SendKeys(Ra180Knapp.ModKlar);
+            sut.SendKeys(Ra180Knapp.Knapp2);
+            Assert.That(sut.Display, Is.EqualTo("SDX=NEJ"), "#1");
+
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("OPMTN=JA"), "#2");
+
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("BAT:12.5"), "#3");
+
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("  (RDA) "), "#4");
+
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo(null), "#5");
+        }
+
+        [Test]
+        public void ShouldNotAllowEditRda()
+        {
+            var sut = GetSystemUnderTest();
+            sut.SendKeys(Ra180Knapp.ModKlar);
+            sut.SendKeys(Ra180Knapp.Knapp2);
+            sut.SendKeys(Ra180Knapp.ENT);
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("BAT:12.5"), "#1");
+
+            sut.SendKeys(Ra180Knapp.ÄND);
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("  (RDA) "), "#2");
+        }
+
+
+        [Test]
+        public void ShouldNavigateKda()
+        {
+            var sut = GetSystemUnderTest();
+            sut.SendKeys(Ra180Knapp.ModKlar);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            Assert.That(sut.Display, Is.EqualTo("FR:30060"), "#1");
+
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("BD1:1234"), "#2");
+
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("BD2:5678"), "#3");
+
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("PNY:###"), "#4");
+
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("  (KDA) "), "#5");
+
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo(null), "#6");
+        }
+
+
+        [Test]
+        public void ShouldEnterFrekvensKanal1()
+        {
+            var sut = GetSystemUnderTest();
+            sut.SendKeys(Ra180Knapp.ModKlar);
+            sut.SendKeys(Ra180Knapp.Kanal1);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            sut.SendKeys(Ra180Knapp.ÄND);
+            Assert.That(sut.Display, Is.EqualTo("FR:"), "#1");
+
+            sut.SendKeys(Ra180Knapp.Knapp1);
+            sut.SendKeys(Ra180Knapp.Knapp2);
+            sut.SendKeys(Ra180Knapp.Knapp3);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            sut.SendKeys(Ra180Knapp.Knapp5);
+            Assert.That(sut.Display, Is.EqualTo("FR:12345"), "#2");
+
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("FR:12345"), "#4");
+
+            sut.SendKeys(Ra180Knapp.SLT);
+            Assert.That(sut.Display, Is.EqualTo(null), "#5");
+
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            Assert.That(sut.Display, Is.EqualTo("FR:12345"), "#6");
+        }
+
+        [Test]
+        public void ShouldNotAllowMoreThan8Characters()
+        {
+            var sut = GetSystemUnderTest();
+            sut.SendKeys(Ra180Knapp.ModKlar);
+            sut.SendKeys(Ra180Knapp.Knapp1);
+            sut.SendKeys(Ra180Knapp.ÄND);
+            sut.SendKeys(Ra180Knapp.Knapp1);
+            sut.SendKeys(Ra180Knapp.Knapp2);
+            sut.SendKeys(Ra180Knapp.Knapp3);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            sut.SendKeys(Ra180Knapp.Knapp5);
+            sut.SendKeys(Ra180Knapp.Knapp6);
+            sut.SendKeys(Ra180Knapp.Knapp7);
+            Assert.That(sut.Display, Is.EqualTo("T:123456"), "#2");
+        }
+
+        [Test]
+        public void ShouldNotAllowMoreThan5CharactersFrekvens()
+        {
+            var sut = GetSystemUnderTest();
+            sut.SendKeys(Ra180Knapp.ModKlar);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            sut.SendKeys(Ra180Knapp.ÄND);
+            sut.SendKeys(Ra180Knapp.Knapp1);
+            sut.SendKeys(Ra180Knapp.Knapp2);
+            sut.SendKeys(Ra180Knapp.Knapp3);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            sut.SendKeys(Ra180Knapp.Knapp5);
+            sut.SendKeys(Ra180Knapp.Knapp6);
+            Assert.That(sut.Display, Is.EqualTo("FR:12345"), "#2");
         }
     }
 }

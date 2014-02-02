@@ -487,8 +487,10 @@
             this.Knapp9.Size = new System.Drawing.Size(66, 66);
             this.Knapp9.TabIndex = 9;
             this.Knapp9.Text = "9";
+            this.Knapp9.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.Knapp9.UseVisualStyleBackColor = false;
             this.Knapp9.Click += new System.EventHandler(this.Knapp_Click);
+            this.Knapp9.Paint += new System.Windows.Forms.PaintEventHandler(this.Knapp1_Paint);
             // 
             // Knapp8
             // 
@@ -501,8 +503,10 @@
             this.Knapp8.Size = new System.Drawing.Size(66, 66);
             this.Knapp8.TabIndex = 8;
             this.Knapp8.Text = "8";
+            this.Knapp8.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.Knapp8.UseVisualStyleBackColor = false;
             this.Knapp8.Click += new System.EventHandler(this.Knapp_Click);
+            this.Knapp8.Paint += new System.Windows.Forms.PaintEventHandler(this.Knapp1_Paint);
             // 
             // Knapp7
             // 
@@ -515,8 +519,10 @@
             this.Knapp7.Size = new System.Drawing.Size(66, 66);
             this.Knapp7.TabIndex = 7;
             this.Knapp7.Text = "7";
+            this.Knapp7.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.Knapp7.UseVisualStyleBackColor = false;
             this.Knapp7.Click += new System.EventHandler(this.Knapp_Click);
+            this.Knapp7.Paint += new System.Windows.Forms.PaintEventHandler(this.Knapp1_Paint);
             // 
             // Knapp6
             // 
@@ -529,8 +535,10 @@
             this.Knapp6.Size = new System.Drawing.Size(66, 66);
             this.Knapp6.TabIndex = 6;
             this.Knapp6.Text = "6";
+            this.Knapp6.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.Knapp6.UseVisualStyleBackColor = false;
             this.Knapp6.Click += new System.EventHandler(this.Knapp_Click);
+            this.Knapp6.Paint += new System.Windows.Forms.PaintEventHandler(this.Knapp1_Paint);
             // 
             // Knapp5
             // 
@@ -543,8 +551,10 @@
             this.Knapp5.Size = new System.Drawing.Size(66, 66);
             this.Knapp5.TabIndex = 5;
             this.Knapp5.Text = "5";
+            this.Knapp5.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.Knapp5.UseVisualStyleBackColor = false;
             this.Knapp5.Click += new System.EventHandler(this.Knapp_Click);
+            this.Knapp5.Paint += new System.Windows.Forms.PaintEventHandler(this.Knapp1_Paint);
             // 
             // Knapp4
             // 
@@ -557,8 +567,10 @@
             this.Knapp4.Size = new System.Drawing.Size(66, 66);
             this.Knapp4.TabIndex = 4;
             this.Knapp4.Text = "4";
+            this.Knapp4.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.Knapp4.UseVisualStyleBackColor = false;
             this.Knapp4.Click += new System.EventHandler(this.Knapp_Click);
+            this.Knapp4.Paint += new System.Windows.Forms.PaintEventHandler(this.Knapp1_Paint);
             // 
             // Knapp3
             // 
@@ -571,8 +583,10 @@
             this.Knapp3.Size = new System.Drawing.Size(66, 66);
             this.Knapp3.TabIndex = 3;
             this.Knapp3.Text = "3";
+            this.Knapp3.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.Knapp3.UseVisualStyleBackColor = false;
             this.Knapp3.Click += new System.EventHandler(this.Knapp_Click);
+            this.Knapp3.Paint += new System.Windows.Forms.PaintEventHandler(this.Knapp1_Paint);
             // 
             // Knapp2
             // 
@@ -585,8 +599,10 @@
             this.Knapp2.Size = new System.Drawing.Size(66, 66);
             this.Knapp2.TabIndex = 2;
             this.Knapp2.Text = "2";
+            this.Knapp2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.Knapp2.UseVisualStyleBackColor = false;
             this.Knapp2.Click += new System.EventHandler(this.Knapp_Click);
+            this.Knapp2.Paint += new System.Windows.Forms.PaintEventHandler(this.Knapp1_Paint);
             // 
             // Knapp1
             // 
@@ -599,20 +615,21 @@
             this.Knapp1.Size = new System.Drawing.Size(66, 66);
             this.Knapp1.TabIndex = 1;
             this.Knapp1.Text = "1";
+            this.Knapp1.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.Knapp1.UseVisualStyleBackColor = false;
             this.Knapp1.Click += new System.EventHandler(this.Knapp_Click);
+            this.Knapp1.Paint += new System.Windows.Forms.PaintEventHandler(this.Knapp1_Paint);
             // 
             // Display
             // 
             this.Display.BackColor = System.Drawing.Color.Olive;
-            this.Display.Font = new System.Drawing.Font("Consolas", 26.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Display.Font = new System.Drawing.Font("Consolas", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Display.ForeColor = System.Drawing.Color.Lime;
             this.Display.Location = new System.Drawing.Point(286, 39);
             this.Display.Name = "Display";
-            this.Display.Size = new System.Drawing.Size(233, 48);
+            this.Display.Size = new System.Drawing.Size(233, 64);
             this.Display.TabIndex = 2;
             this.Display.Text = "12345678";
-            this.Display.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // panel6
             // 

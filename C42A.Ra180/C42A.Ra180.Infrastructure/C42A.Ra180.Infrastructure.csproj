@@ -40,6 +40,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ra180Knapp.cs" />
+    <Compile Include="Ra180Menu.cs" />
+    <Compile Include="Ra180MenuKda.cs" />
+    <Compile Include="Ra180MenuRda.cs" />
+    <Compile Include="Ra180MenuTid.cs" />
     <Compile Include="Ra180Mod.cs" />
     <Compile Include="Ra180Unit.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

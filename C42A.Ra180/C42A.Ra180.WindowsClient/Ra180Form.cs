@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using C42A.Ra180.Infrastructure;
@@ -16,7 +17,9 @@ namespace C42A.Ra180.WindowsClient
             _synchronizationContext = SynchronizationContext.Current;
             InitializeComponent();
 
-            Bind(new Ra180Unit());
+            var taskFactory = new TaskFactory();
+            var ra180 = new Ra180Unit(taskFactory);
+            Bind(ra180);
         }
 
         private void Bind(Ra180Unit unit)
@@ -52,17 +55,75 @@ namespace C42A.Ra180.WindowsClient
 
         private void Knapp_Click(object sender, EventArgs e)
         {
-            var senderControl = sender as Control;
-            if (senderControl == null) return;
+            var knapp = GetRa180Knapp(sender);
+            if (knapp == null) return;
+            _ra180.SendKeys(knapp.Value);
+        }
+
+        private static Ra180Knapp? GetRa180Knapp(object control)
+        {
+            var senderControl = control as Control;
+            if (senderControl == null) return null;
 
             var senderName = senderControl.Name;
-            if (string.IsNullOrWhiteSpace(senderName)) return;
+            if (string.IsNullOrWhiteSpace(senderName)) return null;
 
             Ra180Knapp knapp;
             if (!Enum.TryParse(senderName, true, out knapp))
-                return;
+                return null;
 
-            _ra180.SendKeys(knapp);
+            return knapp;
+        }
+
+        private void Knapp1_Paint(object sender, PaintEventArgs e)
+        {
+            var title = GetButtonTitle(sender);
+            if (title == null) return;
+
+            var control = sender as Control;
+            if (control == null) return;
+
+            const float padding = 3f;
+            var width = control.Width - (padding * 2);
+            var height = control.Height / 2;
+            var rectangle = new RectangleF(padding, padding, width, height);
+
+            using (var font = new Font(control.Font.FontFamily, control.Font.SizeInPoints * 0.75f))
+            using (var brush = new SolidBrush(control.ForeColor))
+            using (var format = new StringFormat())
+            {
+                format.Alignment = StringAlignment.Center;
+                e.Graphics.DrawString(title, font, brush, rectangle, format);
+            }
+        }
+
+        private string GetButtonTitle(object sender)
+        {
+            var knapp = GetRa180Knapp(sender);
+            if (knapp == null) return null;
+
+            switch (knapp)
+            {
+                case Ra180Knapp.Knapp1:
+                    return "TID";
+                case Ra180Knapp.Knapp2:
+                    return "RDA";
+                case Ra180Knapp.Knapp3:
+                    return "DTM";
+                case Ra180Knapp.Knapp4:
+                    return "KDA";
+                case Ra180Knapp.Knapp5:
+                    return "NIV";
+                case Ra180Knapp.Knapp6:
+                    return "RAP";
+                case Ra180Knapp.Knapp7:
+                    return "NYK";
+                case Ra180Knapp.Knapp9:
+                    return "TJK";
+
+                default:
+                    return null;
+            }
         }
     }
 }

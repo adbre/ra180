@@ -1,19 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace C42A.Ra180.Infrastructure
 {
+    public interface ITaskFactory
+    {
+        void StartNew(Action action);
+        void Wait(TimeSpan delay);
+    }
+
+    public class TaskFactory : ITaskFactory
+    {
+        public void StartNew(Action action)
+        {
+            if (action == null) throw new ArgumentNullException("action");
+            Task.Factory.StartNew(action);
+        }
+
+        public void Wait(TimeSpan delay)
+        {
+            Thread.Sleep(delay);
+        }
+    }
+
+    public class DummyTaskFactory : ITaskFactory
+    {
+        public void StartNew(Action action)
+        {
+            if (action == null) throw new ArgumentNullException("action");
+            action();
+        }
+
+        public void Wait(TimeSpan delay)
+        {
+            
+        }
+    }
+
     public class Ra180Unit
     {
+        private readonly ITaskFactory _taskFactory;
         private int _kanal = 1;
         private int _volym = 4;
         private Ra180Menu _currentMenu;
         private Ra180Hemligt _hemligt;
         private Ra180Mod _mod;
+
+        public Ra180Unit(ITaskFactory taskFactory)
+        {
+            if (taskFactory == null) throw new ArgumentNullException("taskFactory");
+            _taskFactory = taskFactory;
+        }
 
         public int Kanal { get { return _kanal; }}
 
@@ -25,13 +64,12 @@ namespace C42A.Ra180.Infrastructure
                 if (_mod == value) return;
 
                 var mod = _mod;
-                _mod = value;
                 if (mod == Ra180Mod.Från)
                 {
-                    Task.Factory.StartNew(() =>
+                    _taskFactory.StartNew(() =>
                     {
                         var interval = TimeSpan.FromSeconds(2);
-                        Action wait = () => Thread.Sleep(interval);
+                        Action wait = () => _taskFactory.Wait(interval);
                         SetDisplay("TEST");
                         wait();
                         SetDisplay("TEST OK");
@@ -39,8 +77,11 @@ namespace C42A.Ra180.Infrastructure
                         SetDisplay("NOLLSTÄ");
                         wait();
                         SetDisplay(null);
+                        _mod = value;
                     });
                 }
+                else
+                    _mod = value;
             }
         }
 
@@ -72,6 +113,8 @@ namespace C42A.Ra180.Infrastructure
                 var keymaps = new Dictionary<Ra180Knapp, Func<Ra180Menu>>
                 {
                     {Ra180Knapp.Knapp1, () => new Ra180MenuTid(this)},
+                    {Ra180Knapp.Knapp2, () => new Ra180MenuRda(this)},
+                    {Ra180Knapp.Knapp4, () => new Ra180MenuKda(this)},
                 };
 
                 foreach (var keymap in keymaps)
@@ -87,6 +130,31 @@ namespace C42A.Ra180.Infrastructure
         }
 
         internal DateTimeOffset Now { get; private set; }
+
+        internal Ra180Kanaldata Kanaldata
+        {
+            get
+            {
+                switch (Kanal)
+                {
+                    case 1: return Hemligt.Kanal1;
+                    case 2: return Hemligt.Kanal2;
+                    case 3: return Hemligt.Kanal3;
+                    case 4: return Hemligt.Kanal4;
+                    case 5: return Hemligt.Kanal5;
+                    case 6: return Hemligt.Kanal6;
+                    case 7: return Hemligt.Kanal7;
+                    case 8: return Hemligt.Kanal8;
+                    default:
+                        return new Ra180Kanaldata();
+                }
+            }
+        }
+
+        internal Ra180Hemligt Hemligt
+        {
+            get { return _hemligt ?? (_hemligt = Ra180Hemligt.GetDefault()); }
+        }
 
         internal void SetDisplay(string text)
         {
@@ -141,283 +209,44 @@ namespace C42A.Ra180.Infrastructure
 
     internal class Ra180Hemligt
     {
-
-    }
-
-    internal abstract class Ra180Menu
-    {
-        private readonly Ra180Unit _unit;
-        private string _input;
-        private int _submenu;
-
-        protected Ra180Menu(Ra180Unit unit)
+        public Ra180Hemligt()
         {
-            if (unit == null) throw new ArgumentNullException("unit");
-            _unit = unit;
-
-            OnSubmenuChanged(0);
+            Kanal1 = new Ra180Kanaldata();
+            Kanal2 = new Ra180Kanaldata();
+            Kanal3 = new Ra180Kanaldata();
+            Kanal4 = new Ra180Kanaldata();
+            Kanal5 = new Ra180Kanaldata();
+            Kanal6 = new Ra180Kanaldata();
+            Kanal7 = new Ra180Kanaldata();
+            Kanal8 = new Ra180Kanaldata();
         }
 
-        protected virtual string Title
+        public Ra180Kanaldata Kanal1 { get; set; }
+        public Ra180Kanaldata Kanal2 { get; set; }
+        public Ra180Kanaldata Kanal3 { get; set; }
+        public Ra180Kanaldata Kanal4 { get; set; }
+        public Ra180Kanaldata Kanal5 { get; set; }
+        public Ra180Kanaldata Kanal6 { get; set; }
+        public Ra180Kanaldata Kanal7 { get; set; }
+        public Ra180Kanaldata Kanal8 { get; set; }
+
+        public static Ra180Hemligt GetDefault()
         {
-            get { return "????????"; }
-        }
+            var result = new Ra180Hemligt();
+            result.Kanal1.Frekvens = "30060";
+            result.Kanal1.Bandbredd1 = "1234";
+            result.Kanal1.Bandbredd2 = "5678";
 
-        protected virtual int Submenus
-        {
-            get { return 0; }
-        }
-
-        protected Ra180Unit Unit { get { return _unit; } }
-
-        protected int Submenu
-        {
-            get { return _submenu; }
-            set
-            {
-                _submenu = value > Submenus ? 0 : value;
-                OnSubmenuChanged(_submenu);
-            }
-        }
-
-        protected string Input
-        {
-            get { return _input; }
-            private set
-            {
-                _input = value; 
-                OnInputChanged(_input);
-            }
-        }
-
-        protected virtual void OnInputChanged(string input)
-        {
-        }
-
-        public virtual void HandleKeys(Ra180Knapp knapp)
-        {
-            switch (knapp)
-            {
-                case Ra180Knapp.ÄND:
-                    OnÄND();
-                    break;
-                case Ra180Knapp.ENT:
-                    OnRETURN();
-                    break;
-                case Ra180Knapp.SLT:
-                    OnSLT();
-                    break;
-                default:
-                    OnNumpadKey(knapp);
-                    break;
-            }
-        }
-
-        protected virtual void OnÄND()
-        {
-            StartCaptureInput();
-        }
-
-        protected virtual void OnRETURN()
-        {
-            var input = Input;
-            if (input != null)
-                ConfirmInput();
-            else
-                NextSubmodule();
-        }
-
-        protected virtual void OnSLT()
-        {
-            var input = Input;
-            if (input == null)
-            {
-                CloseMenu();
-                return;
-            }
-
-            Input = null;
-            OnSubmenuChanged(Submenu);
-        }
-
-        protected virtual void NextSubmodule()
-        {
-            var submodule = Submenu + 1;
-            if (submodule > Submenus)
-            {
-                CloseMenu();
-                return;
-            }
-
-            Submenu++;
-        }
-
-        protected virtual void CloseMenu()
-        {
-            Unit.CloseMenu();
-        }
-
-        protected virtual void ConfirmInput()
-        {
-            var success = TrySubmitInput(Input);
-            if (success) 
-                _input = null;
-            else
-                Input = "";
-        }
-
-        protected virtual bool TrySubmitInput(string input)
-        {
-            return true;
-        }
-
-        protected virtual void StartCaptureInput()
-        {
-            Input = "";
-        }
-
-        protected virtual void OnNumpadKey(Ra180Knapp knapp)
-        {
-            var numpad = new Dictionary<Ra180Knapp, char>
-            {
-                {Ra180Knapp.Knapp0, '0'},
-                {Ra180Knapp.Knapp1, '1'},
-                {Ra180Knapp.Knapp2, '2'},
-                {Ra180Knapp.Knapp3, '3'},
-                {Ra180Knapp.Knapp4, '4'},
-                {Ra180Knapp.Knapp5, '5'},
-                {Ra180Knapp.Knapp6, '6'},
-                {Ra180Knapp.Knapp7, '7'},
-                {Ra180Knapp.Knapp8, '8'},
-                {Ra180Knapp.Knapp9, '9'},
-            };
-
-            foreach (var keymap in numpad)
-            {
-                if (keymap.Key != knapp) continue;
-                OnNumpadKey(keymap.Value);
-            }
-        }
-
-        protected virtual void OnNumpadKey(char key)
-        {
-            var input = Input;
-            if (input == null) return;
-            input += key;
-            Input = input;
-        }
-
-        protected virtual void OnSubmenuChanged(int submenu)
-        {
-            var displayText = FormatDisplay(submenu);
-            Unit.SetDisplay(displayText);
-        }
-
-        protected virtual string FormatDisplay(int submenu)
-        {
-            if (submenu == Submenus)
-                return string.Format("  ({0}) ", Title);
-            else
-                return null;
+            return result;
         }
     }
 
-    internal class Ra180MenuTid : Ra180Menu
+    internal class Ra180Kanaldata
     {
-        public Ra180MenuTid(Ra180Unit unit) : base(unit)
-        {
-        }
-
-        protected override string Title
-        {
-            get { return "TID"; }
-        }
-
-        protected override int Submenus
-        {
-            get { return 2; }
-        }
-
-        protected virtual string GetSubmenuPrefix(int submenu)
-        {
-            var prefixes = new[] {"T:", "DAT:"};
-            if (submenu >= 0 && submenu < prefixes.Length)
-                return prefixes[submenu];
-            else
-                return null;
-        }
-
-        protected override string FormatDisplay(int submenu)
-        {
-            var prefix = GetSubmenuPrefix(submenu);
-
-            if (submenu == 0)
-                return string.Format("{0}{1:HHmmss}", prefix, Unit.Now);
-            else if (submenu == 1)
-                return string.Format("{0}{1:MMdd}", prefix, Unit.Now);
-            else
-                return base.FormatDisplay(submenu);
-        }
-
-        protected override void OnInputChanged(string input)
-        {
-            var prefix = GetSubmenuPrefix(Submenu);
-            Unit.SetDisplay(prefix + input);
-        }
-
-        protected override bool TrySubmitInput(string input)
-        {
-            var submenu = Submenu;
-            if (submenu == 0)
-                return TrySubmitTidInput(input);
-            else if (submenu == 1)
-                return TrySubmitDatumInput(input);
-            return false;
-        }
-
-        private bool TrySubmitDatumInput(string input)
-        {
-            var match = Regex.Match(input, "^([0-9]{2})([0-9]{2})$");
-            if (!match.Success) return false;
-
-            var mm = int.Parse(match.Groups[1].Value);
-            var dd = int.Parse(match.Groups[2].Value);
-
-            try
-            {
-                const int leapYear = 2016;
-                var date = new DateTime(leapYear, mm, dd, 0, 0, 0, DateTimeKind.Local);
-                date = date.Add(Unit.Now.TimeOfDay);
-                var now = new DateTimeOffset(date);
-                Unit.SetNow(now);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private bool TrySubmitTidInput(string input)
-        {
-            var match = Regex.Match(input, "^([0-9]{2})([0-9]{2})([0-9]{2})$");
-            if (!match.Success) return false;
-
-            var hh = int.Parse(match.Groups[1].Value);
-            var mm = int.Parse(match.Groups[2].Value);
-            var ss = int.Parse(match.Groups[3].Value);
-
-            try
-            {
-                var timespan = new TimeSpan(hh, mm, ss);
-                var now = Unit.Now.Date.Add(timespan);
-                Unit.SetNow(now);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+        public string Frekvens { get; set; }
+        public string Bandbredd1 { get; set; }
+        public string Bandbredd2 { get; set; }
+        public string PNY { get; set; }
+        public string NYK { get; set; }
     }
 }
