@@ -26,6 +26,7 @@ namespace C42A.Ra180.WindowsClient
         {
             if (unit == null) throw new ArgumentNullException("unit");
             _ra180 = unit;
+            _ra180.Start();
             _ra180.DisplayChanged += (sender, args) => _synchronizationContext.Send(state => Display.Text = _ra180.Display, null);
             Display.Text = _ra180.Display;
             ResetHardwareKeysToRa180Values();

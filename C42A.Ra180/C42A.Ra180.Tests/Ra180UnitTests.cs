@@ -227,13 +227,16 @@ namespace C42A.Ra180.Tests
             Assert.That(sut.Display, Is.EqualTo("BD2:5678"), "#3");
 
             sut.SendKeys(Ra180Knapp.ENT);
-            Assert.That(sut.Display, Is.EqualTo("PNY:###"), "#4");
+            Assert.That(sut.Display, Is.EqualTo("SYNK=NEJ"), "#4");
 
             sut.SendKeys(Ra180Knapp.ENT);
-            Assert.That(sut.Display, Is.EqualTo("  (KDA) "), "#5");
+            Assert.That(sut.Display, Is.EqualTo("PNY:###"), "#5");
 
             sut.SendKeys(Ra180Knapp.ENT);
-            Assert.That(sut.Display, Is.EqualTo(null), "#6");
+            Assert.That(sut.Display, Is.EqualTo("  (KDA) "), "#6");
+
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo(null), "#7");
         }
 
 

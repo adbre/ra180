@@ -7,6 +7,18 @@ namespace C42A.Ra180.Infrastructure
     {
         public Ra180MenuTid(Ra180Unit unit) : base(unit)
         {
+            unit.NowChanged += UnitOnNowChanged;
+        }
+
+        protected override void CloseMenu()
+        {
+            Unit.NowChanged -= UnitOnNowChanged;
+            base.CloseMenu();
+        }
+
+        private void UnitOnNowChanged(object sender, EventArgs eventArgs)
+        {
+            OnSubmenuChanged(Submenu);
         }
 
         protected override string Title

@@ -168,6 +168,7 @@ namespace C42A.Ra180.Infrastructure
 
         protected virtual void OnSubmenuChanged(int submenu)
         {
+            if (Input != null) return;
             var displayText = FormatDisplay(submenu);
             Unit.SetDisplay(displayText);
         }

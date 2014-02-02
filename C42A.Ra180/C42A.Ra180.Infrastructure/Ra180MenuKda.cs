@@ -23,7 +23,7 @@ namespace C42A.Ra180.Infrastructure
 
         protected override int Submenus
         {
-            get { return 4; }
+            get { return 5; }
         }
 
         protected override void OnÄND()
@@ -82,6 +82,8 @@ namespace C42A.Ra180.Infrastructure
             if (submenu == 2)
                 return string.Format("BD2:{0}", Unit.Kanaldata.Bandbredd2);
             if (submenu == 3)
+                return string.Format("SYNK=NEJ");
+            if (submenu == 4)
             {
                 var pny = Unit.Kanaldata.PNY;
                 pny = pny ?? "###";

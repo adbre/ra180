@@ -1,45 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace C42A.Ra180.Infrastructure
 {
-    public interface ITaskFactory
-    {
-        void StartNew(Action action);
-        void Wait(TimeSpan delay);
-    }
-
-    public class TaskFactory : ITaskFactory
-    {
-        public void StartNew(Action action)
-        {
-            if (action == null) throw new ArgumentNullException("action");
-            Task.Factory.StartNew(action);
-        }
-
-        public void Wait(TimeSpan delay)
-        {
-            Thread.Sleep(delay);
-        }
-    }
-
-    public class DummyTaskFactory : ITaskFactory
-    {
-        public void StartNew(Action action)
-        {
-            if (action == null) throw new ArgumentNullException("action");
-            action();
-        }
-
-        public void Wait(TimeSpan delay)
-        {
-            
-        }
-    }
-
-    public class Ra180Unit
+    public class Ra180Unit : IDisposable
     {
         private readonly ITaskFactory _taskFactory;
         private int _kanal = 1;
@@ -47,11 +12,22 @@ namespace C42A.Ra180.Infrastructure
         private Ra180Menu _currentMenu;
         private Ra180Hemligt _hemligt;
         private Ra180Mod _mod;
+        private readonly Timer _timer;
+        private bool _isStarted;
+
 
         public Ra180Unit(ITaskFactory taskFactory)
         {
             if (taskFactory == null) throw new ArgumentNullException("taskFactory");
             _taskFactory = taskFactory;
+            Now = new DateTimeOffset(2016, 01, 01, 00, 00, 00, TimeSpan.Zero);
+
+            _timer = new Timer(state => SetNow(Now.AddSeconds(1)), null, -1, -1);
+        }
+
+        public void Start()
+        {
+            _isStarted = true;
         }
 
         public int Kanal { get { return _kanal; }}
@@ -76,6 +52,10 @@ namespace C42A.Ra180.Infrastructure
                         wait();
                         SetDisplay("NOLLSTÄ");
                         wait();
+
+                        if (_isStarted)
+                            _timer.Change(TimeSpan.Zero, TimeSpan.FromSeconds(1));
+
                         SetDisplay(null);
                         _mod = value;
                     });
@@ -88,12 +68,14 @@ namespace C42A.Ra180.Infrastructure
         public int Volym { get { return _volym; } }
         public string Display { get; private set; }
 
-        public Ra180Unit()
-        {
-            Now = new DateTimeOffset(2016, 01, 01, 00, 00, 00, TimeSpan.Zero);
-        }
-
         public event EventHandler DisplayChanged;
+        public event EventHandler NowChanged;
+
+        protected virtual void OnNowChanged()
+        {
+            var handler = NowChanged;
+            if (handler != null) handler(this, EventArgs.Empty);
+        }
 
         protected virtual void OnDisplayChanged()
         {
@@ -165,6 +147,7 @@ namespace C42A.Ra180.Infrastructure
         internal void SetNow(DateTimeOffset now)
         {
             Now = now;
+            OnNowChanged();
         }
 
         private void HandleHardwareKeys(Ra180Knapp knapp)
@@ -204,6 +187,11 @@ namespace C42A.Ra180.Infrastructure
         {
             _currentMenu = null;
             SetDisplay(null);
+        }
+
+        public void Dispose()
+        {
+            _timer.Dispose();
         }
     }
 
