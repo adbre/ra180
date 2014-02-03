@@ -66,7 +66,7 @@ namespace C42A.Ra180.Infrastructure
                         wait();
                         SetDisplay("TEST OK");
                         wait();
-                        SetDisplay("NOLLSTÄ");
+                        SetDisplay("NOLLST");
                         wait();
 
                         if (_isStarted)
@@ -113,6 +113,7 @@ namespace C42A.Ra180.Infrastructure
                     {Ra180Knapp.Knapp1, () => new Ra180MenuTid(this)},
                     {Ra180Knapp.Knapp2, () => new Ra180MenuRda(this)},
                     {Ra180Knapp.Knapp4, () => new Ra180MenuKda(this)},
+                    {Ra180Knapp.Knapp7, () => new Ra180MenuNyk(this)},
                 };
 
                 foreach (var keymap in keymaps)

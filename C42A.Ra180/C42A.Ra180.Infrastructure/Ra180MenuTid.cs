@@ -33,7 +33,9 @@ namespace C42A.Ra180.Infrastructure
 
         protected override void OnNumpadKey(char key)
         {
-            if (Input.Length >= GetMaxLength()) return;
+            var input = Input;
+            if (input == null) return;
+            if (input.Length >= GetMaxLength()) return;
             base.OnNumpadKey(key);
         }
 

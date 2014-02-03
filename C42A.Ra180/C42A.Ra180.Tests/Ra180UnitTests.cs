@@ -316,12 +316,103 @@ namespace C42A.Ra180.Tests
             sut.SendKeys(Ra180Knapp.Knapp6);
             sut.SendKeys(Ra180Knapp.Knapp0);
             sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("BD1:3040"), "#1");
             sut.SendKeys(Ra180Knapp.SLT);
             sut.SendKeys(Ra180Knapp.Knapp4);
             sut.SendKeys(Ra180Knapp.ENT);
-            Assert.That(sut.Display, Is.EqualTo("BD1:3040"), "#1");
+            Assert.That(sut.Display, Is.EqualTo("BD1:3040"), "#2");
             sut.SendKeys(Ra180Knapp.ENT);
-            Assert.That(sut.Display, Is.EqualTo("BD2:5060"), "#2");
+            Assert.That(sut.Display, Is.EqualTo("BD2:5060"), "#3");
+        }
+
+        [Test]
+        public void ShouldEnterPnyGroups()
+        {
+            var sut = GetSystemUnderTest();
+            sut.SendKeys(Ra180Knapp.ModKlar);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            sut.SendKeys(Ra180Knapp.ENT); // FR->BD1
+            sut.SendKeys(Ra180Knapp.ENT); // BD1->BD2
+            sut.SendKeys(Ra180Knapp.ENT); // BD2->SYNK
+            sut.SendKeys(Ra180Knapp.ENT); // SYNK->PNY
+            sut.SendKeys(Ra180Knapp.ÄND);
+            Assert.That(sut.Display, Is.EqualTo("PN1:"), "#1");
+            sut.SendKeys(Ra180Knapp.Knapp1);
+            sut.SendKeys(Ra180Knapp.Knapp1);
+            sut.SendKeys(Ra180Knapp.Knapp1);
+            sut.SendKeys(Ra180Knapp.Knapp1);
+            Assert.That(sut.Display, Is.EqualTo("PN1:1111"), "#2");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("PN2:"), "#3");
+            sut.SendKeys(Ra180Knapp.Knapp2);
+            sut.SendKeys(Ra180Knapp.Knapp2);
+            sut.SendKeys(Ra180Knapp.Knapp2);
+            sut.SendKeys(Ra180Knapp.Knapp2);
+            Assert.That(sut.Display, Is.EqualTo("PN2:2222"), "#4");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("PN3:"), "#5");
+            sut.SendKeys(Ra180Knapp.Knapp3);
+            sut.SendKeys(Ra180Knapp.Knapp3);
+            sut.SendKeys(Ra180Knapp.Knapp3);
+            sut.SendKeys(Ra180Knapp.Knapp3);
+            Assert.That(sut.Display, Is.EqualTo("PN3:3333"), "#6");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("PN4:"), "#7");
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            Assert.That(sut.Display, Is.EqualTo("PN4:4444"), "#8");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("PN5:"), "#9");
+            sut.SendKeys(Ra180Knapp.Knapp5);
+            sut.SendKeys(Ra180Knapp.Knapp5);
+            sut.SendKeys(Ra180Knapp.Knapp5);
+            sut.SendKeys(Ra180Knapp.Knapp5);
+            Assert.That(sut.Display, Is.EqualTo("PN5:5555"), "#10");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("PN6:"), "#11");
+            sut.SendKeys(Ra180Knapp.Knapp6);
+            sut.SendKeys(Ra180Knapp.Knapp6);
+            sut.SendKeys(Ra180Knapp.Knapp6);
+            sut.SendKeys(Ra180Knapp.Knapp6);
+            Assert.That(sut.Display, Is.EqualTo("PN6:6666"), "#12");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("PN7:"), "#13");
+            sut.SendKeys(Ra180Knapp.Knapp7);
+            sut.SendKeys(Ra180Knapp.Knapp7);
+            sut.SendKeys(Ra180Knapp.Knapp7);
+            sut.SendKeys(Ra180Knapp.Knapp7);
+            Assert.That(sut.Display, Is.EqualTo("PN7:7777"), "#14");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("PN8:"), "#15");
+            sut.SendKeys(Ra180Knapp.Knapp8);
+            sut.SendKeys(Ra180Knapp.Knapp8);
+            sut.SendKeys(Ra180Knapp.Knapp8);
+            sut.SendKeys(Ra180Knapp.Knapp8);
+            Assert.That(sut.Display, Is.EqualTo("PN8:8888"), "#16");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("PN9:"), "#17");
+            sut.SendKeys(Ra180Knapp.Knapp9);
+            sut.SendKeys(Ra180Knapp.Knapp9);
+            sut.SendKeys(Ra180Knapp.Knapp9);
+            sut.SendKeys(Ra180Knapp.Knapp9);
+            Assert.That(sut.Display, Is.EqualTo("PN9:9999"), "#18");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("PNY:111"), "#19");
+            sut.SendKeys(Ra180Knapp.SLT);
+            sut.SendKeys(Ra180Knapp.Knapp7);
+            Assert.That(sut.Display, Is.EqualTo("NYK=###"), "#20");
+            sut.SendKeys(Ra180Knapp.ÄND);
+            Assert.That(sut.Display, Is.EqualTo("NYK=111"), "#21");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("NYK=111"), "#22");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("  (NYK) "), "#23");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo(null), "#24");
+            sut.SendKeys(Ra180Knapp.Knapp7);
+            Assert.That(sut.Display, Is.EqualTo("NYK=111"), "#25");
         }
     }
 }

@@ -1,6 +1,5 @@
     using System;
     using System.Linq;
-    using Microsoft.SqlServer.Server;
 
 namespace C42A.Ra180.Infrastructure
 {
@@ -10,9 +9,12 @@ namespace C42A.Ra180.Infrastructure
      * BD2:
      * PNY:
      */
-
     internal class Ra180MenuKda : Ra180Menu
     {
+        private bool _moveBackToSubmenu1;
+        private string _pny;
+        private int _pnyGrupp;
+
         public Ra180MenuKda(Ra180Unit unit) : base(unit)
         {
         }
@@ -29,11 +31,20 @@ namespace C42A.Ra180.Infrastructure
 
         protected override void OnÄND()
         {
+            if (Input != null) return;
+            _moveBackToSubmenu1 = false;
+
             switch (Submenu)
             {
                 case 0:
                 case 1:
                 case 2:
+                    base.OnÄND();
+                    break;
+
+                case 4:
+                    if (_pnyGrupp > 0) return;
+                    _pnyGrupp = 1;
                     base.OnÄND();
                     break;
             }
@@ -54,6 +65,7 @@ namespace C42A.Ra180.Infrastructure
                 case 0: return 5;
                 case 1: return 4;
                 case 2: return 4;
+                case 4: return 4;
                 default: return 0;
             }
         }
@@ -79,6 +91,16 @@ namespace C42A.Ra180.Infrastructure
                     case 2:
                         Unit.Kanaldata.Bandbredd2 = input;
                         return true;
+
+                    case 4:
+                        _pny += input;
+                        if (_pnyGrupp == 9)
+                        {
+                            Unit.Kanaldata.SetPNYGroups(_pny);
+                            _pny = null;
+                        }
+
+                        return true;
                 }
             }
 
@@ -93,6 +115,27 @@ namespace C42A.Ra180.Infrastructure
             {
                 NextSubmodule();
                 OnÄND();
+                _moveBackToSubmenu1 = true;
+            }
+            else if (Submenu == 2)
+            {
+                if (_moveBackToSubmenu1)
+                {
+                    _moveBackToSubmenu1 = false;
+                    Submenu = 1;
+                }
+            }
+            else if (Submenu == 4)
+            {
+                if (_pnyGrupp == 9)
+                {
+                    _pnyGrupp = default(int);
+                    OnInputChanged(null);
+                    return;
+                }
+
+                _pnyGrupp++;
+                StartCaptureInput();
             }
         }
 
@@ -120,6 +163,9 @@ namespace C42A.Ra180.Infrastructure
                 return string.Format("SYNK=NEJ");
             if (submenu == 4)
             {
+                if (_pnyGrupp >= 1 && _pnyGrupp <= 9)
+                    return string.Format("PN{0}:{1}", _pnyGrupp, input);
+
                 var pny = Unit.Kanaldata.PNY;
                 pny = pny ?? "###";
                 return string.Format("PNY:{0}", pny);
