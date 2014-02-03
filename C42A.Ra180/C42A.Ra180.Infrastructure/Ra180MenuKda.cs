@@ -1,5 +1,6 @@
     using System;
     using System.Linq;
+    using Microsoft.SqlServer.Server;
 
 namespace C42A.Ra180.Infrastructure
 {
@@ -28,15 +29,21 @@ namespace C42A.Ra180.Infrastructure
 
         protected override void OnÄND()
         {
-            if (Submenu != 0)
-                return;
-
-            base.OnÄND();
+            switch (Submenu)
+            {
+                case 0:
+                case 1:
+                case 2:
+                    base.OnÄND();
+                    break;
+            }
         }
 
         protected override void OnNumpadKey(char key)
         {
-            if (Input.Length >= GetMaxLength()) return;
+            var input = Input;
+            if (input == null) return;
+            if (input.Length >= GetMaxLength()) return;
             base.OnNumpadKey(key);
         }
 
@@ -53,34 +60,62 @@ namespace C42A.Ra180.Infrastructure
 
         protected override void OnInputChanged(string input)
         {
-            if (Submenu != 0) return;
-            var text = string.Format("FR:{0}", input);
+            var text = FormatDisplay2(Submenu, input);
             Unit.SetDisplay(text);
         }
 
         protected override bool TrySubmitInput(string input)
         {
-            if (Submenu == 0)
-                return TrySubmitFrekvensInput(input);
+            if (IsAllDigits(input))
+            {
+                switch (Submenu)
+                {
+                    case 0:
+                        Unit.Kanaldata.Frekvens = input;
+                        return true;
+                    case 1:
+                        Unit.Kanaldata.Bandbredd1 = input;
+                        return true;
+                    case 2:
+                        Unit.Kanaldata.Bandbredd2 = input;
+                        return true;
+                }
+            }
+
             return base.TrySubmitInput(input);
         }
 
-        private bool TrySubmitFrekvensInput(string input)
+        protected override void ConfirmInput()
         {
-            var allDigits = input.ToCharArray().All(c => Char.IsDigit(c));
-            if (!allDigits) return false;
-            Unit.Kanaldata.Frekvens = input;
-            return true;
+            base.ConfirmInput();
+
+            if (Submenu == 1)
+            {
+                NextSubmodule();
+                OnÄND();
+            }
+        }
+
+        private static bool IsAllDigits(string input)
+        {
+            return input.ToCharArray().All(c => Char.IsDigit(c));
         }
 
         protected override string FormatDisplay(int submenu)
         {
+            var text = FormatDisplay2(submenu);
+            text = text ?? base.FormatDisplay(submenu);
+            return text;
+        }
+
+        private string FormatDisplay2(int submenu, string input = null)
+        {
             if (submenu == 0)
-                return string.Format("FR:{0}", Unit.Kanaldata.Frekvens);
+                return string.Format("FR:{0}", input ?? Unit.Kanaldata.Frekvens);
             if (submenu == 1)
-                return string.Format("BD1:{0}", Unit.Kanaldata.Bandbredd1);
+                return string.Format("BD1:{0}", input?? Unit.Kanaldata.Bandbredd1);
             if (submenu == 2)
-                return string.Format("BD2:{0}", Unit.Kanaldata.Bandbredd2);
+                return string.Format("BD2:{0}", input ?? Unit.Kanaldata.Bandbredd2);
             if (submenu == 3)
                 return string.Format("SYNK=NEJ");
             if (submenu == 4)
@@ -90,7 +125,7 @@ namespace C42A.Ra180.Infrastructure
                 return string.Format("PNY:{0}", pny);
             }
 
-            return base.FormatDisplay(submenu);
+            return null;
         }
     }
 }

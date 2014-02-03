@@ -78,6 +78,7 @@
             this.Volym2 = new System.Windows.Forms.RadioButton();
             this.Volym1 = new System.Windows.Forms.RadioButton();
             this.label1 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel5.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -90,6 +91,7 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(24)))), ((int)(((byte)(24)))));
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.panel5);
             this.panel1.Controls.Add(this.panel4);
             this.panel1.Location = new System.Drawing.Point(12, 12);
@@ -770,12 +772,26 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "VOLYM";
             // 
+            // button1
+            // 
+            this.button1.BackColor = System.Drawing.Color.Black;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.button1.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.Color.White;
+            this.button1.Location = new System.Drawing.Point(17, 222);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(66, 66);
+            this.button1.TabIndex = 6;
+            this.button1.Text = "DART";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Visible = false;
+            // 
             // Ra180Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DarkOliveGreen;
-            this.ClientSize = new System.Drawing.Size(972, 340);
+            this.ClientSize = new System.Drawing.Size(972, 339);
             this.Controls.Add(this.panel6);
             this.Controls.Add(this.Display);
             this.Controls.Add(this.panel3);
@@ -851,6 +867,7 @@
         private System.Windows.Forms.RadioButton Volym2;
         private System.Windows.Forms.RadioButton Volym1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button button1;
     }
 }
 

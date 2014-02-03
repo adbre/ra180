@@ -211,7 +211,6 @@ namespace C42A.Ra180.Tests
             Assert.That(sut.Display, Is.EqualTo("  (RDA) "), "#2");
         }
 
-
         [Test]
         public void ShouldNavigateKda()
         {
@@ -238,7 +237,6 @@ namespace C42A.Ra180.Tests
             sut.SendKeys(Ra180Knapp.ENT);
             Assert.That(sut.Display, Is.EqualTo(null), "#7");
         }
-
 
         [Test]
         public void ShouldEnterFrekvensKanal1()
@@ -298,6 +296,32 @@ namespace C42A.Ra180.Tests
             sut.SendKeys(Ra180Knapp.Knapp5);
             sut.SendKeys(Ra180Knapp.Knapp6);
             Assert.That(sut.Display, Is.EqualTo("FR:12345"), "#2");
+        }
+
+        [Test]
+        public void ShouldEnterBandbredd1And2()
+        {
+            var sut = GetSystemUnderTest();
+            sut.SendKeys(Ra180Knapp.ModKlar);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            sut.SendKeys(Ra180Knapp.ENT);
+            sut.SendKeys(Ra180Knapp.ÄND);
+            sut.SendKeys(Ra180Knapp.Knapp3);
+            sut.SendKeys(Ra180Knapp.Knapp0);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            sut.SendKeys(Ra180Knapp.Knapp0);
+            sut.SendKeys(Ra180Knapp.ENT);
+            sut.SendKeys(Ra180Knapp.Knapp5);
+            sut.SendKeys(Ra180Knapp.Knapp0);
+            sut.SendKeys(Ra180Knapp.Knapp6);
+            sut.SendKeys(Ra180Knapp.Knapp0);
+            sut.SendKeys(Ra180Knapp.ENT);
+            sut.SendKeys(Ra180Knapp.SLT);
+            sut.SendKeys(Ra180Knapp.Knapp4);
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("BD1:3040"), "#1");
+            sut.SendKeys(Ra180Knapp.ENT);
+            Assert.That(sut.Display, Is.EqualTo("BD2:5060"), "#2");
         }
     }
 }
