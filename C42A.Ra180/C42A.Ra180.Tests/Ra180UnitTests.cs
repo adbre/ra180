@@ -1,21 +1,58 @@
-﻿using C42A.Ra180.Infrastructure;
+﻿using System;
+using C42A.Ra180.Infrastructure;
 using NUnit.Framework;
 
 namespace C42A.Ra180.Tests
 {
+    public class MockDartTransport : IDartTransport
+    {
+        public Action<string> SendingString { get; set; }
+
+        public void OnReceivedString(string s)
+        {
+            var handler = ReceivedString;
+            if (handler != null) handler(this, s);
+        }
+
+        public event EventHandler<string> ReceivedString;
+
+        public void SendString(string s)
+        {
+            var sending = SendingString;
+            if (sending != null) sending(s);
+        }
+    }
+
     [TestFixture]
     public class Ra180UnitTests
     {
+        private MockDartTransport _dartTransport;
+
         [SetUp]
         public void SetUp()
         {
-            
+            _dartTransport = new MockDartTransport();
         }
 
         private Ra180Unit GetSystemUnderTest()
         {
             var taskFactory = new DummyTaskFactory();
-            return new Ra180Unit(taskFactory);
+            return new Ra180Unit(taskFactory, _dartTransport);
+        }
+
+        [Test]
+        public void ShouldReceiveMessageInKlar()
+        {
+            const string expected = "99FB75D9-C4B1-42D7-B98B-0243C19FD366";
+            var sut = GetSystemUnderTest();
+            sut.SendKeys(Ra180Knapp.ModKlar);
+
+            _dartTransport.SendingString = s => _dartTransport.OnReceivedString(s);
+
+            var actual = default(string);
+            sut.ReceivedString += (sender, s) => actual = s;
+            sut.SendString(expected);
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]

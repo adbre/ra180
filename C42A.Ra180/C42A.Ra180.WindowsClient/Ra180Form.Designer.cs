@@ -78,7 +78,14 @@
             this.Volym2 = new System.Windows.Forms.RadioButton();
             this.Volym1 = new System.Windows.Forms.RadioButton();
             this.label1 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.panel8 = new System.Windows.Forms.Panel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.Trafiklista = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.UtgåendeKlartext = new System.Windows.Forms.TextBox();
+            this.Sänd = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel5.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -86,15 +93,16 @@
             this.panel3.SuspendLayout();
             this.panel6.SuspendLayout();
             this.panel7.SuspendLayout();
+            this.panel8.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(24)))), ((int)(((byte)(24)))));
-            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.panel5);
             this.panel1.Controls.Add(this.panel4);
-            this.panel1.Location = new System.Drawing.Point(12, 12);
+            this.panel1.Location = new System.Drawing.Point(13, 13);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(246, 316);
             this.panel1.TabIndex = 0;
@@ -312,7 +320,7 @@
             this.panel2.Controls.Add(this.ÄND);
             this.panel2.Controls.Add(this.EFF);
             this.panel2.Controls.Add(this.OPM);
-            this.panel2.Location = new System.Drawing.Point(286, 164);
+            this.panel2.Location = new System.Drawing.Point(287, 165);
             this.panel2.Name = "panel2";
             this.panel2.Padding = new System.Windows.Forms.Padding(6);
             this.panel2.Size = new System.Drawing.Size(233, 159);
@@ -418,7 +426,7 @@
             this.panel3.Controls.Add(this.Knapp3);
             this.panel3.Controls.Add(this.Knapp2);
             this.panel3.Controls.Add(this.Knapp1);
-            this.panel3.Location = new System.Drawing.Point(545, 12);
+            this.panel3.Location = new System.Drawing.Point(546, 13);
             this.panel3.Name = "panel3";
             this.panel3.Padding = new System.Windows.Forms.Padding(6);
             this.panel3.Size = new System.Drawing.Size(230, 316);
@@ -627,7 +635,7 @@
             this.Display.BackColor = System.Drawing.Color.Olive;
             this.Display.Font = new System.Drawing.Font("Consolas", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Display.ForeColor = System.Drawing.Color.Lime;
-            this.Display.Location = new System.Drawing.Point(286, 39);
+            this.Display.Location = new System.Drawing.Point(287, 40);
             this.Display.Name = "Display";
             this.Display.Size = new System.Drawing.Size(233, 64);
             this.Display.TabIndex = 2;
@@ -637,7 +645,7 @@
             // 
             this.panel6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(24)))), ((int)(((byte)(24)))), ((int)(((byte)(24)))));
             this.panel6.Controls.Add(this.panel7);
-            this.panel6.Location = new System.Drawing.Point(781, 12);
+            this.panel6.Location = new System.Drawing.Point(782, 13);
             this.panel6.Name = "panel6";
             this.panel6.Size = new System.Drawing.Size(179, 316);
             this.panel6.TabIndex = 10;
@@ -772,31 +780,90 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "VOLYM";
             // 
-            // button1
+            // panel8
             // 
-            this.button1.BackColor = System.Drawing.Color.Black;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button1.Font = new System.Drawing.Font("Arial", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.ForeColor = System.Drawing.Color.White;
-            this.button1.Location = new System.Drawing.Point(17, 222);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(66, 66);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "DART";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Visible = false;
+            this.panel8.BackColor = System.Drawing.Color.OliveDrab;
+            this.panel8.Controls.Add(this.panel1);
+            this.panel8.Controls.Add(this.panel6);
+            this.panel8.Controls.Add(this.panel2);
+            this.panel8.Controls.Add(this.Display);
+            this.panel8.Controls.Add(this.panel3);
+            this.panel8.Location = new System.Drawing.Point(8, 12);
+            this.panel8.Name = "panel8";
+            this.panel8.Padding = new System.Windows.Forms.Padding(10);
+            this.panel8.Size = new System.Drawing.Size(976, 342);
+            this.panel8.TabIndex = 11;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.Sänd);
+            this.groupBox1.Controls.Add(this.UtgåendeKlartext);
+            this.groupBox1.Controls.Add(this.Trafiklista);
+            this.groupBox1.Location = new System.Drawing.Point(8, 360);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(976, 158);
+            this.groupBox1.TabIndex = 12;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Trafik";
+            // 
+            // Trafiklista
+            // 
+            this.Trafiklista.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.Trafiklista.FullRowSelect = true;
+            this.Trafiklista.GridLines = true;
+            this.Trafiklista.Location = new System.Drawing.Point(6, 19);
+            this.Trafiklista.Name = "Trafiklista";
+            this.Trafiklista.Size = new System.Drawing.Size(964, 106);
+            this.Trafiklista.TabIndex = 0;
+            this.Trafiklista.UseCompatibleStateImageBehavior = false;
+            this.Trafiklista.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "kl";
+            this.columnHeader1.Width = 45;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "S/M";
+            this.columnHeader2.Width = 36;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Klartext";
+            this.columnHeader3.Width = 801;
+            // 
+            // UtgåendeKlartext
+            // 
+            this.UtgåendeKlartext.Location = new System.Drawing.Point(6, 131);
+            this.UtgåendeKlartext.Name = "UtgåendeKlartext";
+            this.UtgåendeKlartext.Size = new System.Drawing.Size(883, 20);
+            this.UtgåendeKlartext.TabIndex = 1;
+            // 
+            // Sänd
+            // 
+            this.Sänd.Location = new System.Drawing.Point(895, 129);
+            this.Sänd.Name = "Sänd";
+            this.Sänd.Size = new System.Drawing.Size(75, 23);
+            this.Sänd.TabIndex = 2;
+            this.Sänd.Text = "Sänd";
+            this.Sänd.UseVisualStyleBackColor = true;
+            this.Sänd.Click += new System.EventHandler(this.Sänd_Click);
             // 
             // Ra180Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.DarkOliveGreen;
-            this.ClientSize = new System.Drawing.Size(972, 339);
-            this.Controls.Add(this.panel6);
-            this.Controls.Add(this.Display);
-            this.Controls.Add(this.panel3);
-            this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panel1);
+            this.BackColor = System.Drawing.SystemColors.ControlLight;
+            this.ClientSize = new System.Drawing.Size(992, 530);
+            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.panel8);
             this.Name = "Ra180Form";
             this.Text = "Ra180";
             this.panel1.ResumeLayout(false);
@@ -810,8 +877,11 @@
             this.panel6.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
+            this.panel8.ResumeLayout(false);
+            this.panel8.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -867,7 +937,14 @@
         private System.Windows.Forms.RadioButton Volym2;
         private System.Windows.Forms.RadioButton Volym1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Panel panel8;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.ListView Trafiklista;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.Button Sänd;
+        private System.Windows.Forms.TextBox UtgåendeKlartext;
     }
 }
 

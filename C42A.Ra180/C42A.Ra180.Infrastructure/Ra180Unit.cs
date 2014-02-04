@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 
 namespace C42A.Ra180.Infrastructure
@@ -7,6 +8,8 @@ namespace C42A.Ra180.Infrastructure
     public class Ra180Unit : IDisposable
     {
         private readonly ITaskFactory _taskFactory;
+        private readonly IDartTransport _transport;
+        private readonly Guid _id = Guid.NewGuid();
         private int _kanal = 1;
         private int _volym = 4;
         private Ra180Menu _currentMenu;
@@ -16,13 +19,21 @@ namespace C42A.Ra180.Infrastructure
         private bool _isStarted;
 
 
-        public Ra180Unit(ITaskFactory taskFactory)
+        public Ra180Unit(ITaskFactory taskFactory, IDartTransport transport)
         {
             if (taskFactory == null) throw new ArgumentNullException("taskFactory");
+            if (transport == null) throw new ArgumentNullException("transport");
             _taskFactory = taskFactory;
+            _transport = transport;
+            _transport.ReceivedString += ReceiveString;
             Now = new DateTimeOffset(2016, 01, 01, 00, 00, 00, TimeSpan.Zero);
 
             _timer = new Timer(state => SetNow(Now.AddSeconds(1)), null, -1, -1);
+        }
+
+        private void ReceiveString(object sender, string e)
+        {
+            ReceiveString(e);
         }
 
         public void Start()
@@ -155,6 +166,14 @@ namespace C42A.Ra180.Infrastructure
             get { return _hemligt ?? (_hemligt = Ra180Hemligt.GetDefault()); }
         }
 
+        public event EventHandler<string> ReceivedString;
+
+        protected virtual void OnReceivedString(string e)
+        {
+            EventHandler<string> handler = ReceivedString;
+            if (handler != null) handler(this, e);
+        }
+
         internal void SetDisplay(string text)
         {
             Display = text;
@@ -209,6 +228,56 @@ namespace C42A.Ra180.Infrastructure
         public void Dispose()
         {
             _timer.Dispose();
+            _transport.ReceivedString -= ReceiveString;
+        }
+
+        public void SendString(string s)
+        {
+            if (s == null) throw new ArgumentNullException("s");
+            if (string.IsNullOrEmpty(s)) throw new ArgumentException();
+
+            var messageHeader = GetMessageHeader();
+            var message = messageHeader + '|' + s;
+            _transport.SendString(message);
+        }
+
+        private string GetMessageHeader()
+        {
+            var header = new StringBuilder();
+            header.Append(_id);
+            header.Append(Kanaldata.Frekvens);
+            if (Mod == Ra180Mod.Klar)
+            {
+                return header.ToString();
+            }
+
+            throw new NotSupportedException("SKYDD");
+        }
+
+        public void ReceiveString(string s)
+        {
+            if (s == null) throw new ArgumentNullException("s");
+
+            var headerPos = s.IndexOf('|');
+            if (headerPos == -1) return;
+            var header = s.Substring(0, headerPos);
+            var message = s.Substring(headerPos + 1);
+
+            var idLength = _id.ToString().Length;
+            var remoteId = header.Substring(0, idLength);
+            header = header.Substring(idLength);
+
+            if (string.Equals(remoteId, _id.ToString(), StringComparison.OrdinalIgnoreCase))
+                return;
+
+            if (Mod == Ra180Mod.Klar)
+            {
+                if (header != Kanaldata.Frekvens) return;
+                OnReceivedString(message);
+                return;
+            }
+
+            throw new NotSupportedException("SKYDD");
         }
     }
 }

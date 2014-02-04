@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using C42A.Ra180.Infrastructure;
+using C42A.Ra180.Infrastructure.UdpDart;
 
 namespace C42A.Ra180.WindowsClient
 {
@@ -18,7 +19,9 @@ namespace C42A.Ra180.WindowsClient
             InitializeComponent();
 
             var taskFactory = new TaskFactory();
-            var ra180 = new Ra180Unit(taskFactory);
+            var dartTransport = new UdpClientSenderAndReceiver();
+            dartTransport.StartAsync();
+            var ra180 = new Ra180Unit(taskFactory, dartTransport);
             Bind(ra180);
         }
 
@@ -27,9 +30,32 @@ namespace C42A.Ra180.WindowsClient
             if (unit == null) throw new ArgumentNullException("unit");
             _ra180 = unit;
             _ra180.Start();
+            _ra180.ReceivedString += ReceivedString;
             _ra180.DisplayChanged += (sender, args) => _synchronizationContext.Send(state => Display.Text = _ra180.Display, null);
             Display.Text = _ra180.Display;
             ResetHardwareKeysToRa180Values();
+        }
+
+        private void ReceivedString(object sender, string e)
+        {
+            _synchronizationContext.Send(state => AddToTrafiklista("M", e), null);
+        }
+
+        private void AddToTrafiklista(string category, string text)
+        {
+            var lvi = new ListViewItem();
+            PopulateListViewItem(lvi, 0, DateTime.Now.ToShortTimeString());
+            PopulateListViewItem(lvi, 1, category);
+            PopulateListViewItem(lvi, 2, text);
+            Trafiklista.Items.Add(lvi);
+        }
+
+        private void PopulateListViewItem(ListViewItem lvi, int index, string text)
+        {
+            if (lvi.SubItems.Count > index)
+                lvi.SubItems[index].Text = text;
+            else
+                lvi.SubItems.Add(text);
         }
 
         private void ResetHardwareKeysToRa180Values()
@@ -125,6 +151,17 @@ namespace C42A.Ra180.WindowsClient
                 default:
                     return null;
             }
+        }
+
+        private void Sänd_Click(object sender, EventArgs e)
+        {
+            if (_ra180.Mod == Ra180Mod.Från) return;
+            var text = UtgåendeKlartext.Text;
+            if (string.IsNullOrWhiteSpace(text)) return;
+            _ra180.SendString(text);
+            AddToTrafiklista("S", text);
+            UtgåendeKlartext.Text = null;
+            UtgåendeKlartext.Focus();
         }
     }
 }
