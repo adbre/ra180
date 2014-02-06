@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Skapa kanaldata för Ra180</title>
+    <link rel="stylesheet" href="~/Content/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/Content/css/bootstrap-theme.min.css">
+    <script src="~/Content/js/jquery-2.1.0.min.js"></script>
+    <script src="~/Content/js/knockout-3.0.0.js"></script>
+    <script src="~/Content/js/knockout.mapping-latest.js"></script>
+    <script src="~/Content/js/bootstrap.min.js"></script>
+</head>
+    <body>
+        <div class="container-fluid">
+            <h1>
+                Ra180 Kanaldata
+            </h1>
+
+            <table class="table table-striped table-condensed" style="width:100px">
+                <tr><td>PN1</td><td><span data-bind="text: kda.PN1"></span></td></tr>
+                <tr><td>PN2</td><td><span data-bind="text: kda.PN2"></span></td></tr>
+                <tr><td>PN3</td><td><span data-bind="text: kda.PN3"></span></td></tr>
+                <tr><td>PN4</td><td><span data-bind="text: kda.PN4"></span></td></tr>
+                <tr><td>PN5</td><td><span data-bind="text: kda.PN5"></span></td></tr>
+                <tr><td>PN6</td><td><span data-bind="text: kda.PN6"></span></td></tr>
+                <tr><td>PN7</td><td><span data-bind="text: kda.PN7"></span></td></tr>
+                <tr><td>PN8</td><td><span data-bind="text: kda.PN8"></span></td></tr>
+                <tr><td>PN9</td><td><span data-bind="text: kda.PN9"></span></td></tr>
+                <tr><td>PNY</td><td><span data-bind="text: kda.PNY"></span></td></tr>
+            </table>
+            
+            <div>
+                <button class="btn btn-info" data-bind="click: generateNewKey">
+                    Skapa ny kanaldata
+                </button>
+            </div>
+        </div>
+        <script type="text/javascript">
+            function KanaldataViewModel() {
+                var me = this;
+                me.kda = ko.mapping.fromJS({
+                    PN1: '',
+                    PN2: '',
+                    PN3: '',
+                    PN4: '',
+                    PN5: '',
+                    PN6: '',
+                    PN7: '',
+                    PN8: '',
+                    PN9: '',
+                    PNY: '',
+                });
+
+                me.generateNewKey = function() {
+                    $.getJSON("/kda/generate-new-key", function(data) {
+                        ko.mapping.fromJS(data, me.kda);
+                    });
+                };
+            }
+
+            ko.applyBindings(new KanaldataViewModel());
+        </script>
+    </body>
+</html>

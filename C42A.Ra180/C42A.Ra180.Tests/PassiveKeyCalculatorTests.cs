@@ -16,6 +16,9 @@ namespace C42A.Ra180.Tests
         [TestCase("562", "5621")]
         [TestCase("320", "3201")]
         [TestCase("510", "5104")]
+        [TestCase("979", "9797")]
+        [TestCase("350", "3506")]
+        [TestCase("751", "7513")]
         public void ShouldCalculatePnyGroup(string input, string expected)
         {
             var sut = new PassiveKeyCalculator();
@@ -29,7 +32,7 @@ namespace C42A.Ra180.Tests
         public void ShouldCalculateNyk(string input, string expected)
         {
             var sut = new PassiveKeyCalculator();
-            var actual = sut.GetNyk(input);
+            var actual = sut.GetPny(input);
             Assert.That(actual, Is.EqualTo(expected), "#1");
         }
 
@@ -40,15 +43,18 @@ namespace C42A.Ra180.Tests
             var key = sut.GenerateNewKey();
 
             var groups = key.ToArray();
-            var nyk = sut.GetNyk(groups);
-            Assert.That(key.NYK, Is.EqualTo(nyk), "#1 NYK");
+
+            var nyk = sut.GetPny(groups);
+            Assert.That(key.PNY, Is.EqualTo(nyk), "#1 NYK");
+            Assert.That(key.PNY.Length, Is.EqualTo(3), "#2 NYK.Length " + key.PNY);
 
             for (var i = 0; i < groups.Length; i++)
             {
                 var pn = groups[i];
                 var threeLetters = pn.Substring(0, 3);
                 var check = sut.GetPnyGroup(threeLetters);
-                Assert.That(pn, Is.EqualTo(check), string.Format("#2 PN{0}", i + 1));
+                Assert.That(pn, Is.EqualTo(check), string.Format("#3 PN{0}", i + 1));
+                Assert.That(pn.Length, Is.EqualTo(4), string.Format("#3 PN{0} ", i + 1) + pn);
             }
         }
     }

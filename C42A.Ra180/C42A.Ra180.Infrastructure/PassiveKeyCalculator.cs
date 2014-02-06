@@ -39,11 +39,11 @@ namespace C42A.Ra180.Infrastructure
             }
         }
 
-        public string GetNyk(string input)
+        public string GetPny(string input)
         {
             if (input == null) throw new ArgumentNullException("input");
             var pnyGroups = input.Split(',', ' ', ';', '\n').Select(s => s.Trim()).ToArray();
-            return GetNyk(pnyGroups);
+            return GetPny(pnyGroups);
         }
 
         private static bool IsAllDigits(string s)
@@ -51,7 +51,7 @@ namespace C42A.Ra180.Infrastructure
             return s.All(c => Char.IsDigit(c));
         }
 
-        public string GetNyk(string[] pnyGroups)
+        public string GetPny(string[] pnyGroups)
         {
             if (pnyGroups == null) throw new ArgumentNullException("pnyGroups");
             var threeLetterPnyGroups = pnyGroups.Select(s => s.Substring(0, 3)).ToArray();
@@ -68,12 +68,16 @@ namespace C42A.Ra180.Infrastructure
 
         public string GetPnyGroup(string threeLetterPny)
         {
+            return threeLetterPny + GetPnyChecksum(threeLetterPny);
+        }
+
+        public string GetPnyChecksum(string threeLetterPny)
+        {
             if (threeLetterPny == null) throw new ArgumentNullException("threeLetterPny");
             if (threeLetterPny.Length != 3) throw new ArgumentException("Input must be three characters long, exactly.", "threeLetterPny");
             if (!IsAllDigits(threeLetterPny)) throw new ArgumentException("Input must be consisting of digits only", "threeLetterPny");
-
             var sum = Calculate(threeLetterPny.ToCharArray());
-            var result = threeLetterPny + ToString(sum);
+            var result = ToString(sum);
             return result;
         }
 
@@ -91,7 +95,7 @@ namespace C42A.Ra180.Infrastructure
                 PN7 = groups[6],
                 PN8 = groups[7],
                 PN9 = groups[8],
-                NYK = GetNyk(groups)
+                PNY = GetPny(groups)
             };
 
             return result;
@@ -101,7 +105,16 @@ namespace C42A.Ra180.Infrastructure
         {
             random = random ?? new Random();
             for (var i = 0; i < groups; i++)
-                yield return string.Format(_formatProvider, "{0:000}", random.Next(0, 1000));
+            {
+                var values = new[]
+                {
+                    random.Next(0, 7),
+                    random.Next(0, 7),
+                    random.Next(0, 7),
+                };
+
+                yield return string.Join("", values.Select(n => ToString(n)));
+            }
         }
 
         private int Calculate(IEnumerable<char> values)

@@ -12,7 +12,7 @@ namespace C42A.Ra180.Infrastructure
         public string PN7 { get; set; }
         public string PN8 { get; set; }
         public string PN9 { get; set; }
-        public string NYK { get; set; }
+        public string PNY { get; set; }
         // ReSharper restore InconsistentNaming
 
         public string[] ToArray()
