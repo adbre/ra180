@@ -62,7 +62,7 @@ namespace C42A.Ra180.WindowsClient
         {
             SelectHardwareKey(_ra180.Kanal, new []{Kanal1, Kanal2, Kanal3, Kanal4, Kanal5, Kanal6, Kanal7, Kanal8});
             SelectHardwareKey(_ra180.Volym, new []{Volym1, Volym2, Volym3, Volym4, Volym5, Volym6, Volym7, Volym8});
-            SelectHardwareKey(((int)_ra180.Mod) + 1, new []{ModFrån, ModKlar, ModSkydd, ModDRelä});
+            SelectHardwareKey(((int)_ra180.Mod) + 1, new []{ModFrån, ModKlar, ModDRelä, ModSkydd});
         }
 
         private void SelectHardwareKey(int value, IList<RadioButton> radioButtons)
@@ -155,13 +155,24 @@ namespace C42A.Ra180.WindowsClient
 
         private void Sänd_Click(object sender, EventArgs e)
         {
-            if (_ra180.Mod == Ra180Mod.Från) return;
             var text = UtgåendeKlartext.Text;
             if (string.IsNullOrWhiteSpace(text)) return;
-            _ra180.SendString(text);
-            AddToTrafiklista("S", text);
+            if (!Send(text)) return;
             UtgåendeKlartext.Text = null;
             UtgåendeKlartext.Focus();
+        }
+
+        private bool Send(string s)
+        {
+            if (_ra180.Mod == Ra180Mod.Från) return false;
+            _ra180.SendString(s);
+            AddToTrafiklista("S", s);
+            return true;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Send("Förbindelsen prövas.");
         }
     }
 }

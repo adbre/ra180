@@ -30,8 +30,8 @@
         {
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.ModSkydd = new System.Windows.Forms.RadioButton();
             this.ModDRelä = new System.Windows.Forms.RadioButton();
+            this.ModSkydd = new System.Windows.Forms.RadioButton();
             this.ModKlar = new System.Windows.Forms.RadioButton();
             this.ModFrån = new System.Windows.Forms.RadioButton();
             this.label3 = new System.Windows.Forms.Label();
@@ -86,6 +86,7 @@
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.UtgåendeKlartext = new System.Windows.Forms.TextBox();
             this.Sänd = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel5.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -109,8 +110,8 @@
             // 
             // panel5
             // 
-            this.panel5.Controls.Add(this.ModSkydd);
             this.panel5.Controls.Add(this.ModDRelä);
+            this.panel5.Controls.Add(this.ModSkydd);
             this.panel5.Controls.Add(this.ModKlar);
             this.panel5.Controls.Add(this.ModFrån);
             this.panel5.Controls.Add(this.label3);
@@ -119,31 +120,31 @@
             this.panel5.Size = new System.Drawing.Size(138, 115);
             this.panel5.TabIndex = 9;
             // 
-            // ModSkydd
-            // 
-            this.ModSkydd.AutoSize = true;
-            this.ModSkydd.ForeColor = System.Drawing.Color.White;
-            this.ModSkydd.Location = new System.Drawing.Point(76, 70);
-            this.ModSkydd.Name = "ModSkydd";
-            this.ModSkydd.Size = new System.Drawing.Size(64, 17);
-            this.ModSkydd.TabIndex = 6;
-            this.ModSkydd.TabStop = true;
-            this.ModSkydd.Text = "D RELÄ";
-            this.ModSkydd.UseVisualStyleBackColor = true;
-            this.ModSkydd.Click += new System.EventHandler(this.Knapp_Click);
-            // 
             // ModDRelä
             // 
             this.ModDRelä.AutoSize = true;
             this.ModDRelä.ForeColor = System.Drawing.Color.White;
-            this.ModDRelä.Location = new System.Drawing.Point(76, 47);
+            this.ModDRelä.Location = new System.Drawing.Point(76, 70);
             this.ModDRelä.Name = "ModDRelä";
-            this.ModDRelä.Size = new System.Drawing.Size(62, 17);
-            this.ModDRelä.TabIndex = 5;
+            this.ModDRelä.Size = new System.Drawing.Size(64, 17);
+            this.ModDRelä.TabIndex = 6;
             this.ModDRelä.TabStop = true;
-            this.ModDRelä.Text = "SKYDD";
+            this.ModDRelä.Text = "D RELÄ";
             this.ModDRelä.UseVisualStyleBackColor = true;
             this.ModDRelä.Click += new System.EventHandler(this.Knapp_Click);
+            // 
+            // ModSkydd
+            // 
+            this.ModSkydd.AutoSize = true;
+            this.ModSkydd.ForeColor = System.Drawing.Color.White;
+            this.ModSkydd.Location = new System.Drawing.Point(76, 47);
+            this.ModSkydd.Name = "ModSkydd";
+            this.ModSkydd.Size = new System.Drawing.Size(62, 17);
+            this.ModSkydd.TabIndex = 5;
+            this.ModSkydd.TabStop = true;
+            this.ModSkydd.Text = "SKYDD";
+            this.ModSkydd.UseVisualStyleBackColor = true;
+            this.ModSkydd.Click += new System.EventHandler(this.Knapp_Click);
             // 
             // ModKlar
             // 
@@ -799,6 +800,7 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.Sänd);
             this.groupBox1.Controls.Add(this.UtgåendeKlartext);
             this.groupBox1.Controls.Add(this.Trafiklista);
@@ -841,20 +843,30 @@
             // 
             // UtgåendeKlartext
             // 
-            this.UtgåendeKlartext.Location = new System.Drawing.Point(6, 131);
+            this.UtgåendeKlartext.Location = new System.Drawing.Point(16, 133);
             this.UtgåendeKlartext.Name = "UtgåendeKlartext";
-            this.UtgåendeKlartext.Size = new System.Drawing.Size(883, 20);
+            this.UtgåendeKlartext.Size = new System.Drawing.Size(794, 20);
             this.UtgåendeKlartext.TabIndex = 1;
             // 
             // Sänd
             // 
-            this.Sänd.Location = new System.Drawing.Point(895, 129);
+            this.Sänd.Location = new System.Drawing.Point(897, 131);
             this.Sänd.Name = "Sänd";
             this.Sänd.Size = new System.Drawing.Size(75, 23);
             this.Sänd.TabIndex = 2;
             this.Sänd.Text = "Sänd";
             this.Sänd.UseVisualStyleBackColor = true;
             this.Sänd.Click += new System.EventHandler(this.Sänd_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(816, 131);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "Förb.prov";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Ra180Form
             // 
@@ -921,8 +933,8 @@
         private System.Windows.Forms.RadioButton Kanal7;
         private System.Windows.Forms.RadioButton Kanal8;
         private System.Windows.Forms.Panel panel5;
-        private System.Windows.Forms.RadioButton ModSkydd;
         private System.Windows.Forms.RadioButton ModDRelä;
+        private System.Windows.Forms.RadioButton ModSkydd;
         private System.Windows.Forms.RadioButton ModKlar;
         private System.Windows.Forms.RadioButton ModFrån;
         private System.Windows.Forms.Label label3;
@@ -945,6 +957,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.Button Sänd;
         private System.Windows.Forms.TextBox UtgåendeKlartext;
+        private System.Windows.Forms.Button button1;
     }
 }
 

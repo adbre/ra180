@@ -246,17 +246,23 @@ namespace C42A.Ra180.Infrastructure
             var header = new StringBuilder();
             header.Append(_id);
             header.Append(Kanaldata.Frekvens);
-            if (Mod == Ra180Mod.Klar)
+            
+            if (Mod == Ra180Mod.Skydd)
             {
-                return header.ToString();
+                header.Append(Kanaldata.Bandbredd1);
+                header.Append(Kanaldata.Bandbredd2);
+                header.Append(Kanaldata.NYK);
             }
 
-            throw new NotSupportedException("SKYDD");
+            return header.ToString();
         }
 
         public void ReceiveString(string s)
         {
             if (s == null) throw new ArgumentNullException("s");
+
+            if (Mod == Ra180Mod.Från)
+                return;
 
             var headerPos = s.IndexOf('|');
             if (headerPos == -1) return;
@@ -273,11 +279,20 @@ namespace C42A.Ra180.Infrastructure
             if (Mod == Ra180Mod.Klar)
             {
                 if (header != Kanaldata.Frekvens) return;
-                OnReceivedString(message);
-                return;
+            }
+            else if (Mod == Ra180Mod.Skydd)
+            {
+                var hoppgruppnyckel = Kanaldata.Frekvens +
+                    Kanaldata.Bandbredd1 +
+                    Kanaldata.Bandbredd2 +
+                    Kanaldata.NYK;
+                var remoteHgny = header.Substring(0, hoppgruppnyckel.Length);
+                header = header.Substring(hoppgruppnyckel.Length);
+                if (remoteHgny != hoppgruppnyckel)
+                    return;
             }
 
-            throw new NotSupportedException("SKYDD");
+            OnReceivedString(message);
         }
     }
 }
