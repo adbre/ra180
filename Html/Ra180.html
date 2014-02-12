@@ -1,0 +1,109 @@
+<html>
+	<head>
+		<title>Ra180</title>
+
+		<link rel="stylesheet" href="assets/css/ra180.css" />
+		
+		<script src="lib/jquery-2.1.0.min.js"></script>
+		<script src="lib/knockout-3.0.0.debug.js"></script>
+		
+		<script type="text/javascript" src="src/Ra180TidMenu.js"></script>
+		<script type="text/javascript" src="src/Ra180RdaMenu.js"></script>
+		<script type="text/javascript" src="src/Ra180ViewModel.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Ra180 Simulering</h1>
+		</div>
+		<div class="ra180">
+			<div class="ra180-display">
+				<div class="text">
+					<span data-bind="css: {'blink': display.char1.isBlinking}, text: display.char1.character"></span>
+					<span data-bind="css: {'blink': display.char2.isBlinking}, text: display.char2.character"></span>
+					<span data-bind="css: {'blink': display.char3.isBlinking}, text: display.char3.character"></span>
+					<span data-bind="css: {'blink': display.char4.isBlinking}, text: display.char4.character"></span>
+					<span data-bind="css: {'blink': display.char5.isBlinking}, text: display.char5.character"></span>
+					<span data-bind="css: {'blink': display.char6.isBlinking}, text: display.char6.character"></span>
+					<span data-bind="css: {'blink': display.char7.isBlinking}, text: display.char7.character"></span>
+					<span data-bind="css: {'blink': display.char8.isBlinking}, text: display.char8.character"></span>
+				</div>
+				<div class="underscore">
+					<span class="blink" data-bind="text: display.char1.hasUnderscore() ? '-' : '&nbsp;'"></span>
+					<span class="blink" data-bind="text: display.char2.hasUnderscore() ? '-' : '&nbsp;'"></span>
+					<span class="blink" data-bind="text: display.char3.hasUnderscore() ? '-' : '&nbsp;'"></span>
+					<span class="blink" data-bind="text: display.char4.hasUnderscore() ? '-' : '&nbsp;'"></span>
+					<span class="blink" data-bind="text: display.char5.hasUnderscore() ? '-' : '&nbsp;'"></span>
+					<span class="blink" data-bind="text: display.char6.hasUnderscore() ? '-' : '&nbsp;'"></span>
+					<span class="blink" data-bind="text: display.char7.hasUnderscore() ? '-' : '&nbsp;'"></span>
+					<span class="blink" data-bind="text: display.char8.hasUnderscore() ? '-' : '&nbsp;'">-</span>
+				</div>
+			</div>
+			<div class="ra180-numpad">
+				<div>
+					<button id="key-1" title="1 (TID)" data-bind="click: sendKey1">1</button>
+					<button id="key-2" title="2 (RDA)" data-bind="click: sendKey2">2</button>
+					<button id="key-3" title="3 (DTM)" data-bind="click: sendKey3">3</button>
+				</div>
+				<div>
+					<button id="key-4" title="4 (KDA)" data-bind="click: sendKey4">4</button>
+					<button id="key-5" title="5 (NIV)" data-bind="click: sendKey5">5</button>
+					<button id="key-6" title="6 (RAP)" data-bind="click: sendKey6">6</button>
+				</div>
+				<div>
+					<button id="key-7" title="7 (NYK)" data-bind="click: sendKey7">7</button>
+					<button id="key-8" title="8"       data-bind="click: sendKey8">8</button>
+					<button id="key-9" title="9 (TJK)" data-bind="click: sendKey9">9</button>
+				</div>
+				<div>
+					<button id="key-asterix" title="*" data-bind="click: sendKeyAsterix">*</button>
+					<button id="key-0" title="0"       data-bind="click: sendKey0">0</button>
+					<button id="key-hashtag" title="#" data-bind="click: sendKeyHashtag">#</button>
+				</div>
+				<button id="reset" title="NOLLSTÄLLN" data-bind="click: sendKeyReset">NOLLSTÄLLN</button>
+			</div>
+			<div class="ra180-fnpad">
+				<div>
+					<button id="key-opm" title="OPM" data-bind="click: sendKeyOpm">OPM</button>
+					<button id="key-eff" title="EFF" data-bind="click: sendKeyEff">EFF</button>
+					<button id="key-and" title="&Auml;ND" data-bind="click: sendKeyAnd">&Auml;ND</button>
+				</div>
+				<div>
+					<button id="key-bel" title="BEL" data-bind="click: sendKeyBel">BEL</button>
+					<button id="key-slt" title="SLT" data-bind="click: sendKeySlt">SLT</button>
+					<button id="key-ent" title="ENT" data-bind="click: sendKeyEnt">ENT</button>
+				</div>
+			</div>
+			<div class="channel-mod">
+				<div class="channel" data-bind="css: channelVred">
+					<button id="channel-1" title="Kanal 1" data-bind="click: setChannel1">1</button>
+					<button id="channel-2" title="Kanal 2" data-bind="click: setChannel2">2</button>
+					<button id="channel-3" title="Kanal 3" data-bind="click: setChannel3">3</button>
+					<button id="channel-4" title="Kanal 4" data-bind="click: setChannel4">4</button>
+					<button id="channel-5" title="Kanal 5" data-bind="click: setChannel5">5</button>
+					<button id="channel-6" title="Kanal 6" data-bind="click: setChannel6">6</button>
+					<button id="channel-7" title="Kanal 7" data-bind="click: setChannel7">7</button>
+					<button id="channel-8" title="Kanal 8" data-bind="click: setChannel8">8</button>
+				</div>
+				<div class="mod" data-bind="css: modVred">
+					<button id="mod-off" title="FR&Aring;N" data-bind="click: setModOff">FR&Aring;N</button>
+					<button id="mod-klar" title="KLAR" data-bind="click: setModKlar">KLAR</button>
+					<button id="mod-skydd" title="SKYDD" data-bind="click: setModSkydd">SKYDD</button>
+					<button id="mod-drelay" title="D REL&Auml;" data-bind="click: setModDRelay">D REL&Auml;</button>
+				</div>
+			</div>
+			<div class="volume" data-bind="css: volumeVred">
+				<button id="volume-1" title="Volym 1" data-bind="click: setVolume1">1</button>
+				<button id="volume-2" title="Volym 2" data-bind="click: setVolume2">2</button>
+				<button id="volume-3" title="Volym 3" data-bind="click: setVolume3">3</button>
+				<button id="volume-4" title="Volym 4" data-bind="click: setVolume4">4</button>
+				<button id="volume-5" title="Volym 5" data-bind="click: setVolume5">5</button>
+				<button id="volume-6" title="Volym 6" data-bind="click: setVolume6">6</button>
+				<button id="volume-7" title="Volym 7" data-bind="click: setVolume7">7</button>
+				<button id="volume-8" title="Volym 8" data-bind="click: setVolume8">8</button>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		ko.applyBindings(new Ra180ViewModel());
+	</script>
+</html>
