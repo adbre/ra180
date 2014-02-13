@@ -340,14 +340,23 @@ describe("Ra180", function() {
 			});
 		});
 
+		describe("DTM", function () {
+			it("should display title", function () {
+				ra180.sendKey3();
+				expect(ra180.display.getPlainText()).toBe("  (DTM) ");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+		});
+
 		describe("KDA", function() {
 			it("should navigate KDA", function () {
 				ra180.sendKey4();
-				expect(ra180.display.getPlainText()).toBe("FR:42000");
+				expect(ra180.display.getPlainText()).toMatch(/^FR:[0-9]{5}$/);
 				ra180.sendKeyEnt();
-				expect(ra180.display.getPlainText()).toBe("BD1:1234");
+				expect(ra180.display.getPlainText()).toMatch(/^BD1:[0-9]{4}$/);
 				ra180.sendKeyEnt();
-				expect(ra180.display.getPlainText()).toBe("BD2:5678");
+				expect(ra180.display.getPlainText()).toMatch(/^BD2:[0-9]{4}$/);
 				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toBe("SYNK=NEJ");
 				ra180.sendKeyEnt();
@@ -360,7 +369,7 @@ describe("Ra180", function() {
 
 			it("should return to main menu on SLT from FR", function() {
 				ra180.sendKey4();
-				expect(ra180.display.getPlainText()).toBe("FR:42000");
+				expect(ra180.display.getPlainText()).toMatch(/^FR:[0-9]{5}$/);
 				ra180.sendKeySlt();
 				expect(ra180.display.getPlainText()).toBe("        ");
 			});
@@ -368,7 +377,7 @@ describe("Ra180", function() {
 			it("should return to main menu on SLT from BD1", function() {
 				ra180.sendKey4();
 				ra180.sendKeyEnt();
-				expect(ra180.display.getPlainText()).toBe("BD1:1234");
+				expect(ra180.display.getPlainText()).toMatch(/^BD1:[0-9]{4}$/);
 				ra180.sendKeySlt();
 				expect(ra180.display.getPlainText()).toBe("        ");
 			});
@@ -377,7 +386,7 @@ describe("Ra180", function() {
 				ra180.sendKey4();
 				ra180.sendKeyEnt();
 				ra180.sendKeyEnt();
-				expect(ra180.display.getPlainText()).toBe("BD2:5678");
+				expect(ra180.display.getPlainText()).toMatch(/^BD2:[0-9]{4}$/);
 				ra180.sendKeySlt();
 				expect(ra180.display.getPlainText()).toBe("        ");
 			});
@@ -412,6 +421,241 @@ describe("Ra180", function() {
 				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toBe("  (KDA) ");
 				ra180.sendKeySlt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+
+			it("should allow modification of SYNK when in sync", function() {
+				ra180.data.synk(true);
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("SYNK:JA ");
+			});
+
+			it("should allow edit of frequency", function () {
+				ra180.sendKey4();
+				ra180.sendKeyAnd();
+				ra180.sendKey6();
+				ra180.sendKey5();
+				ra180.sendKey4();
+				ra180.sendKey3();
+				ra180.sendKey1();
+				ra180.sendKeyEnt();
+				ra180.sendKeySlt();
+				ra180.sendKey4();
+				expect(ra180.display.getPlainText()).toBe("FR:65431");
+			});
+
+			it("should reject frequency lower than 30.000 MHz", function () {
+				ra180.sendKey4();
+				ra180.sendKeyAnd();
+				ra180.sendKey2();
+				ra180.sendKey9();
+				ra180.sendKey9();
+				ra180.sendKey9();
+				ra180.sendKey9();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).not.toBe("FR:29999");
+			});
+
+			it("should allow frequency equal to 30.000 MHz", function () {
+				ra180.sendKey4();
+				ra180.sendKeyAnd();
+				ra180.sendKey3();
+				ra180.sendKey0();
+				ra180.sendKey0();
+				ra180.sendKey0();
+				ra180.sendKey0();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("FR:30000");
+			});
+
+			it("should reject frequency higher than 87.975 MHz", function () {
+				ra180.sendKey4();
+				ra180.sendKeyAnd();
+				ra180.sendKey8();
+				ra180.sendKey7();
+				ra180.sendKey9();
+				ra180.sendKey7();
+				ra180.sendKey6();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).not.toBe("FR:87976");
+			});
+
+			it("should allow frequency equal to 87.975 MHz", function () {
+				ra180.sendKey4();
+				ra180.sendKeyAnd();
+				ra180.sendKey8();
+				ra180.sendKey7();
+				ra180.sendKey9();
+				ra180.sendKey7();
+				ra180.sendKey5();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("FR:87975");
+			});
+
+			it("should modify BD2 after BD1", function () {
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKey4();
+				ra180.sendKey5();
+				ra180.sendKey5();
+				ra180.sendKey5();
+				expect(ra180.display.getPlainText()).toBe("BD1:4555");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("BD2:    ");
+				ra180.sendKey6();
+				ra180.sendKey5();
+				ra180.sendKey7();
+				ra180.sendKey5();
+				expect(ra180.display.getPlainText()).toBe("BD2:6575");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("BD1:4555");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("BD2:6575");
+			});
+
+			it("should modify BD1 on AND for BD2", function () {
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toMatch(/^BD2:[0-9]{4}$/);
+				ra180.sendKeyAnd();
+				expect(ra180.display.getPlainText()).toBe("BD1:    ");
+			});
+
+			it("should modify PNY via PN1-8", function () {
+				ra180.sendKey4();   // FR
+				ra180.sendKeyEnt(); // BD1
+				ra180.sendKeyEnt(); // BD2
+				ra180.sendKeyEnt(); // SYNK
+				ra180.sendKeyEnt(); // PNY=###
+				ra180.sendKeyAnd();
+				expect(ra180.display.getPlainText()).toBe("PN1:    ");
+				ra180.sendKey4();
+				ra180.sendKey4();
+				ra180.sendKey2();
+				ra180.sendKey2();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("PN2:    ");
+				ra180.sendKey2();
+				ra180.sendKey2();
+				ra180.sendKey1();
+				ra180.sendKey1();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("PN3:    ");
+				ra180.sendKey3();
+				ra180.sendKey3();
+				ra180.sendKey0();
+				ra180.sendKey0();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("PN4:    ");
+				ra180.sendKey5();
+				ra180.sendKey5();
+				ra180.sendKey1();
+				ra180.sendKey1();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("PN5:    ");
+				ra180.sendKey4();
+				ra180.sendKey3();
+				ra180.sendKey2();
+				ra180.sendKey5();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("PN6:    ");
+				ra180.sendKey5();
+				ra180.sendKey6();
+				ra180.sendKey2();
+				ra180.sendKey1();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("PN7:    ");
+				ra180.sendKey3();
+				ra180.sendKey2();
+				ra180.sendKey0();
+				ra180.sendKey1();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("PN8:    ");
+				ra180.sendKey5();
+				ra180.sendKey1();
+				ra180.sendKey0();
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toMatch(/^PNY:[0-9]{3} $/);
+				ra180.sendKeySlt();
+				ra180.sendKey4();   // FR
+				ra180.sendKeyEnt(); // BD1
+				ra180.sendKeyEnt(); // BD2
+				ra180.sendKeyEnt(); // SYNK
+				ra180.sendKeyEnt(); // PNY=###
+				expect(ra180.display.getPlainText()).toMatch(/^PNY:[0-9]{3} $/);
+			});
+		});
+
+		describe("NIV", function () {
+			it("should display title", function () {
+				ra180.sendKey5();
+				expect(ra180.display.getPlainText()).toBe("  (NIV) ");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+		});
+
+		describe("RAP", function () {
+			it("should display title", function () {
+				ra180.sendKey6();
+				expect(ra180.display.getPlainText()).toBe("  (RAP) ");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+		});
+
+		describe("NYK", function () {
+			it("should not have active key by default", function () {
+				ra180.sendKey7();
+				expect(ra180.display.getPlainText()).toBe("NYK=### ");
+			});
+
+			describe("when entered passive key", function () {
+				beforeEach(function () {
+					ra180.sendKey4();
+					ra180.sendKeyEnt(4);
+					ra180.sendKeyAnd();
+					ra180.sendKeys("4422");
+					ra180.sendKeyEnt();
+					ra180.sendKeys("2211");
+					ra180.sendKeyEnt();
+					ra180.sendKeys("3300");
+					ra180.sendKeyEnt();
+					ra180.sendKeys("5511");
+					ra180.sendKeyEnt();
+					ra180.sendKeys("4325");
+					ra180.sendKeyEnt();
+					ra180.sendKeys("5621");
+					ra180.sendKeyEnt();
+					ra180.sendKeys("3201");
+					ra180.sendKeyEnt();
+					ra180.sendKeys("5104");
+					ra180.sendKeyEnt();
+					expect(ra180.display.getPlainText()).toMatch(/^PNY:[0-9]{3} $/);
+					ra180.sendKeySlt();
+				});
+			});
+			
+			it("should display title", function () {
+				ra180.sendKey7();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("  (NYK) ");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+		});
+
+		describe("TJK", function () {
+			it("should display title", function () {
+				ra180.sendKey9();
+				expect(ra180.display.getPlainText()).toBe("  (TJK) ");
+				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toBe("        ");
 			});
 		});

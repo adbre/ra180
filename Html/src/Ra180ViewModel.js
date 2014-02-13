@@ -5,6 +5,103 @@ function Ra180DisplayCharacter() {
 	me.hasUnderscore = ko.observable(false);
 }
 
+function Ra180ChannelData() {
+	var me = this;
+	me.fr = ko.observable();
+	me.bd1 = ko.observable();
+	me.bd2 = ko.observable();
+	me.pny = ko.observable();
+	me.nyk = ko.observable();
+	me.nyk1 = ko.observable();
+	me.nyk2 = ko.observable();
+
+	me.reset = function () {
+		me.fr("");
+		me.bd1("");
+		me.bd2("");
+		me.pny("");
+		me.nyk("");
+		me.nyk1("");
+		me.nyk2("");
+	}
+}
+
+function Ra180Data() {
+	var me = this;
+	me.tid = ko.observable("000000");
+	me.dat = ko.observable("0101");
+
+	me.synk = ko.observable();
+	me.eff = ko.observable();
+	me.sdx = ko.observable();
+	me.opmtn = ko.observable();
+	me.rap = ko.observable();
+	me.bel = ko.observable();
+
+	me.channel1 = new Ra180ChannelData();
+	me.channel2 = new Ra180ChannelData();
+	me.channel3 = new Ra180ChannelData();
+	me.channel4 = new Ra180ChannelData();
+	me.channel5 = new Ra180ChannelData();
+	me.channel6 = new Ra180ChannelData();
+	me.channel7 = new Ra180ChannelData();
+	me.channel8 = new Ra180ChannelData();
+
+	me.isEmpty = ko.observable(true);
+
+	me.reset = function () {
+		me.synk(false);
+		me.eff("LÅG");
+		me.sdx(false);
+		me.opmtn(false);
+		me.rap("UPPK");
+		me.bel(3);
+	
+		me.channel1.reset();
+		me.channel1.fr("42000");
+		me.channel1.bd1("3040");
+		me.channel1.bd2("5060");
+
+		me.channel2.reset();
+		me.channel2.fr("52000");
+		me.channel2.bd1("3040");
+		me.channel2.bd2("5060");
+
+		me.channel3.reset();
+		me.channel3.fr("62000");
+		me.channel3.bd1("3040");
+		me.channel3.bd2("5060");
+
+		me.channel4.reset();
+		me.channel4.fr("72000");
+		me.channel4.bd1("3040");
+		me.channel4.bd2("5060");
+
+		me.channel5.reset();
+		me.channel5.fr("41125");
+		me.channel5.bd1("3040");
+		me.channel5.bd2("5060");
+
+		me.channel6.reset();
+		me.channel6.fr("51125");
+		me.channel6.bd1("3040");
+		me.channel6.bd2("5060");
+
+		me.channel7.reset();
+		me.channel7.fr("61125");
+		me.channel7.bd1("3040");
+		me.channel7.bd2("5060");
+
+		me.channel8.reset();
+		me.channel8.fr("71125");
+		me.channel8.bd1("3040");
+		me.channel8.bd2("5060");
+
+		me.isEmpty(false);
+	};
+}
+
+
 function Ra180ViewModel() {
 	var me = this;
 	me.MOD_OFF = 3;
@@ -13,8 +110,9 @@ function Ra180ViewModel() {
 	me.MOD_DRELAY = 6;
 	me.MOD_DEBUG = 9;
 
-	me.tid = ko.observable("000000");
-	me.dat = ko.observable("0101");
+	me.data = new Ra180Data();
+
+	me.pnyCalc = new Ra180PnyCalculator();
 
 	me.display = {
 		char1: new Ra180DisplayCharacter(),
@@ -87,6 +185,9 @@ function Ra180ViewModel() {
 
 		setCharacterBlinking: function (pos, value) {
 			var character = me.display.getCharacter(pos);
+			if (!character) {
+				return;
+			}
 			character.isBlinking(value);
 		},
 		
@@ -118,20 +219,238 @@ function Ra180ViewModel() {
 		if (newValue != me.MOD_OFF) {
 			me.display.setText("TEST");
 			me.display.setText("TEST OK");
-			me.display.setText("NOLLST");
+			if (me.data.isEmpty()) {
+				me.display.setText("NOLLST");
+				me.data.reset();
+			}
 			me.display.setText("");
 		} else {
 			me.display.setText("");
 		}
-	});	
+	});
 
 	me.getVredClass = function(value) {
 		return "vred-0" + value;
 	};
 
+	me.getChannelData = function () {
+		switch (me.channel()) {
+			case 1: return me.data.channel1;
+			case 2: return me.data.channel2;
+			case 3: return me.data.channel3;
+			case 4: return me.data.channel4;
+			case 5: return me.data.channel5;
+			case 6: return me.data.channel6;
+			case 7: return me.data.channel7;
+			case 8: return me.data.channel8;
+		}
+	};
+
+	me.menuOptions = {
+		tid: {
+			title: "TID",
+			submenus: [
+				{
+					prefix: "T",
+					maxInputTextLength: 6,
+					canEdit: true,
+					saveInput: function (text) { 
+						if (text.length == 6) {
+							me.data.tid(text);
+							return true;
+						}
+						return false;
+					},
+					getValue: function () { return me.data.tid(); },
+				},
+				{
+					prefix: "DAT",
+					maxInputTextLength: 4,
+					canEdit: true,
+					saveInput: function (text) {
+						if (text.length == 4) {
+							me.data.dat(text);
+							return true;
+						}
+						return false;
+					},
+					getValue: function () { return me.data.dat(); },
+				}
+			]
+		},
+		rda: {
+			title: "RDA",
+			submenus: [
+				{
+					prefix: "SDX",
+					getValue: function () { return "NEJ"; },
+				},
+				{
+					prefix: "OPMTN",
+					getValue: function () { return "JA"; },
+				},
+				{
+					prefix: "BAT",
+					getValue: function () { return "12.5"; },
+				}
+			]
+		},
+		dtm: {
+			title: "DTM"
+		},
+		kda: {
+			title: "KDA",
+			submenus: [
+				{
+					prefix: "FR",
+					maxInputTextLength: 5,
+					canEdit: true,
+					getValue: function () { return me.getChannelData().fr(); },
+					saveInput: function (text) {
+						if (text.length != 5) {
+							return false;
+						}
+
+						var fr = parseInt(text);
+						if (fr < 30000 || fr > 87975) {
+							return false;
+						}
+						
+						me.getChannelData().fr(text);
+						return true;
+					}
+				},
+				{
+					prefix: "BD1",
+					maxInputTextLength: 4,
+					canEdit: true,
+					getValue: function () {
+						return me.getChannelData().bd1();
+					},
+					saveInput: function (text, menu) {
+						if (text.length != 4) {
+							return;
+						}
+
+						me.getChannelData().bd1(text);
+						menu.stopInput();
+						menu.nextSubmenu();
+						return false;
+					},
+				},
+				{
+					prefix: "BD2",
+					maxInputTextLength: 4,
+					canEdit: true,
+					getValue: function () { return me.getChannelData().bd2(); },
+					saveInput: function (text, menu) {
+						if (text.length != 4) {
+							return false;
+						}
+
+						me.getChannelData().bd2(text);
+						menu.previousSubmenu();
+						return true;
+					},
+					onKey: function (key, menu) {
+						if (key == "AND" && !menu.isEditing) {
+							menu.previousSubmenu();
+						}
+
+						return false;
+					},
+				},
+				{
+					prefix: "SYNK",
+					canSelect: function () {
+						return me.data.synk() ? true : false;
+					},
+					getValue: function () {
+						return me.data.synk() ? "JA" : "NEJ";
+					}
+				},
+				{
+					pn: ["", "", "", "", "", "", "", ""],
+					pnIndex: 0,
+					maxInputTextLength: 4,
+					prefix: function (menu) {
+						if (menu.isEditing) {
+							return "PN" + (menu.currentSubmenu.pnIndex + 1);
+						} else {
+							return "PNY";
+						}
+					},
+					canEdit: true,
+					getValue: function () {
+						var pny = me.getChannelData().pny();
+						if (pny && pny.length == 3) {
+							return pny;
+						} else {
+							return "###";
+						}
+					},
+					onKey: function (key, menu) {
+						if (key == "AND" && !menu.isEditing) {
+							menu.currentSubmenu.pnIndex = 0;
+						}
+						return false;
+					},
+					saveInput: function (text, menu) {
+						var self = menu.currentSubmenu;
+
+						if (!me.pnyCalc.isValidPn(text)) {
+							return false;
+						}
+
+						self.pn[self.pnIndex] = text;
+						self.pnIndex = self.pnIndex + 1;
+
+						if (self.pnIndex == self.pn.length) {
+							var pny = me.pnyCalc.calculatePny(self.pn);
+							me.getChannelData().pny(pny);
+							return true;
+						}
+
+						return false;
+					},
+				},
+			]
+		},
+		niv: {
+			title: "NIV"
+		},
+		rap: {
+			title: "RAP"
+		},
+		nyk: {
+			title: "NYK",
+			submenus: [
+				{
+					prefix: "NYK",
+					getValue: function () {
+						return "###";
+					},
+				}
+			]
+		},
+		tjk: {
+			title: "TJK"
+		}
+	};
+
 	me.currentMenu = null;
 
-	me.sendKey = function (key) {
+	me.sendKey = function (key, count) {
+		count = typeof count !== 'undefined' ? count : 1;
+		if (count > 1) {
+			for (var i=0; i < count; i++) {
+				me.sendKey(key, 1);
+			}
+			return;
+		} else if (count < 1) {
+			return;
+		}
+
 		if (me.mod() == me.MOD_OFF) return;
 		if (me.mod() == me.MOD_DEBUG) {
 			me.display.setText(key);
@@ -139,20 +458,38 @@ function Ra180ViewModel() {
 		} else if (me.currentMenu) {
 			me.currentMenu.sendKey(key);
 		} else {
-			var onSubmenuDone = function () {
-				me.currentMenu = null;
-				me.display.setText("");
-			};
 
-			var getSubmenu = function () {
+			var getMenuOptions = function () {
 				switch (key) {
-					case "1": return new Ra180TidMenu(me, onSubmenuDone);
-					case "2": return new Ra180RdaMenu(me, onSubmenuDone);
+					case "1": return me.menuOptions.tid;
+					case "2": return me.menuOptions.rda;
+					case "3": return me.menuOptions.dtm;
+					case "4": return me.menuOptions.kda;
+					case "5": return me.menuOptions.niv;
+					case "6": return me.menuOptions.rap;
+					case "7": return me.menuOptions.nyk;
+					case "8": return null;
+					case "9": return me.menuOptions.tjk;
 				}
 			};
 
-			me.currentMenu = getSubmenu();
+			var options = getMenuOptions();
+			if (options) {
+				options.completed = function () {
+					me.currentMenu = undefined;
+					me.display.setText("");
+				};
+
+				me.currentMenu = new Ra180Menu(options, me);
+				me.currentMenu.refreshDisplay();
+			}
 		}
+	};
+	
+	me.sendKeys = function (keys) {
+		keys.split("").forEach(function (c) {
+			me.sendKey(c);
+		});
 	};
 
 	me.channelVred = ko.computed(function() { return me.getVredClass(me.channel()); }, me);
@@ -201,5 +538,5 @@ function Ra180ViewModel() {
 	me.sendKeyAnd = function() { me.sendKey("AND"); }
 	me.sendKeyBel = function() { me.sendKey("BEL"); }
 	me.sendKeySlt = function() { me.sendKey("SLT"); }
-	me.sendKeyEnt = function() { me.sendKey("ENT"); }
+	me.sendKeyEnt = function(count) { me.sendKey("ENT", count); }
 }
