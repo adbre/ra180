@@ -168,6 +168,7 @@ describe("Ra180", function() {
 		});
 
 		describe("TID", function () {
+
 			it("should navigate TID", function () {
 				ra180.sendKey1();
 				expect(ra180.display.getPlainText()).toBe("T:000000");
@@ -336,6 +337,82 @@ describe("Ra180", function() {
 				ra180.sendKey1();
 				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toBe("DAT:1231");
+			});
+		});
+
+		describe("KDA", function() {
+			it("should navigate KDA", function () {
+				ra180.sendKey4();
+				expect(ra180.display.getPlainText()).toBe("FR:42000");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("BD1:1234");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("BD2:5678");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("SYNK=NEJ");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("PNY:### ");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("  (KDA) ");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+
+			it("should return to main menu on SLT from FR", function() {
+				ra180.sendKey4();
+				expect(ra180.display.getPlainText()).toBe("FR:42000");
+				ra180.sendKeySlt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+
+			it("should return to main menu on SLT from BD1", function() {
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("BD1:1234");
+				ra180.sendKeySlt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+
+			it("should return to main menu on SLT from BD2", function() {
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("BD2:5678");
+				ra180.sendKeySlt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+
+			it("should return to main menu on SLT from SYNK", function() {
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("SYNK=NEJ");
+				ra180.sendKeySlt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+
+			it("should return to main menu on SLT from PNY", function() {
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("PNY:### ");
+				ra180.sendKeySlt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+
+			it("should return to main menu on SLT from KDA", function() {
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("  (KDA) ");
+				ra180.sendKeySlt();
+				expect(ra180.display.getPlainText()).toBe("        ");
 			});
 		});
 	});
