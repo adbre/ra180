@@ -33,4 +33,14 @@ describe("Ra180 PNY Calculator", function () {
 	it("should calculate pny", function () {
 		expect(calc.calculatePny(["4422", "2211", "3300", "5511", "4325", "5621", "3201", "5104"])).toBe("762");
 	});
+
+	it("should generate valid pn", function () {
+		var keys = calc.generateKeys();
+
+		for (var i=0; i < keys.pn.length; i++) {
+			expect(calc.isValidPn(keys.pn[i])).toBe(true);
+		}
+
+		expect(keys.pny).toBe(calc.calculatePny(keys.pn));
+	});
 });

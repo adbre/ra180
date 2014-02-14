@@ -51,4 +51,24 @@ function Ra180PnyCalculator() {
 		return result = checksums.join("");
 		return result;
 	};
+	var random = function () {
+		var min = 0, max = 7;
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	};
+	me.generateKeys = function () {
+		var count = 8;
+		var pn = [];
+		for (var i=0; i < count; i++) {
+			var s = "";
+			s += random();
+			s += random();
+			s += random();
+			s = me.calculatePn(s);
+			pn.push(s);
+		}
+		return {
+			pn: pn,
+			pny: me.calculatePny(pn)
+		};
+	};
 }
