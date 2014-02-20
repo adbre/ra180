@@ -193,3 +193,16 @@
 	opacity: 0;
   }
 }
+
+#webrtc-radio {
+	margin-top: 30px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 800px;
+}
+
+#webrtc-radio button {
+	font-size: 150%;
+	width: 800px;
+	height: 50px;
+}

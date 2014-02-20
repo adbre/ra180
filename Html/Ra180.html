@@ -6,16 +6,25 @@
 		
 		<script src="lib/jquery/jquery-2.1.0.min.js"></script>
 		<script src="lib/knockout/knockout-3.0.0.debug.js"></script>
+
+		<script src="lib/xsockets/XSockets.latest.js"></script>
+		<script src="lib/xsockets/XSockets.WebRTC.latest.js"></script>
 		
 		<script type="text/javascript" src="src/Ra180Menu.js"></script>
 		<script type="text/javascript" src="src/Ra180PnyCalculator.js"></script>
 		<script type="text/javascript" src="src/Ra180ViewModel.js"></script>
+
+		<script type="text/javascript" src="src/WebRtcRadio.js"></script>
+
+		<script>
+			var brokerUri = "ws://malinrocks.cloudapp.net:4502/CustomBroker";
+		</script>
 	</head>
 	<body>
 		<div class="container">
 			<h1>Ra180 Simulering</h1>
 		</div>
-		<div class="ra180">
+		<div id="ra180" class="ra180">
 			<div class="ra180-display">
 				<div class="text">
 					<span data-bind="css: {'blink': display.char1.isBlinking}, text: display.char1.character"></span>
@@ -102,8 +111,24 @@
 				<button id="volume-8" title="Volym 8" data-bind="click: setVolume8">8</button>
 			</div>
 		</div>
+		<div id="webrtc-radio">
+			<button data-bind="event: {mousedown: transmit, mouseup: receive, mouseleave: receive}, text: isTransmitting() ? 'Sending' : 'Receiving'">
+			</button>
+			
+			<div id="remote">
+				<div data-bind="foreach: audio">
+					<audio data-bind="attr: { 'id': id, 'rel': rel }" autoplay="autoplay"/>
+				</div>
+			</div>
+		</div>
 	</body>
 	<script type="text/javascript">
-		ko.applyBindings(new Ra180ViewModel());
+		$(function() {
+			var ra180 = new Ra180ViewModel();
+			var radio = new WebRtcRadio(brokerUri);
+			ko.applyBindings(ra180, $("#ra180")[0]);
+			ko.applyBindings(radio, $("#webrtc-radio")[0]);
+			radio.initialize();
+		});
 	</script>
 </html>
