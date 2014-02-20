@@ -12,7 +12,7 @@ function WebRtcRadio(options) {
 	};
 
 	var onLocalStream = function (stream) {
-		muteLocalAudio(!me.isTransmitting());
+		muteLocalAudio(shouldEnableOut());
 	};
 
 	var onRemoteStream = function (event) {
@@ -22,7 +22,7 @@ function WebRtcRadio(options) {
 		});
 
 		var audio = new WebRtcRadioAudio(event);
-		audio.muted(me.isTransmitting());
+		audio.muted(shouldEnableOut());
 		me.audio.push(audio);
 		attachMediaStream($("#" + event.PeerId).get(0), event.stream);
 	};
@@ -53,8 +53,14 @@ function WebRtcRadio(options) {
 	me.brokerUri = brokerUri;	
 	me.audio = ko.observableArray([]);
 	me.isTransmitting = ko.observable(false);
+	me.isEnabled = ko.observable(false);
+
+	me.isEnabled.subscribe(function (newValue) {
+		me.receive();
+	});
 	
 	me.transmit = function () {
+		if (!me.isEnabled()) return;
 		me.isTransmitting(true);
 		muteLocalAudio(false);
 		muteRemoteAudio(true);
@@ -62,8 +68,13 @@ function WebRtcRadio(options) {
 
 	me.receive = function () {
 		me.isTransmitting(false);
-		muteLocalAudio(true);
-		muteRemoteAudio(false);
+		if (me.isEnabled()) {
+			muteLocalAudio(true);
+			muteRemoteAudio(false);
+		} else {
+			muteLocalAudio(true);
+			muteRemoteAudio(true);
+		}
 	};
 
 	me.initialize = function () {
@@ -102,6 +113,16 @@ function WebRtcRadio(options) {
 		this.id = ko.observable(event.PeerId);
 		this.rel = ko.observable(event.stream.id);
 		this.muted = ko.observable(false);
+	}
+
+	function shouldEnableOut() {
+		if (!me.isEnabled()) return false;
+		return me.isTransmitting();
+	}
+
+	function shouldEnableIn() {
+		if (!me.isEnabled()) return false;
+		return !me.isTransmitting();
 	}
 
 	function muteLocalAudio(value) {

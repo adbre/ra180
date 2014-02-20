@@ -126,6 +126,11 @@
 		$(function() {
 			var ra180 = new Ra180ViewModel();
 			var radio = new WebRtcRadio(brokerUri);
+
+			ra180.mod.subscribe(function(newValue) {
+				radio.isEnabled(ra180.mod() != ra180.MOD_OFF);
+			});
+
 			ko.applyBindings(ra180, $("#ra180")[0]);
 			ko.applyBindings(radio, $("#webrtc-radio")[0]);
 			radio.initialize();
