@@ -12,7 +12,7 @@ function WebRtcRadio(options) {
 	};
 
 	var onLocalStream = function (stream) {
-		//muteLocalAudio(isAudioMuted);
+		muteLocalAudio(!me.isTransmitting());
 	};
 
 	var onRemoteStream = function (event) {
@@ -21,17 +21,10 @@ function WebRtcRadio(options) {
 			return audio.rel() == event.stream.id;
 		});
 
-		var video = $("<audio>").attr({
-			autoplay: "autoplay",
-			id: event.PeerId,
-			rel: event.stream.id
-		}).prependTo("#remote");
-		/*
 		var audio = new WebRtcRadioAudio(event);
 		audio.muted(me.isTransmitting());
 		me.audio.push(audio);
-		*/
-		attachMediaStream($(video).get(0), event.stream);
+		attachMediaStream($("#" + event.PeerId).get(0), event.stream);
 	};
 
 	var onPeerConnectionLost = function (peerConnection) {
@@ -100,7 +93,7 @@ function WebRtcRadio(options) {
 				}
 			});
 
-			//me.receive();
+			me.receive();
 		});
 	};
 

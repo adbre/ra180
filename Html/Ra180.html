@@ -117,7 +117,7 @@
 			
 			<div id="remote">
 				<div data-bind="foreach: audio">
-					<audio data-bind="attr: { 'id': id, 'rel': rel }" autoplay="autoplay"/>
+					<audio data-bind="attr: { 'id': id, 'rel': rel, 'muted': muted() ? 'muted' : undefined }" autoplay="autoplay"/>
 				</div>
 			</div>
 		</div>
