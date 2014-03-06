@@ -16,6 +16,7 @@
 		<script type="text/javascript" src="src/Ra180ViewModel.js"></script>
 
 		<script type="text/javascript" src="src/WebRtcRadio.js"></script>
+		<script type="text/javascript" src="src/Ra180WebRtcRadioAdapter.js"></script>
 
 		<script>
 			var brokerUri = "ws://malinrocks.cloudapp.net:4502/CustomBroker";
@@ -130,10 +131,7 @@
 			var radio = new WebRtcRadio(brokerUri);
 			
 			ra180.synchronizationContext = syncContext;
-
-			ra180.mod.subscribe(function(newValue) {
-				radio.isEnabled(ra180.mod() != ra180.MOD_OFF);
-			});
+			var adapter = new Ra180WebRtcRadioAdapter(ra180, radio);
 
 			ko.applyBindings(ra180, $("#ra180")[0]);
 			ko.applyBindings(radio, $("#webrtc-radio")[0]);

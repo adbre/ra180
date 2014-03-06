@@ -12,7 +12,7 @@ function WebRtcRadio(options) {
 	};
 
 	var onLocalStream = function (stream) {
-		muteLocalAudio(shouldEnableOut());
+		muteLocalAudio(!shouldEnableOut());
 	};
 
 	var onRemoteStream = function (event) {
@@ -22,7 +22,7 @@ function WebRtcRadio(options) {
 		});
 
 		var audio = new WebRtcRadioAudio(event);
-		audio.muted(shouldEnableOut());
+		audio.muted(!shouldEnableIn());
 		me.audio.push(audio);
 		attachMediaStream($("#" + event.PeerId).get(0), event.stream);
 	};
@@ -54,6 +54,17 @@ function WebRtcRadio(options) {
 	me.audio = ko.observableArray([]);
 	me.isTransmitting = ko.observable(false);
 	me.isEnabled = ko.observable(false);
+
+	me.enable = function () {
+		me.isEnabled(true);
+		me.receive();
+	};
+
+	me.disable = function () {
+		me.isEnabled(false);
+		muteLocalAudio(true);
+		muteRemoteAudio(true);
+	};
 
 	me.isEnabled.subscribe(function (newValue) {
 		me.receive();
@@ -116,17 +127,16 @@ function WebRtcRadio(options) {
 	}
 
 	function shouldEnableOut() {
-		if (!me.isEnabled()) return false;
-		return me.isTransmitting();
+		return me.isEnabled() && me.isTransmitting();
 	}
 
 	function shouldEnableIn() {
-		if (!me.isEnabled()) return false;
-		return !me.isTransmitting();
+		return me.isEnabled() && !me.isTransmitting();
 	}
 
 	function muteLocalAudio(value) {
 		if (!rtc) return;
+		console.log("muting local audio", value);
 		rtc.muteAudio(function (muted) {
 			if (muted != value) {
 				rtc.muteAudio();
@@ -136,8 +146,12 @@ function WebRtcRadio(options) {
 	}
 
 	function muteRemoteAudio(value) {
+		console.log("muting remote audio", value);
 		$.each(me.audio(), function (i, audio) {
 			audio.muted(value);
+		});
+		$("audio").forEach(function (aduio) {
+			audio.muted = value;
 		});
 	}
 }
