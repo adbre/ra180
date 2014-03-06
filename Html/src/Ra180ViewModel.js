@@ -741,4 +741,40 @@ function Ra180ViewModel() {
 	me.sendKeyBel = function() { me.sendKey("BEL"); }
 	me.sendKeySlt = function() { me.sendKey("SLT"); }
 	me.sendKeyEnt = function(count) { me.sendKey("ENT", count); }
+
+	me.sendKeyMod = function () {
+		switch (me.mod())
+		{
+			case me.MOD_OFF: me.setModKlar(); break;
+			case me.MOD_KLAR: me.setModSkydd(); break;
+			case me.MOD_SKYDD: me.setModDRelay(); break;
+			case me.MOD_DRELAY: me.setModOff(); break;
+		}
+	};
+	me.sendKeyChannel = function () {
+		switch (me.channel())
+		{
+			case 1: me.setChannel2(); break;
+			case 2: me.setChannel3(); break;
+			case 3: me.setChannel4(); break;
+			case 4: me.setChannel5(); break;
+			case 5: me.setChannel6(); break;
+			case 6: me.setChannel7(); break;
+			case 7: me.setChannel8(); break;
+			case 8: me.setChannel1(); break;
+		}
+	};
+	me.sendKeyVolume = function () {
+		switch (me.volume())
+		{
+			case 1: me.setVolume2(); break;
+			case 2: me.setVolume3(); break;
+			case 3: me.setVolume4(); break;
+			case 4: me.setVolume5(); break;
+			case 5: me.setVolume6(); break;
+			case 6: me.setVolume7(); break;
+			case 7: me.setVolume8(); break;
+			case 8: me.setVolume1(); break;
+		}
+	};
 }

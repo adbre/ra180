@@ -93,6 +93,59 @@
 			ra180.setVolume1();
 			expect(ra180.volume()).toBe(1);
 		});
+
+		it("should cycle MOD", function () {
+			expect(ra180.mod()).toBe(ra180.MOD_OFF);
+			ra180.sendKeyMod();
+			expect(ra180.mod()).toBe(ra180.MOD_KLAR);
+			ra180.sendKeyMod();
+			expect(ra180.mod()).toBe(ra180.MOD_SKYDD);
+			ra180.sendKeyMod();
+			expect(ra180.mod()).toBe(ra180.MOD_DRELAY);
+			ra180.sendKeyMod();
+			expect(ra180.mod()).toBe(ra180.MOD_OFF);
+		});
+
+		it("should cycle CHANNEL", function () {
+			expect(ra180.channel()).toBe(1);
+			ra180.sendKeyChannel();
+			expect(ra180.channel()).toBe(2);
+			ra180.sendKeyChannel();
+			expect(ra180.channel()).toBe(3);
+			ra180.sendKeyChannel();
+			expect(ra180.channel()).toBe(4);
+			ra180.sendKeyChannel();
+			expect(ra180.channel()).toBe(5);
+			ra180.sendKeyChannel();
+			expect(ra180.channel()).toBe(6);
+			ra180.sendKeyChannel();
+			expect(ra180.channel()).toBe(7);
+			ra180.sendKeyChannel();
+			expect(ra180.channel()).toBe(8);
+			ra180.sendKeyChannel();
+			expect(ra180.channel()).toBe(1);
+		});
+
+		it("should cycle VOLUME", function () {
+			// Volume starts by default at 4...
+			expect(ra180.volume()).toBe(4);
+			ra180.sendKeyVolume();
+			expect(ra180.volume()).toBe(5);
+			ra180.sendKeyVolume();
+			expect(ra180.volume()).toBe(6);
+			ra180.sendKeyVolume();
+			expect(ra180.volume()).toBe(7);
+			ra180.sendKeyVolume();
+			expect(ra180.volume()).toBe(8);
+			ra180.sendKeyVolume();
+			expect(ra180.volume()).toBe(1);
+			ra180.sendKeyVolume();
+			expect(ra180.volume()).toBe(2);
+			ra180.sendKeyVolume();
+			expect(ra180.volume()).toBe(3);
+			ra180.sendKeyVolume();
+			expect(ra180.volume()).toBe(4);
+		});
 	});
 
 	describe("display manipulation", function () {

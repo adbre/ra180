@@ -94,12 +94,14 @@
 					<button id="channel-6" title="Kanal 6" data-bind="click: setChannel6">6</button>
 					<button id="channel-7" title="Kanal 7" data-bind="click: setChannel7">7</button>
 					<button id="channel-8" title="Kanal 8" data-bind="click: setChannel8">8</button>
+					<button id="channel-toggle"title="Byt kanal" data-bind="click: sendKeyChannel"></button>
 				</div>
 				<div class="mod" data-bind="css: modVred">
 					<button id="mod-off" title="FR&Aring;N" data-bind="click: setModOff">FR&Aring;N</button>
 					<button id="mod-klar" title="KLAR" data-bind="click: setModKlar">KLAR</button>
 					<button id="mod-skydd" title="SKYDD" data-bind="click: setModSkydd">SKYDD</button>
 					<button id="mod-drelay" title="D REL&Auml;" data-bind="click: setModDRelay">D REL&Auml;</button>
+					<button id="mod-toggle" title="Byt kanal" data-bind="click: sendKeyMod"></button>
 				</div>
 			</div>
 			<div class="volume" data-bind="css: volumeVred">
@@ -111,6 +113,7 @@
 				<button id="volume-6" title="Volym 6" data-bind="click: setVolume6">6</button>
 				<button id="volume-7" title="Volym 7" data-bind="click: setVolume7">7</button>
 				<button id="volume-8" title="Volym 8" data-bind="click: setVolume8">8</button>
+				<button id="volume-toggle"title="Byt kanal" data-bind="click: sendKeyVolume"></button>
 			</div>
 		</div>
 		<div id="webrtc-radio">
