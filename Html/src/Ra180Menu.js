@@ -3,6 +3,7 @@ function Ra180Menu(options, ra180) {
 	me.inputText = "";
 	me.isEditing = false;
 	me.ra180 = ra180;
+	me.selectedIndex = -1;
 
 	function getSafeOptions (options) {
 		options = options !== undefined ? options : {};
@@ -21,6 +22,7 @@ function Ra180Menu(options, ra180) {
 		submenu.saveInput = submenu.saveInput !== undefined ? submenu.saveInput : function () { return false; };
 		submenu.getValue = submenu.getValue !== undefined ? submenu.getValue : function () { return ""; };
 		submenu.getOptions = submenu.getOptions !== undefined ? submenu.getOptions : function () { return []; };
+		submenu.nextOption = submenu.nextOption !== undefined ? submenu.nextOption : function () { };
 
 		if (typeof submenu.canEdit !== 'function') {
 			var canEditValue = submenu.canEdit;
@@ -33,6 +35,10 @@ function Ra180Menu(options, ra180) {
 		if (typeof submenu.prefix !== 'function') {
 			var prefixValue = submenu.prefix;
 			submenu.prefix = function () { return prefixValue; };
+		}
+		if (typeof submenu.nextOption !== 'function') {
+			var nextOptionValue = submenu.nextOption;
+			submenu.nextOption = function () { return nextOptionValue; }
 		}
 
 		return submenu;
@@ -81,6 +87,21 @@ function Ra180Menu(options, ra180) {
 	me.onKeyEff = function () {
 	};
 	me.onKeyAnd = function () {
+		if (me.currentSubmenu.canSelect()) {
+			var options = me.currentSubmenu.getOptions();
+			var index = me.selectedIndex + 1;
+			if (index > options.length) {
+				index = 0;
+			}
+			me.selectedIndex = index;
+			me.currentSubmenu.nextOption(me.selectedIndex);
+			me.refreshDisplay();
+			return;
+		}
+
+		if (!me.currentSubmenu.canEdit()) {
+			return;
+		}
 		if (!me.isEditing) {
 			me.startInput();
 		}

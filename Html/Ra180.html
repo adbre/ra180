@@ -10,6 +10,7 @@
 		<script src="lib/xsockets/XSockets.latest.js"></script>
 		<script src="lib/xsockets/XSockets.WebRTC.latest.js"></script>
 		
+		<script type="text/javascript" src="src/SynchronizationContext.js"></script>
 		<script type="text/javascript" src="src/Ra180Menu.js"></script>
 		<script type="text/javascript" src="src/Ra180PnyCalculator.js"></script>
 		<script type="text/javascript" src="src/Ra180ViewModel.js"></script>
@@ -124,8 +125,11 @@
 	</body>
 	<script type="text/javascript">
 		$(function() {
-			var ra180 = new Ra180ViewModel();
+			var syncContext = new SynchronizationContext();
+			var ra180 = new Ra180ViewModel(syncContext);
 			var radio = new WebRtcRadio(brokerUri);
+			
+			ra180.synchronizationContext = syncContext;
 
 			ra180.mod.subscribe(function(newValue) {
 				radio.isEnabled(ra180.mod() != ra180.MOD_OFF);

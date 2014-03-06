@@ -1,9 +1,25 @@
-describe("Ra180", function() {
+﻿describe("Ra180", function() {
 	var ra180;
 	
 	beforeEach(function() {
 		ra180 = new Ra180ViewModel();
+		ra180.synchronizationContext = new InstantSynchronizationContext();
 	});
+
+	function enterNewPny() {
+		ra180.sendKey4();
+		ra180.sendKeyEnt(4);
+		ra180.sendKeyAnd();
+		
+		var calc = new Ra180PnyCalculator();
+		var pn = calc.generateKeys().pn;
+		for (var i=0; i < pn.length; i++) {
+			ra180.sendKeys(pn[1]);
+			ra180.sendKeyEnt();
+		}
+
+		ra180.sendKeySlt();
+	}
 
 	describe("Vred manipulation", function() {
 
@@ -118,6 +134,121 @@ describe("Ra180", function() {
 			expect(ra180.display.char4.isBlinking()).toBe(false);
 		});
 	});
+	
+	describe("Async tests", function () {
+		var synchronizationContext;
+	
+		beforeEach(function() {
+			synchronizationContext = new MockSynchronizationContext();
+			ra180.synchronizationContext = synchronizationContext;
+		});
+
+		describe("Self test", function () {
+			it("should perform self-test on KLAR", function () {
+				ra180.setModKlar();
+				expect(ra180.display.getPlainText()).toBe("TEST    ");
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("TEST OK ");
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("NOLLST  ");
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+			
+			it("should not delay change of mod observable to KLAR", function () {
+				ra180.setModKlar();
+				expect(ra180.mod()).toBe(ra180.MOD_KLAR);
+			});
+			
+			it("should not delay change of mod observable to SKYDD", function () {
+				ra180.setModSkydd();
+				expect(ra180.mod()).toBe(ra180.MOD_SKYDD);
+			});
+			
+			it("should not delay change of mod observable to DRELÄ", function () {
+				ra180.setModDRelay();
+				expect(ra180.mod()).toBe(ra180.MOD_DRELAY);
+			});
+
+			it("should not open menu until self-test is complete", function () {
+				ra180.setModKlar();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).not.toMatch(/^T:/);
+			});
+
+			it("should not display NOLLST if entered KDA", function () {
+				ra180.setModKlar();
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL * 3);
+				enterNewPny();
+				ra180.setModOff();
+				ra180.setModKlar();
+				expect(ra180.display.getPlainText()).toBe("TEST    ");
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("TEST OK ");
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+			
+			it("should perform self-test after RESET", function () {
+				ra180.setModKlar();
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL * 3);
+				enterNewPny();
+				ra180.sendKeyReset();
+				expect(ra180.display.getPlainText()).toBe("TEST    ");
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("TEST OK ");
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("NOLLST  ");
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+		});
+		
+		describe("TID", function () {
+			beforeEach(function () {
+				ra180.setModKlar();
+				ra180.synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				ra180.synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				ra180.synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+			});
+			describe("should tick", function () {
+				it("each second", function() {
+					ra180.sendKey1();
+					expect(ra180.display.getPlainText()).toBe("T:000000");
+					synchronizationContext.tick(1000);
+					expect(ra180.display.getPlainText()).toBe("T:000001");
+					synchronizationContext.tick(1000);
+					expect(ra180.display.getPlainText()).toBe("T:000002");
+				});
+				it("each minute", function() {
+					ra180.sendKey1();
+					expect(ra180.display.getPlainText()).toBe("T:000000");
+					synchronizationContext.tick(60 * 1000);
+					expect(ra180.display.getPlainText()).toBe("T:000100");
+					synchronizationContext.tick(60 * 1000);
+					expect(ra180.display.getPlainText()).toBe("T:000200");
+				});
+				it("each hour", function() {
+					ra180.sendKey1();
+					expect(ra180.display.getPlainText()).toBe("T:000000");
+					synchronizationContext.tick(60 * 60 * 1000);
+					expect(ra180.display.getPlainText()).toBe("T:010000");
+					synchronizationContext.tick(60 * 60 * 1000);
+					expect(ra180.display.getPlainText()).toBe("T:020000");
+				});
+				it("each day", function() {
+					ra180.sendKey1();
+					ra180.sendKeyEnt();
+					expect(ra180.display.getPlainText()).toBe("DAT:0101");
+					synchronizationContext.tick(24 * 60 * 60 * 1000);
+					expect(ra180.display.getPlainText()).toBe("DAT:0102");
+					synchronizationContext.tick(24 * 60 * 60 * 1000);
+					expect(ra180.display.getPlainText()).toBe("DAT:0103");
+				});
+			});
+
+		});
+	});
 
 	describe("Menu navigation", function() {
 		beforeEach(function() {
@@ -167,8 +298,7 @@ describe("Ra180", function() {
 			});
 		});
 
-		describe("TID", function () {
-
+		describe("TID", function () {		
 			it("should navigate TID", function () {
 				ra180.sendKey1();
 				expect(ra180.display.getPlainText()).toBe("T:000000");
@@ -615,30 +745,51 @@ describe("Ra180", function() {
 				ra180.sendKey7();
 				expect(ra180.display.getPlainText()).toBe("NYK=### ");
 			});
+			
+			it("should not allow AND when no PNY has been entered", function () {
+				ra180.sendKey7();
+				expect(ra180.display.getPlainText()).toBe("NYK=### ");
+				ra180.sendKeyAnd();
+				expect(ra180.display.getPlainText()).toBe("NYK=### ");
+			});
 
 			describe("when entered passive key", function () {
 				beforeEach(function () {
-					ra180.sendKey4();
-					ra180.sendKeyEnt(4);
+					enterNewPny();
+				});
+				
+				it("should select entered PNY", function () {
+					ra180.sendKey7();
+					expect(ra180.display.getPlainText()).toBe("NYK:### ");
 					ra180.sendKeyAnd();
-					ra180.sendKeys("4422");
-					ra180.sendKeyEnt();
-					ra180.sendKeys("2211");
-					ra180.sendKeyEnt();
-					ra180.sendKeys("3300");
-					ra180.sendKeyEnt();
-					ra180.sendKeys("5511");
-					ra180.sendKeyEnt();
-					ra180.sendKeys("4325");
-					ra180.sendKeyEnt();
-					ra180.sendKeys("5621");
-					ra180.sendKeyEnt();
-					ra180.sendKeys("3201");
-					ra180.sendKeyEnt();
-					ra180.sendKeys("5104");
-					ra180.sendKeyEnt();
-					expect(ra180.display.getPlainText()).toMatch(/^PNY:[0-9]{3} $/);
-					ra180.sendKeySlt();
+					expect(ra180.display.getPlainText()).toMatch(/^NYK:[0-9]{3} $/);
+				});
+				
+				it("should be possible to de-select active key", function () {
+					ra180.sendKey7();
+					expect(ra180.display.getPlainText()).toBe("NYK:### ");
+					ra180.sendKeyAnd();
+					expect(ra180.display.getPlainText()).toMatch(/^NYK:[0-9]{3} $/);
+					ra180.sendKeyAnd();
+					expect(ra180.display.getPlainText()).toBe("NYK:### ");
+				});
+
+				describe("twice", function () {
+					beforeEach(function () {
+						// Select already entered passive key as the active key.
+						ra180.sendKey7();
+						ra180.sendKeyAnd();
+						ra180.sendKeySlt();
+
+						// Now we have no passive key, enter a new passive key.
+						enterNewPny();
+					});
+
+					it("should cycle all PNYs", function () {
+						ra180.sendKey7();
+						ra180.sendKeyAnd();
+						expect(ra180.display.getPlainText()).toMatch(/^NYK:[0-9]{3} $/);
+					});
 				});
 			});
 			
@@ -658,6 +809,113 @@ describe("Ra180", function() {
 				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toBe("        ");
 			});
+		});
+	
+		describe("EFF", function () {
+			it("is LÅG by default", function() {
+				ra180.sendKeyEff();
+				expect(ra180.display.getPlainText()).toBe("EFF:LÅG ");
+				ra180.sendKeySlt();
+				ra180.sendKeyEff();
+				expect(ra180.display.getPlainText()).toBe("EFF:LÅG ");
+			});
+
+			it("can change to NRM", function() {
+				ra180.sendKeyEff();
+				ra180.sendKeyEff();
+				expect(ra180.display.getPlainText()).toBe("EFF:NRM ");
+				ra180.sendKeySlt();
+				ra180.sendKeyEff();
+				expect(ra180.display.getPlainText()).toBe("EFF:NRM ");
+			});
+
+			it("can change to HÖG", function() {
+				ra180.sendKeyEff();
+				ra180.sendKeyEff();
+				ra180.sendKeyEff();
+				expect(ra180.display.getPlainText()).toBe("EFF:HÖG ");
+				ra180.sendKeySlt();
+				ra180.sendKeyEff();
+				expect(ra180.display.getPlainText()).toBe("EFF:HÖG ");
+			});
+
+			it("can change back to LÅG", function() {
+				ra180.sendKeyEff();
+				ra180.sendKeyEff();
+				ra180.sendKeyEff();
+				ra180.sendKeyEff();
+				expect(ra180.display.getPlainText()).toBe("EFF:LÅG ");
+				ra180.sendKeySlt();
+				ra180.sendKeyEff();
+				expect(ra180.display.getPlainText()).toBe("EFF:LÅG ");
+			});
+		});
+	});
+});
+
+describe("MockSynchronizationContext", function () {
+	var synchronizationContext;
+	var listener;
+
+	beforeEach(function() {
+		synchronizationContext = new MockSynchronizationContext();
+		listener = {
+			callback: function() {}
+		};
+
+		spyOn(listener, 'callback');
+	});
+
+	describe("setInterval", function () {		
+		it("should never call listener if interval has not elapsed", function () {
+			synchronizationContext.setInterval(listener.callback, 1000);
+			synchronizationContext.tick(999);
+			expect(listener.callback.calls.count()).toEqual(0);
+		});
+		it("should call listener once", function () {
+			synchronizationContext.setInterval(listener.callback, 1000);
+			synchronizationContext.tick(1000);
+			expect(listener.callback.calls.count()).toEqual(1);
+		});
+		it("should call listener once, when passed", function () {
+			synchronizationContext.setInterval(listener.callback, 1000);
+			synchronizationContext.tick(1999);
+			expect(listener.callback.calls.count()).toEqual(1);
+		});
+		it("should call listener twice", function () {
+			synchronizationContext.setInterval(listener.callback, 1000);
+			synchronizationContext.tick(2000);
+			expect(listener.callback.calls.count()).toEqual(2);
+		});
+		it("should cancel", function () {
+			var id = synchronizationContext.setTimeout(listener.callback, 1000);
+			synchronizationContext.clearInterval(id);
+			synchronizationContext.tick(1000);
+			expect(listener.callback.calls.count()).toEqual(0);
+		});
+	});
+
+	describe("setTimeout", function () {
+		it("should never call listener if delay has not elapsed", function () {
+			synchronizationContext.setTimeout(listener.callback, 1000);
+			synchronizationContext.tick(999);
+			expect(listener.callback.calls.count()).toEqual(0);
+		});
+		it("should call listener once when delay has elapsed", function () {
+			synchronizationContext.setTimeout(listener.callback, 1000);
+			synchronizationContext.tick(1000);
+			expect(listener.callback.calls.count()).toEqual(1);
+		});
+		it("should call listener once even if delay has elapsed multiple times", function () {
+			synchronizationContext.setTimeout(listener.callback, 1000);
+			synchronizationContext.tick(2000);
+			expect(listener.callback.calls.count()).toEqual(1);
+		});
+		it("should cancel", function () {
+			var id = synchronizationContext.setTimeout(listener.callback, 1000);
+			synchronizationContext.clearTimeout(id);
+			synchronizationContext.tick(1000);
+			expect(listener.callback.calls.count()).toEqual(0);
 		});
 	});
 });

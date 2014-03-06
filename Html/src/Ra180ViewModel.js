@@ -1,3 +1,13 @@
+function zeroFill( number, width )
+{
+  width -= number.toString().length;
+  if ( width > 0 )
+  {
+    return new Array( width + (/\./.test( number ) ? 2 : 1) ).join( '0' ) + number;
+  }
+  return number + ""; // always return a string
+}
+
 function Ra180DisplayCharacter() {
 	var me = this;
 	me.character = ko.observable(" ");
@@ -7,22 +17,36 @@ function Ra180DisplayCharacter() {
 
 function Ra180ChannelData() {
 	var me = this;
+	var subscribers = [];
 	me.fr = ko.observable();
 	me.bd1 = ko.observable();
 	me.bd2 = ko.observable();
 	me.pny = ko.observable();
+	me.pny2 = ko.observable();
 	me.nyk = ko.observable();
-	me.nyk1 = ko.observable();
-	me.nyk2 = ko.observable();
 
+	me.pny.subscribe(notifySubscribers);
+	me.pny2.subscribe(notifySubscribers);
+	me.nyk.subscribe(notifySubscribers);
+	
 	me.reset = function () {
 		me.fr("");
 		me.bd1("");
 		me.bd2("");
 		me.pny("");
+		me.pny2("");
 		me.nyk("");
-		me.nyk1("");
-		me.nyk2("");
+	}
+
+	me.subscribe = function (fn) {
+		subscribers.push(fn);
+	};
+
+	function notifySubscribers() {
+		for (var i=0; i < subscribers.length; i++) {
+			var subscriber = subscribers[i];
+			subscriber();
+		}
 	}
 }
 
@@ -48,6 +72,62 @@ function Ra180Data() {
 	me.channel8 = new Ra180ChannelData();
 
 	me.isEmpty = ko.observable(true);
+	
+	function setNotEmpty() {
+		me.isEmpty(false);
+	}
+	
+	me.channel1.subscribe(setNotEmpty);
+	me.channel2.subscribe(setNotEmpty);
+	me.channel3.subscribe(setNotEmpty);
+	me.channel4.subscribe(setNotEmpty);
+	me.channel5.subscribe(setNotEmpty);
+	me.channel6.subscribe(setNotEmpty);
+	me.channel7.subscribe(setNotEmpty);
+	me.channel8.subscribe(setNotEmpty);
+
+	me.tick = function () {
+		var reTid = /([0-9]{2})([0-9]{2})([0-9]{2})/;
+		var reDat = /([0-9]{2})([0-9]{2})/;
+		var match;
+		match = reDat.exec(me.dat());
+		var month = parseInt(match[1]);
+		var date = parseInt(match[2]);
+		match = reTid.exec(me.tid());
+		var hour = parseInt(match[1]);
+		var minute = parseInt(match[2]);
+		var second = parseInt(match[3]);
+		second++;
+		if (second == 60) {
+			second = 0;
+			minute++;
+		}
+		if (minute == 60) {
+			minute = 0;
+			hour++;
+		}
+		if (hour == 24) {
+			hour = 0;
+			date++;
+		}
+
+		if (date > 31) {
+			date = 1;
+			month++;
+		}
+		if (month > 12) {
+			month = 1;
+		}
+
+		month = zeroFill(month, 2);
+		date = zeroFill(date, 2);
+		hour = zeroFill(hour, 2);
+		minute = zeroFill(minute, 2);
+		second = zeroFill(second, 2);
+
+		me.tid(hour + minute + second);
+		me.dat(month + date);
+	};
 
 	me.reset = function () {
 		me.synk(false);
@@ -97,7 +177,7 @@ function Ra180Data() {
 		me.channel8.bd1("3040");
 		me.channel8.bd2("5060");
 
-		me.isEmpty(false);
+		me.isEmpty(true);
 	};
 }
 
@@ -109,11 +189,21 @@ function Ra180ViewModel() {
 	me.MOD_SKYDD = 5;
 	me.MOD_DRELAY = 6;
 	me.MOD_DEBUG = 9;
-
-	me.data = new Ra180Data();
-
+	me.EFF_LOW = "LÅG";
+	me.EFF_NRM = "NRM";
+	me.EFF_HIG = "HÖG";
+	me.SELFTEST_INTERVAL = 2000;
+	
 	me.pnyCalc = new Ra180PnyCalculator();
+	me.synchronizationContext = undefined;
 
+	function tick() {
+		me.data.tick();
+		if (me.currentMenu) {
+			me.currentMenu.refreshDisplay();
+		}
+	}
+	
 	me.display = {
 		char1: new Ra180DisplayCharacter(),
 		char2: new Ra180DisplayCharacter(),
@@ -214,20 +304,46 @@ function Ra180ViewModel() {
 	me.channel = ko.observable(1);
 	me.volume = ko.observable(4);
 	me.mod = ko.observable(me.MOD_OFF);
-	
-	me.mod.subscribe(function(newValue) {
-		if (newValue != me.MOD_OFF) {
-			me.display.setText("TEST");
-			me.display.setText("TEST OK");
-			if (me.data.isEmpty()) {
-				me.display.setText("NOLLST");
-				me.data.reset();
-			}
-			me.display.setText("");
-		} else {
-			me.display.setText("");
+	me.eff = ko.observable(me.EFF_LOW);
+	me.isEnabled = ko.observable(false);
+
+	function start(mod, shouldStartAsync) {
+		me.display.setText("");
+		me.mod(mod);
+		if (shouldStartAsync) {
+			me.synchronizationContext.setInterval(tick, 1000);
 		}
-	});
+		me.isEnabled(mod != me.MOD_OFF);
+	}
+	
+	me.setMod = function (newValue) {
+		me.mod(newValue);
+		if (newValue != me.MOD_OFF) {
+			var shouldStartAsync = false;
+			if (!me.data) {
+				me.data = new Ra180Data();
+				me.data.reset();
+				shouldStartAsync = true;
+			}
+			
+			me.display.setText("TEST");
+			me.synchronizationContext.setTimeout(function() {
+				me.display.setText("TEST OK");
+				me.synchronizationContext.setTimeout(function() {
+					if (me.data.isEmpty()) {
+						me.display.setText("NOLLST");
+						me.synchronizationContext.setTimeout(function() {
+							start(newValue, shouldStartAsync);
+						}, me.SELFTEST_INTERVAL);
+					} else {
+						start(newValue, shouldStartAsync);
+					}
+				}, me.SELFTEST_INTERVAL);
+			}, me.SELFTEST_INTERVAL);
+		} else {
+			start(newValue, shouldStartAsync);
+		}
+	};
 
 	me.getVredClass = function(value) {
 		return "vred-0" + value;
@@ -427,9 +543,36 @@ function Ra180ViewModel() {
 			submenus: [
 				{
 					prefix: "NYK",
-					getValue: function () {
-						return "###";
+					canEdit: false,
+					canSelect: function () {
+						var pny = me.getChannelData().pny();
+						var nyk = me.getChannelData().nyk();
+						return (pny && pny.length == 3) || (nyk && nyk.length == 3);
 					},
+					getValue: function (index) {
+						var nyk = me.getChannelData().nyk();
+						return (nyk && nyk.length == 3) ? nyk : "###";
+					},
+					nextOption: function (index) {
+						var channeldata = me.getChannelData();
+						var nyk = channeldata.nyk();
+						var pny = channeldata.pny();
+						channeldata.nyk(pny);
+						channeldata.pny(nyk);
+					},
+					getOptions: function () {
+						var pny = me.getChannelData().pny();
+						var pny2 = me.getChannelData().pny2();
+						var result = new Array();
+						if (pny) {
+							result.push(pny);
+						}
+						if (pny2) {
+							result.push(pny2);
+						}
+						result.push("###");
+						return result;
+					}
 				}
 			]
 		},
@@ -437,8 +580,40 @@ function Ra180ViewModel() {
 			title: "TJK"
 		}
 	};
+	
+	me.effMenu = new function () {
+		var self = this;
+		self.sendKey = function (key) {
+			if (key == "SLT") {
+				self.completed();
+				return;
+			}
+
+			if (key == "EFF") {
+				var eff = me.eff();
+				switch (eff) {
+					case me.EFF_LOW: eff = me.EFF_NRM; break;
+					case me.EFF_NRM: eff = me.EFF_HIG; break;
+					case me.EFF_HIG: eff = me.EFF_LOW; break;
+					default: eff = me.EFF_LOW; break;
+				}
+				me.eff(eff);
+				self.refreshDisplay();
+			}
+		};
+		self.refreshDisplay = function () {
+			me.display.setText("EFF:" + me.eff());
+		};
+		self.completed = function () {
+		};
+	};
 
 	me.currentMenu = null;
+
+	function closeMenu() {		
+		me.currentMenu = undefined;
+		me.display.setText("");
+	}
 
 	me.sendKey = function (key, count) {
 		count = typeof count !== 'undefined' ? count : 1;
@@ -451,14 +626,29 @@ function Ra180ViewModel() {
 			return;
 		}
 
-		if (me.mod() == me.MOD_OFF) return;
+		if (!me.isEnabled()) return;
 		if (me.mod() == me.MOD_DEBUG) {
 			me.display.setText(key);
 			me.display.setInputPos(key.length);
-		} else if (me.currentMenu) {
-			me.currentMenu.sendKey(key);
-		} else {
+			return;
+		}
 
+		if (key == "RESET") {
+			me.data.reset();
+			me.isEnabled(false);
+			me.setMod(me.mod());
+			return;
+		}
+		
+		if (me.currentMenu) {
+			me.currentMenu.sendKey(key);
+		} else if (key.length > 1) {
+			if (key == "EFF") {
+				me.currentMenu = me.effMenu;
+				me.currentMenu.completed = closeMenu;
+				me.currentMenu.refreshDisplay();
+			}
+		} else {
 			var getMenuOptions = function () {
 				switch (key) {
 					case "1": return me.menuOptions.tid;
@@ -475,11 +665,7 @@ function Ra180ViewModel() {
 
 			var options = getMenuOptions();
 			if (options) {
-				options.completed = function () {
-					me.currentMenu = undefined;
-					me.display.setText("");
-				};
-
+				options.completed = closeMenu;
 				me.currentMenu = new Ra180Menu(options, me);
 				me.currentMenu.refreshDisplay();
 			}
@@ -514,11 +700,11 @@ function Ra180ViewModel() {
 	me.setVolume7 = function() { me.volume(7); };
 	me.setVolume8 = function() { me.volume(8); };
 
-	me.setModOff = function() { me.mod(me.MOD_OFF); }
-	me.setModKlar = function() { me.mod(me.MOD_KLAR); }
-	me.setModSkydd = function() { me.mod(me.MOD_SKYDD); }
-	me.setModDRelay = function() { me.mod(me.MOD_DRELAY); }
-	me.setModDebug = function() { me.mod(me.MOD_DEBUG); }
+	me.setModOff = function() { me.setMod(me.MOD_OFF); }
+	me.setModKlar = function() { me.setMod(me.MOD_KLAR); }
+	me.setModSkydd = function() { me.setMod(me.MOD_SKYDD); }
+	me.setModDRelay = function() { me.setMod(me.MOD_DRELAY); }
+	me.setModDebug = function() { me.setMod(me.MOD_DEBUG); }
 
 	me.sendKey1 = function() { me.sendKey("1"); }
 	me.sendKey2 = function() { me.sendKey("2"); }
