@@ -117,7 +117,7 @@
 			</div>
 		</div>
 		<div id="webrtc-radio">
-			<button data-bind="event: {mousedown: transmit, mouseup: receive, mouseleave: receive}, text: isTransmitting() ? 'Sending' : 'Receiving'">
+			<button data-bind="event: {mousedown: transmit, mouseup: receive, mouseleave: receive}, text: isTransmitting() ? 'Sending' : 'Receiving', visible: isEnabled">
 			</button>
 			
 			<div id="remote">
