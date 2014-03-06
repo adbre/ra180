@@ -16,6 +16,13 @@
 	height: 30px;
 }
 
+.ra180-display-bel0 { color: #008800; }
+.ra180-display-bel1 { color: #009900; }
+.ra180-display-bel2 { color: #00aa00; }
+.ra180-display-bel3 { color: #00cc00; }
+.ra180-display-bel4 { color: #00dd00; }
+.ra180-display-bel5 { color: #00ff00; }
+
 .ra180-display .underscore {
 	position: relative;
 	top: -4px;

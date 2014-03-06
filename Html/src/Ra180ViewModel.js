@@ -193,6 +193,13 @@ function Ra180ViewModel() {
 	me.EFF_NRM = "NRM";
 	me.EFF_HIG = "HÖG";
 	me.SELFTEST_INTERVAL = 2000;
+
+	me.channel = ko.observable(1);
+	me.volume = ko.observable(4);
+	me.mod = ko.observable(me.MOD_OFF);
+	me.bel = ko.observable(3);
+	me.eff = ko.observable(me.EFF_LOW);
+	me.isEnabled = ko.observable(false);
 	
 	me.pnyCalc = new Ra180PnyCalculator();
 	me.synchronizationContext = undefined;
@@ -300,12 +307,6 @@ function Ra180ViewModel() {
 			me.display.char8.hasUnderscore(pos == 7);
 		}
 	};
-	
-	me.channel = ko.observable(1);
-	me.volume = ko.observable(4);
-	me.mod = ko.observable(me.MOD_OFF);
-	me.eff = ko.observable(me.EFF_LOW);
-	me.isEnabled = ko.observable(false);
 
 	function start(mod, shouldStartAsync) {
 		me.display.setText("");
@@ -639,6 +640,11 @@ function Ra180ViewModel() {
 			me.setMod(me.mod());
 			return;
 		}
+
+		if (key == "BEL") {
+			toggleBel();
+			return;
+		}
 		
 		if (me.currentMenu) {
 			me.currentMenu.sendKey(key);
@@ -681,6 +687,16 @@ function Ra180ViewModel() {
 	me.channelVred = ko.computed(function() { return me.getVredClass(me.channel()); }, me);
 	me.volumeVred = ko.computed(function() { return me.getVredClass(me.volume()); }, me);
 	me.modVred = ko.computed(function() { return me.getVredClass(me.mod()); }, me);
+	me.displayLight = ko.computed(function() {
+		return "ra180-display-bel" + me.bel();
+	}, me);
+
+	function toggleBel() {
+		var bel = me.bel();
+		bel++;
+		if (bel > 5) bel = 0;
+		me.bel(bel);
+	}
 	
 	me.setChannel1 = function() { me.channel(1); };
 	me.setChannel2 = function() { me.channel(2); };
