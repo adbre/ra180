@@ -150,8 +150,5 @@ function WebRtcRadio(options) {
 		$.each(me.audio(), function (i, audio) {
 			audio.muted(value);
 		});
-		$("audio").forEach(function (aduio) {
-			audio.muted = value;
-		});
 	}
 }
