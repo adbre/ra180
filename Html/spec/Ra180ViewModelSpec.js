@@ -255,6 +255,42 @@
 				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
 				expect(ra180.display.getPlainText()).toBe("        ");
 			});
+			
+			it("should cancel self-test from TEST when OFF", function () {
+				ra180.setModKlar();
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				ra180.setModOff();
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+			
+			it("should cancel self-test from TEST OK when OFF", function () {
+				ra180.setModKlar();
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				ra180.setModOff();
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+			
+			it("should cancel self-test from NOLLST when OFF", function () {
+				ra180.setModKlar();
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				ra180.setModOff();
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+
+			it ("should not restart self-test when switching between KLAR, SKYDD or DRELAY", function () {
+				ra180.setModKlar();
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("TEST OK ");
+				ra180.setModSkydd();
+				expect(ra180.display.getPlainText()).toBe("TEST OK ");
+				ra180.setModDRelay();
+				expect(ra180.display.getPlainText()).toBe("TEST OK ");
+			});
 		});
 		
 		describe("TID", function () {

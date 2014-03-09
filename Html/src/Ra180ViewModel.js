@@ -310,7 +310,6 @@ function Ra180ViewModel() {
 
 	function start(mod, shouldStartAsync) {
 		me.display.setText("");
-		me.mod(mod);
 		if (shouldStartAsync) {
 			me.synchronizationContext.setInterval(tick, 1000);
 		}
@@ -318,7 +317,9 @@ function Ra180ViewModel() {
 	}
 	
 	me.setMod = function (newValue) {
+		var currentValue = me.mod();
 		me.mod(newValue);
+		
 		if (newValue != me.MOD_OFF) {
 			var shouldStartAsync = false;
 			if (!me.data) {
@@ -327,24 +328,38 @@ function Ra180ViewModel() {
 				shouldStartAsync = true;
 			}
 			
-			me.display.setText("TEST");
-			me.synchronizationContext.setTimeout(function() {
-				me.display.setText("TEST OK");
-				me.synchronizationContext.setTimeout(function() {
-					if (me.data.isEmpty()) {
-						me.display.setText("NOLLST");
-						me.synchronizationContext.setTimeout(function() {
-							start(newValue, shouldStartAsync);
-						}, me.SELFTEST_INTERVAL);
-					} else {
-						start(newValue, shouldStartAsync);
-					}
-				}, me.SELFTEST_INTERVAL);
-			}, me.SELFTEST_INTERVAL);
-		} else {
-			start(newValue, shouldStartAsync);
+			runSelfTest(function() {
+				start(newValue, shouldStartAsync);
+			});
+		} else if (newValue == me.MOD_OFF) {
+			start(newValue, false);
 		}
 	};
+
+	var isExecutingSelfTest = false;
+	function runSelfTest(fn) {
+		if (isExecutingSelfTest) return;
+		isExecutingSelfTest = true;
+		me.display.setText("TEST");
+		me.synchronizationContext.setTimeout(function() {
+			if (me.mod() == me.MOD_OFF) return;
+			me.display.setText("TEST OK");
+			me.synchronizationContext.setTimeout(function() {
+				if (me.mod() == me.MOD_OFF) return;
+				if (me.data.isEmpty()) {
+					me.display.setText("NOLLST");
+					me.synchronizationContext.setTimeout(function() {
+						if (me.mod() == me.MOD_OFF) return;
+						fn();
+						isExecutingSelfTest = false;
+					}, me.SELFTEST_INTERVAL);
+				} else {
+					fn();
+					isExecutingSelfTest = false;
+				}
+			}, me.SELFTEST_INTERVAL);
+		}, me.SELFTEST_INTERVAL);
+	}
 
 	me.getVredClass = function(value) {
 		return "vred-0" + value;
