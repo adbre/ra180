@@ -773,6 +773,38 @@
 				ra180.sendKeyEnt(); // PNY=###
 				expect(ra180.display.getPlainText()).toMatch(/^PNY:[0-9]{3} $/);
 			});
+
+			describe("when changing channel", function () {
+				it("should refresh FR", function () {
+					ra180.sendKey4();
+
+					ra180.setChannel2();
+					var channel2 = ra180.display.getPlainText();
+					ra180.setChannel3();
+					var channel3 = ra180.display.getPlainText();
+					ra180.setChannel4();
+					var channel4 = ra180.display.getPlainText();
+					ra180.setChannel5();
+					var channel5 = ra180.display.getPlainText();
+					ra180.setChannel6();
+					var channel6 = ra180.display.getPlainText();
+					ra180.setChannel7();
+					var channel7 = ra180.display.getPlainText();
+					ra180.setChannel8();
+					var channel8 = ra180.display.getPlainText();
+					ra180.setChannel1();
+					var channel1 = ra180.display.getPlainText();
+
+					expect(channel1).not.toBe(channel2);
+					expect(channel2).not.toBe(channel3);
+					expect(channel3).not.toBe(channel4);
+					expect(channel4).not.toBe(channel5);
+					expect(channel5).not.toBe(channel6);
+					expect(channel6).not.toBe(channel7);
+					expect(channel7).not.toBe(channel8);
+					expect(channel8).not.toBe(channel1);
+				});
+			});
 		});
 
 		describe("NIV", function () {

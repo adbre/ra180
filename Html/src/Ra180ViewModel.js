@@ -698,14 +698,14 @@ function Ra180ViewModel() {
 		me.bel(bel);
 	}
 	
-	me.setChannel1 = function() { me.channel(1); };
-	me.setChannel2 = function() { me.channel(2); };
-	me.setChannel3 = function() { me.channel(3); };
-	me.setChannel4 = function() { me.channel(4); };
-	me.setChannel5 = function() { me.channel(5); };
-	me.setChannel6 = function() { me.channel(6); };
-	me.setChannel7 = function() { me.channel(7); };
-	me.setChannel8 = function() { me.channel(8); };
+	me.setChannel1 = function() { me.channel(1); refreshDisplay(); };
+	me.setChannel2 = function() { me.channel(2); refreshDisplay(); };
+	me.setChannel3 = function() { me.channel(3); refreshDisplay(); };
+	me.setChannel4 = function() { me.channel(4); refreshDisplay(); };
+	me.setChannel5 = function() { me.channel(5); refreshDisplay(); };
+	me.setChannel6 = function() { me.channel(6); refreshDisplay(); };
+	me.setChannel7 = function() { me.channel(7); refreshDisplay(); };
+	me.setChannel8 = function() { me.channel(8); refreshDisplay(); };
 	
 	me.setVolume1 = function() { me.volume(1); };
 	me.setVolume2 = function() { me.volume(2); };
@@ -777,4 +777,10 @@ function Ra180ViewModel() {
 			case 8: me.setVolume1(); break;
 		}
 	};
+
+	function refreshDisplay() {
+		if (me.currentMenu) {
+			me.currentMenu.refreshDisplay();
+		}
+	}
 }
