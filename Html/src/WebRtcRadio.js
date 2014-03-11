@@ -66,6 +66,13 @@ function WebRtcRadio(options) {
 		muteRemoteAudio(true);
 	};
 
+	me.changeContext = function(ctx) {
+		myCtx = ctx;
+		if (rtc) {
+			rtc.changeContext(ctx);
+		}
+	};
+
 	me.isEnabled.subscribe(function (newValue) {
 		me.receive();
 	});
@@ -107,12 +114,7 @@ function WebRtcRadio(options) {
 			rtc.bind(XSockets.WebRTC.Events.onContextChange, onContextChange);
 
 			rtc.getUserMedia({audio: true}, function () {
-				var ctxId = XSockets.Utils.getParameterByName('ctxId');
-				if (ctxId) {
-					rtc.changeContext(ctxId);
-				} else {
-					rtc.changeContext(mainCtx);
-				}
+				me.changeContext(myCtx);
 			});
 
 			me.receive();

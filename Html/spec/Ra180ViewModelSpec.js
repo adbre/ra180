@@ -810,6 +810,11 @@
 				expect(ra180.display.getPlainText()).toMatch(/^PNY:[0-9]{3} $/);
 			});
 
+			it("should set context after ON", function () {
+				expect(ra180.context()).not.toBe(undefined);
+				expect(ra180.context()).toMatch(/^.+$/);
+			});
+
 			describe("when changing channel", function () {
 				it("should refresh FR", function () {
 					ra180.sendKey4();
@@ -839,6 +844,31 @@
 					expect(channel6).not.toBe(channel7);
 					expect(channel7).not.toBe(channel8);
 					expect(channel8).not.toBe(channel1);
+				});
+
+				it("should notify context listeners", function() {
+					var ctx = ra180.context(), lastCtx;
+					ra180.context.subscribe(function() {
+						lastCtx = ctx;
+						ctx = ra180.context();
+					});
+
+					ra180.setChannel2();
+					expect(ctx).not.toBe(lastCtx);
+					ra180.setChannel3();
+					expect(ctx).not.toBe(lastCtx);
+					ra180.setChannel4();
+					expect(ctx).not.toBe(lastCtx);
+					ra180.setChannel5();
+					expect(ctx).not.toBe(lastCtx);
+					ra180.setChannel6();
+					expect(ctx).not.toBe(lastCtx);
+					ra180.setChannel7();
+					expect(ctx).not.toBe(lastCtx);
+					ra180.setChannel8();
+					expect(ctx).not.toBe(lastCtx);
+					ra180.setChannel1();
+					expect(ctx).not.toBe(lastCtx);
 				});
 			});
 		});

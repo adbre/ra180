@@ -200,6 +200,7 @@ function Ra180ViewModel() {
 	me.bel = ko.observable(3);
 	me.eff = ko.observable(me.EFF_LOW);
 	me.isEnabled = ko.observable(false);
+	me.context = ko.observable();
 	
 	me.pnyCalc = new Ra180PnyCalculator();
 	me.synchronizationContext = undefined;
@@ -350,10 +351,12 @@ function Ra180ViewModel() {
 					me.display.setText("NOLLST");
 					me.synchronizationContext.setTimeout(function() {
 						if (me.mod() == me.MOD_OFF) return;
+						refreshContext();
 						fn();
 						isExecutingSelfTest = false;
 					}, me.SELFTEST_INTERVAL);
 				} else {
+					refreshContext();
 					fn();
 					isExecutingSelfTest = false;
 				}
@@ -713,14 +716,14 @@ function Ra180ViewModel() {
 		me.bel(bel);
 	}
 	
-	me.setChannel1 = function() { me.channel(1); refreshDisplay(); };
-	me.setChannel2 = function() { me.channel(2); refreshDisplay(); };
-	me.setChannel3 = function() { me.channel(3); refreshDisplay(); };
-	me.setChannel4 = function() { me.channel(4); refreshDisplay(); };
-	me.setChannel5 = function() { me.channel(5); refreshDisplay(); };
-	me.setChannel6 = function() { me.channel(6); refreshDisplay(); };
-	me.setChannel7 = function() { me.channel(7); refreshDisplay(); };
-	me.setChannel8 = function() { me.channel(8); refreshDisplay(); };
+	me.setChannel1 = function() { setChannel(1); };
+	me.setChannel2 = function() { setChannel(2); };
+	me.setChannel3 = function() { setChannel(3); };
+	me.setChannel4 = function() { setChannel(4); };
+	me.setChannel5 = function() { setChannel(5); };
+	me.setChannel6 = function() { setChannel(6); };
+	me.setChannel7 = function() { setChannel(7); };
+	me.setChannel8 = function() { setChannel(8); };
 	
 	me.setVolume1 = function() { me.volume(1); };
 	me.setVolume2 = function() { me.volume(2); };
@@ -797,5 +800,20 @@ function Ra180ViewModel() {
 		if (me.currentMenu) {
 			me.currentMenu.refreshDisplay();
 		}
+	}
+
+	function setChannel(value) {
+		me.channel(value);
+		refreshDisplay();
+		refreshContext();
+	}
+
+	function refreshContext() {
+		var ctx = "";
+		if (me.data) {
+			ctx += me.getChannelData().fr();
+		}
+
+		me.context(ctx);
 	}
 }
