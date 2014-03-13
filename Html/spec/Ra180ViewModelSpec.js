@@ -569,6 +569,31 @@
 		});
 
 		describe("KDA", function() {
+
+			beforeEach(function() {
+				ra180.setModSkydd();
+			});
+
+			it("should be possible to disable, and re-enable, KLAR", function () {
+				ra180.sendKey4();
+				ra180.sendKeyAnd();
+				ra180.sendKeyAsterix();
+				ra180.sendKeyAsterix();
+				expect(ra180.display.getPlainText()).toBe("FR:**   ");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toMatch(/^\*\*:[0-9]{5}$/);
+				ra180.sendKeySlt();
+
+				ra180.sendKey4();
+				expect(ra180.display.getPlainText()).toMatch(/^\*\*:[0-9]{5}$/);
+				ra180.sendKeyAnd();
+				ra180.sendKeyAsterix();
+				ra180.sendKeyAsterix();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toMatch(/^FR:[0-9]{5}$/);
+				ra180.sendKeySlt();
+			});
+
 			it("should navigate KDA", function () {
 				ra180.sendKey4();
 				expect(ra180.display.getPlainText()).toMatch(/^FR:[0-9]{5}$/);

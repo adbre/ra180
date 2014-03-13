@@ -24,6 +24,7 @@ function Ra180ChannelData() {
 	me.pny = ko.observable();
 	me.pny2 = ko.observable();
 	me.nyk = ko.observable();
+	me.isKlarDisabled = ko.observable(false);
 
 	me.pny.subscribe(notifySubscribers);
 	me.pny2.subscribe(notifySubscribers);
@@ -437,11 +438,24 @@ function Ra180ViewModel() {
 			title: "KDA",
 			submenus: [
 				{
-					prefix: "FR",
+					prefix: function () {
+						if (me.getChannelData().isKlarDisabled()) {
+							return "**";
+						} else {
+							return "FR";
+						}
+					},
 					maxInputTextLength: 5,
 					canEdit: true,
 					getValue: function () { return me.getChannelData().fr(); },
 					saveInput: function (text) {
+						if (/^\*{2,}$/.exec(text)) {
+							var channelData = me.getChannelData();
+							var isKlarDisabled = channelData.isKlarDisabled();
+							channelData.isKlarDisabled(!isKlarDisabled);
+							return true;
+						}
+
 						if (text.length != 5) {
 							return false;
 						}
