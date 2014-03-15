@@ -48,6 +48,10 @@ function Ra180Menu(options, ra180) {
 	me.currentSubmenuIndex = -1;
 	me.currentSubmenu = null;
 
+	me.close = function() {
+		me.options.completed();
+	};
+
 	me.previousSubmenu = function () {
 		me.currentSubmenuIndex = me.currentSubmenuIndex - 1;
 		me.refreshSubmenu();

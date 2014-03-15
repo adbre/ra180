@@ -282,6 +282,17 @@
 				expect(ra180.display.getPlainText()).toBe("        ");
 			});
 
+			it("should clear display when OFF", function() {
+				ra180.setModKlar();
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				ra180.sendKey4();
+				ra180.setModOff();
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+
 			it ("should not restart self-test when switching between KLAR, SKYDD or DRELAY", function () {
 				ra180.setModKlar();
 				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
@@ -290,6 +301,29 @@
 				expect(ra180.display.getPlainText()).toBe("TEST OK ");
 				ra180.setModDRelay();
 				expect(ra180.display.getPlainText()).toBe("TEST OK ");
+			});
+
+			it("should not start new self-test when already ON", function () {
+				ra180.setModKlar();
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL); // TEST
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL); // TEST OK
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL); // NOLLST
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL); // 
+
+				expect(ra180.display.getPlainText()).toBe("        ");
+				ra180.setModSkydd();
+				expect(ra180.display.getPlainText()).toBe("        ");
+				ra180.setModKlar();
+				expect(ra180.display.getPlainText()).toBe("        ");
+				ra180.setModDRelay();
+				expect(ra180.display.getPlainText()).toBe("        ");
+				ra180.setModKlar();
+				expect(ra180.display.getPlainText()).toBe("        ");
+				ra180.setModSkydd();
+				expect(ra180.display.getPlainText()).toBe("        ");
+				ra180.setModDRelay();
+				expect(ra180.display.getPlainText()).toBe("        ");
+				
 			});
 		});
 		
@@ -593,6 +627,29 @@
 				expect(ra180.display.getPlainText()).toMatch(/^FR:[0-9]{5}$/);
 				ra180.sendKeySlt();
 			});
+
+			it("should not be possible to disable KLAR in KLAR-mod", function () {
+				ra180.setModKlar();
+				ra180.sendKey4();
+				ra180.sendKeyAnd();
+				ra180.sendKeyAsterix();
+				ra180.sendKeyAsterix();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("FR:     ");
+			});
+
+			it("should auto re-enable KLAR while in KLAR-mod", function() {
+				ra180.sendKey4();
+				ra180.sendKeyAnd();
+				ra180.sendKeyAsterix();
+				ra180.sendKeyAsterix();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toMatch(/^\*\*:[0-9]{5}$/);
+				ra180.setModKlar();
+				expect(ra180.display.getPlainText()).toBe("**:00000");
+				ra180.setModSkydd();
+				expect(ra180.display.getPlainText()).toMatch(/^\*\*:[0-9]{5}$/);
+			}); 
 
 			it("should navigate KDA", function () {
 				ra180.sendKey4();

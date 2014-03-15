@@ -321,8 +321,9 @@ function Ra180ViewModel() {
 	me.setMod = function (newValue) {
 		var currentValue = me.mod();
 		me.mod(newValue);
+		refreshDisplay();
 		
-		if (newValue != me.MOD_OFF) {
+		if (newValue != me.MOD_OFF && currentValue == me.MOD_OFF) {
 			var shouldStartAsync = false;
 			if (!me.data) {
 				me.data = new Ra180Data();
@@ -334,6 +335,9 @@ function Ra180ViewModel() {
 				start(newValue, shouldStartAsync);
 			});
 		} else if (newValue == me.MOD_OFF) {
+			if (me.currentMenu) {
+				me.currentMenu.close();
+			}
 			start(newValue, false);
 		}
 	};
@@ -341,6 +345,12 @@ function Ra180ViewModel() {
 	var isExecutingSelfTest = false;
 	function runSelfTest(fn) {
 		if (isExecutingSelfTest) return;
+		function complete() {
+			me.display.setText("");
+			refreshContext();
+			fn();
+			isExecutingSelfTest = false;
+		}
 		isExecutingSelfTest = true;
 		me.display.setText("TEST");
 		me.synchronizationContext.setTimeout(function() {
@@ -352,14 +362,10 @@ function Ra180ViewModel() {
 					me.display.setText("NOLLST");
 					me.synchronizationContext.setTimeout(function() {
 						if (me.mod() == me.MOD_OFF) return;
-						refreshContext();
-						fn();
-						isExecutingSelfTest = false;
+						complete();
 					}, me.SELFTEST_INTERVAL);
 				} else {
-					refreshContext();
-					fn();
-					isExecutingSelfTest = false;
+					complete();
 				}
 			}, me.SELFTEST_INTERVAL);
 		}, me.SELFTEST_INTERVAL);
@@ -447,9 +453,17 @@ function Ra180ViewModel() {
 					},
 					maxInputTextLength: 5,
 					canEdit: true,
-					getValue: function () { return me.getChannelData().fr(); },
+					getValue: function () {
+						var channelData = me.getChannelData();
+						if (channelData.isKlarDisabled() && me.mod() == me.MOD_KLAR) {
+							return "00000";
+						} else {
+							return channelData.fr();
+						}
+					},
 					saveInput: function (text) {
 						if (/^\*{2,}$/.exec(text)) {
+							if (me.mod() == me.MOD_KLAR) return false;
 							var channelData = me.getChannelData();
 							var isKlarDisabled = channelData.isKlarDisabled();
 							channelData.isKlarDisabled(!isKlarDisabled);
@@ -669,7 +683,7 @@ function Ra180ViewModel() {
 		if (key == "RESET") {
 			me.data.reset();
 			me.isEnabled(false);
-			me.setMod(me.mod());
+			runSelfTest(function() {});
 			return;
 		}
 
