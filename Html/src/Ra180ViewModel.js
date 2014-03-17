@@ -490,6 +490,7 @@ function Ra180ViewModel() {
 					getValue: function () {
 						return me.getChannelData().bd1();
 					},
+					hidden: function () { return me.mod() == me.MOD_KLAR; },
 					saveInput: function (text, menu) {
 						if (text.length != 4) {
 							return;
@@ -503,7 +504,10 @@ function Ra180ViewModel() {
 				},
 				{
 					prefix: "BD2",
-					hidden: function () { return me.getChannelData().bd1() == "9000"; },
+					hidden: function () {
+						if (me.mod() == me.MOD_KLAR) return true;
+						return me.getChannelData().bd1() == "9000";
+					},
 					maxInputTextLength: 4,
 					canEdit: true,
 					getValue: function () { return me.getChannelData().bd2(); },
@@ -526,6 +530,7 @@ function Ra180ViewModel() {
 				},
 				{
 					prefix: "SYNK",
+					hidden: function () { return me.mod() == me.MOD_KLAR; },
 					canSelect: function () {
 						return me.data.synk() ? true : false;
 					},
@@ -544,6 +549,7 @@ function Ra180ViewModel() {
 							return "PNY";
 						}
 					},
+					hidden: function () { return me.mod() == me.MOD_KLAR; },
 					canEdit: true,
 					getValue: function () {
 						var pny = me.getChannelData().pny();

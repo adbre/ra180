@@ -620,6 +620,17 @@
 				ra180.setModSkydd();
 			});
 
+			it("should hide BD1,BD2,SYNK and PNY while in KLAR", function () {
+				ra180.setModKlar();
+				ra180.sendKey4();
+				expect(ra180.display.getPlainText()).toMatch(/^FR\:[0-9]{5}$/);
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("  (KDA) ");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+				
+			});
+
 			it("should have correct standard FR values", function () {
 				ra180.sendKey4();
 				ra180.setChannel1();
@@ -1052,6 +1063,7 @@
 
 			describe("when entered passive key", function () {
 				beforeEach(function () {
+					ra180.setModSkydd();
 					enterNewPny();
 				});
 				
