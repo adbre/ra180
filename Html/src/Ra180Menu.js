@@ -23,7 +23,12 @@ function Ra180Menu(options, ra180) {
 		submenu.getValue = submenu.getValue !== undefined ? submenu.getValue : function () { return ""; };
 		submenu.getOptions = submenu.getOptions !== undefined ? submenu.getOptions : function () { return []; };
 		submenu.nextOption = submenu.nextOption !== undefined ? submenu.nextOption : function () { };
+		submenu.hidden = submenu.hidden !== undefined ? submenu.hidden : function () { };
 
+		if (typeof submenu.maxInputTextLength !== 'function') {
+			var maxInputTextLengthValue = submenu.maxInputTextLength;
+			submenu.maxInputTextLength = function () { return maxInputTextLengthValue; }
+		}
 		if (typeof submenu.canEdit !== 'function') {
 			var canEditValue = submenu.canEdit;
 			submenu.canEdit = function () { return canEditValue; };
@@ -65,6 +70,10 @@ function Ra180Menu(options, ra180) {
 	me.refreshSubmenu = function () {
 		if (me.currentSubmenuIndex < me.options.submenus.length) {
 			me.currentSubmenu = getSafeSubmenu(me.options.submenus[me.currentSubmenuIndex]);
+			if (me.currentSubmenu.hidden()) {
+				me.nextSubmenu();
+				return;
+			}
 			me.refreshDisplay();
 		} else if (me.currentSubmenuIndex == me.options.submenus.length) {
 			me.currentSubmenu = undefined;
@@ -133,7 +142,7 @@ function Ra180Menu(options, ra180) {
 		}
 	};
 	me.onKeyChar = function (key) {
-		if (me.inputText.length >= me.currentSubmenu.maxInputTextLength) {
+		if (me.inputText.length >= me.currentSubmenu.maxInputTextLength()) {
 			return;
 		}
 		me.inputText = me.inputText + key;
@@ -180,7 +189,7 @@ function Ra180Menu(options, ra180) {
 		if (me.isEditing) {
 			value = me.inputText;
 			me.ra180.display.setInputText(prefix + ":" + value);
-			if (value.length >= me.currentSubmenu.maxInputTextLength) {
+			if (value.length >= me.currentSubmenu.maxInputTextLength()) {
 				me.ra180.display.setCharacterBlinking(prefix.length + value.length, true);
 			}
 		} else {

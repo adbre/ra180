@@ -139,44 +139,44 @@ function Ra180Data() {
 		me.bel(3);
 	
 		me.channel1.reset();
-		me.channel1.fr("42000");
-		me.channel1.bd1("3040");
-		me.channel1.bd2("5060");
+		me.channel1.fr("30025");
+		me.channel1.bd1("9000");
+		me.channel1.bd2("");
 
 		me.channel2.reset();
-		me.channel2.fr("52000");
-		me.channel2.bd1("3040");
-		me.channel2.bd2("5060");
+		me.channel2.fr("40025");
+		me.channel2.bd1("9000");
+		me.channel2.bd2("");
 
 		me.channel3.reset();
-		me.channel3.fr("62000");
-		me.channel3.bd1("3040");
-		me.channel3.bd2("5060");
+		me.channel3.fr("50025");
+		me.channel3.bd1("9000");
+		me.channel3.bd2("");
 
 		me.channel4.reset();
-		me.channel4.fr("72000");
-		me.channel4.bd1("3040");
-		me.channel4.bd2("5060");
+		me.channel4.fr("60025");
+		me.channel4.bd1("9000");
+		me.channel4.bd2("");
 
 		me.channel5.reset();
-		me.channel5.fr("41125");
-		me.channel5.bd1("3040");
-		me.channel5.bd2("5060");
+		me.channel5.fr("70025");
+		me.channel5.bd1("9000");
+		me.channel5.bd2("");
 
 		me.channel6.reset();
-		me.channel6.fr("51125");
-		me.channel6.bd1("3040");
-		me.channel6.bd2("5060");
+		me.channel6.fr("80025");
+		me.channel6.bd1("9000");
+		me.channel6.bd2("");
 
 		me.channel7.reset();
-		me.channel7.fr("61125");
-		me.channel7.bd1("3040");
-		me.channel7.bd2("5060");
+		me.channel7.fr("87975");
+		me.channel7.bd1("9000");
+		me.channel7.bd2("");
 
 		me.channel8.reset();
-		me.channel8.fr("71125");
-		me.channel8.bd1("3040");
-		me.channel8.bd2("5060");
+		me.channel8.fr("42025");
+		me.channel8.bd1("9000");
+		me.channel8.bd2("");
 
 		me.isEmpty(true);
 	};
@@ -503,6 +503,7 @@ function Ra180ViewModel() {
 				},
 				{
 					prefix: "BD2",
+					hidden: function () { return me.getChannelData().bd1() == "9000"; },
 					maxInputTextLength: 4,
 					canEdit: true,
 					getValue: function () { return me.getChannelData().bd2(); },

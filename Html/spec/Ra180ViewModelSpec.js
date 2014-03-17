@@ -8,7 +8,19 @@
 
 	function enterNewPny() {
 		ra180.sendKey4();
-		ra180.sendKeyEnt(4);
+		ra180.sendKeyAnd();
+		ra180.sendKeys("42000");
+		ra180.sendKeyEnt();
+		ra180.sendKeyEnt();
+		ra180.sendKeyAnd();
+		ra180.sendKeys("3040");
+		ra180.sendKeyEnt();
+		ra180.sendKeys("5060");
+		ra180.sendKeyEnt();
+		ra180.sendKeyEnt(); // spara BD2
+		ra180.sendKeyEnt(); // SYNK
+		ra180.sendKeyEnt(); // PNY=###
+		expect(ra180.display.getPlainText()).toMatch(/^PNY\:.{3} $/);
 		ra180.sendKeyAnd();
 		
 		var calc = new Ra180PnyCalculator();
@@ -230,7 +242,7 @@
 			});
 
 			it("should not display NOLLST if entered KDA", function () {
-				ra180.setModKlar();
+				ra180.setModSkydd();
 				synchronizationContext.tick(ra180.SELFTEST_INTERVAL * 3);
 				enterNewPny();
 				ra180.setModOff();
@@ -243,7 +255,7 @@
 			});
 			
 			it("should perform self-test after RESET", function () {
-				ra180.setModKlar();
+				ra180.setModSkydd();
 				synchronizationContext.tick(ra180.SELFTEST_INTERVAL * 3);
 				enterNewPny();
 				ra180.sendKeyReset();
@@ -608,6 +620,47 @@
 				ra180.setModSkydd();
 			});
 
+			it("should have correct standard FR values", function () {
+				ra180.sendKey4();
+				ra180.setChannel1();
+				expect(ra180.display.getPlainText()).toBe("FR:30025");
+				ra180.setChannel2();
+				expect(ra180.display.getPlainText()).toBe("FR:40025");
+				ra180.setChannel3();
+				expect(ra180.display.getPlainText()).toBe("FR:50025");
+				ra180.setChannel4();
+				expect(ra180.display.getPlainText()).toBe("FR:60025");
+				ra180.setChannel5();
+				expect(ra180.display.getPlainText()).toBe("FR:70025");
+				ra180.setChannel6();
+				expect(ra180.display.getPlainText()).toBe("FR:80025");
+				ra180.setChannel7();
+				expect(ra180.display.getPlainText()).toBe("FR:87975");
+				ra180.setChannel8();
+				expect(ra180.display.getPlainText()).toBe("FR:42025");
+			});
+
+			it("should have correct standard BD1 values", function () {
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				ra180.setChannel1();
+				expect(ra180.display.getPlainText()).toBe("BD1:9000");
+				ra180.setChannel2();
+				expect(ra180.display.getPlainText()).toBe("BD1:9000");
+				ra180.setChannel3();
+				expect(ra180.display.getPlainText()).toBe("BD1:9000");
+				ra180.setChannel4();
+				expect(ra180.display.getPlainText()).toBe("BD1:9000");
+				ra180.setChannel5();
+				expect(ra180.display.getPlainText()).toBe("BD1:9000");
+				ra180.setChannel6();
+				expect(ra180.display.getPlainText()).toBe("BD1:9000");
+				ra180.setChannel7();
+				expect(ra180.display.getPlainText()).toBe("BD1:9000");
+				ra180.setChannel8();
+				expect(ra180.display.getPlainText()).toBe("BD1:9000");
+			});
+
 			it("should be possible to disable, and re-enable, KLAR", function () {
 				ra180.sendKey4();
 				ra180.sendKeyAnd();
@@ -649,15 +702,36 @@
 				expect(ra180.display.getPlainText()).toBe("**:00000");
 				ra180.setModSkydd();
 				expect(ra180.display.getPlainText()).toMatch(/^\*\*:[0-9]{5}$/);
-			}); 
+			});
+
+			it("should not display BD2 when BD1 is 9000", function() {
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).not.toMatch(/^BD2:[0-9]{4}$/);
+			});
+
+			it("should display BD2 when BD1 is not 9000", function() {
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("3040");
+				ra180.sendKeyEnt();
+				ra180.sendKeys("5060");
+				ra180.sendKeyEnt();
+				ra180.sendKeySlt();
+
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toMatch(/^BD2:[0-9]{4}$/);
+			});
 
 			it("should navigate KDA", function () {
 				ra180.sendKey4();
 				expect(ra180.display.getPlainText()).toMatch(/^FR:[0-9]{5}$/);
 				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toMatch(/^BD1:[0-9]{4}$/);
-				ra180.sendKeyEnt();
-				expect(ra180.display.getPlainText()).toMatch(/^BD2:[0-9]{4}$/);
 				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toBe("SYNK=NEJ");
 				ra180.sendKeyEnt();
@@ -683,18 +757,8 @@
 				expect(ra180.display.getPlainText()).toBe("        ");
 			});
 
-			it("should return to main menu on SLT from BD2", function() {
-				ra180.sendKey4();
-				ra180.sendKeyEnt();
-				ra180.sendKeyEnt();
-				expect(ra180.display.getPlainText()).toMatch(/^BD2:[0-9]{4}$/);
-				ra180.sendKeySlt();
-				expect(ra180.display.getPlainText()).toBe("        ");
-			});
-
 			it("should return to main menu on SLT from SYNK", function() {
 				ra180.sendKey4();
-				ra180.sendKeyEnt();
 				ra180.sendKeyEnt();
 				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toBe("SYNK=NEJ");
@@ -704,7 +768,6 @@
 
 			it("should return to main menu on SLT from PNY", function() {
 				ra180.sendKey4();
-				ra180.sendKeyEnt();
 				ra180.sendKeyEnt();
 				ra180.sendKeyEnt();
 				ra180.sendKeyEnt();
@@ -719,7 +782,6 @@
 				ra180.sendKeyEnt();
 				ra180.sendKeyEnt();
 				ra180.sendKeyEnt();
-				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toBe("  (KDA) ");
 				ra180.sendKeySlt();
 				expect(ra180.display.getPlainText()).toBe("        ");
@@ -728,7 +790,6 @@
 			it("should allow modification of SYNK when in sync", function() {
 				ra180.data.synk(true);
 				ra180.sendKey4();
-				ra180.sendKeyEnt();
 				ra180.sendKeyEnt();
 				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toBe("SYNK:JA ");
@@ -821,6 +882,11 @@
 			it("should modify BD1 on AND for BD2", function () {
 				ra180.sendKey4();
 				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("3040");
+				ra180.sendKeyEnt();
+				ra180.sendKeys("5060");
+				ra180.sendKeyEnt();
 				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toMatch(/^BD2:[0-9]{4}$/);
 				ra180.sendKeyAnd();
@@ -830,7 +896,6 @@
 			it("should modify PNY via PN1-8", function () {
 				ra180.sendKey4();   // FR
 				ra180.sendKeyEnt(); // BD1
-				ra180.sendKeyEnt(); // BD2
 				ra180.sendKeyEnt(); // SYNK
 				ra180.sendKeyEnt(); // PNY=###
 				ra180.sendKeyAnd();
@@ -886,7 +951,6 @@
 				ra180.sendKeySlt();
 				ra180.sendKey4();   // FR
 				ra180.sendKeyEnt(); // BD1
-				ra180.sendKeyEnt(); // BD2
 				ra180.sendKeyEnt(); // SYNK
 				ra180.sendKeyEnt(); // PNY=###
 				expect(ra180.display.getPlainText()).toMatch(/^PNY:[0-9]{3} $/);
