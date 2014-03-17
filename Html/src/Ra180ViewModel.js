@@ -1,188 +1,4 @@
-﻿
-function zeroFill( number, width )
-{
-  width -= number.toString().length;
-  if ( width > 0 )
-  {
-    return new Array( width + (/\./.test( number ) ? 2 : 1) ).join( '0' ) + number;
-  }
-  return number + ""; // always return a string
-}
-
-function Ra180DisplayCharacter() {
-	var me = this;
-	me.character = ko.observable(" ");
-	me.isBlinking = ko.observable(false);
-	me.hasUnderscore = ko.observable(false);
-}
-
-function Ra180ChannelData() {
-	var me = this;
-	var subscribers = [];
-	me.fr = ko.observable();
-	me.bd1 = ko.observable();
-	me.bd2 = ko.observable();
-	me.pny = ko.observable();
-	me.pny2 = ko.observable();
-	me.nyk = ko.observable();
-	me.isKlarDisabled = ko.observable(false);
-
-	me.pny.subscribe(notifySubscribers);
-	me.pny2.subscribe(notifySubscribers);
-	me.nyk.subscribe(notifySubscribers);
-	
-	me.reset = function () {
-		me.fr("");
-		me.bd1("");
-		me.bd2("");
-		me.pny("");
-		me.pny2("");
-		me.nyk("");
-	}
-
-	me.subscribe = function (fn) {
-		subscribers.push(fn);
-	};
-
-	function notifySubscribers() {
-		for (var i=0; i < subscribers.length; i++) {
-			var subscriber = subscribers[i];
-			subscriber();
-		}
-	}
-}
-
-function Ra180Data() {
-	var me = this;
-	me.tid = ko.observable("000000");
-	me.dat = ko.observable("0101");
-
-	me.synk = ko.observable();
-	me.eff = ko.observable();
-	me.sdx = ko.observable();
-	me.opmtn = ko.observable();
-	me.rap = ko.observable();
-
-	me.channel1 = new Ra180ChannelData();
-	me.channel2 = new Ra180ChannelData();
-	me.channel3 = new Ra180ChannelData();
-	me.channel4 = new Ra180ChannelData();
-	me.channel5 = new Ra180ChannelData();
-	me.channel6 = new Ra180ChannelData();
-	me.channel7 = new Ra180ChannelData();
-	me.channel8 = new Ra180ChannelData();
-
-	me.isEmpty = ko.observable(true);
-	
-	function setNotEmpty() {
-		me.isEmpty(false);
-	}
-	
-	me.channel1.subscribe(setNotEmpty);
-	me.channel2.subscribe(setNotEmpty);
-	me.channel3.subscribe(setNotEmpty);
-	me.channel4.subscribe(setNotEmpty);
-	me.channel5.subscribe(setNotEmpty);
-	me.channel6.subscribe(setNotEmpty);
-	me.channel7.subscribe(setNotEmpty);
-	me.channel8.subscribe(setNotEmpty);
-
-	me.tick = function () {
-		var reTid = /([0-9]{2})([0-9]{2})([0-9]{2})/;
-		var reDat = /([0-9]{2})([0-9]{2})/;
-		var match;
-		match = reDat.exec(me.dat());
-		var month = parseInt(match[1]);
-		var date = parseInt(match[2]);
-		match = reTid.exec(me.tid());
-		var hour = parseInt(match[1]);
-		var minute = parseInt(match[2]);
-		var second = parseInt(match[3]);
-		second++;
-		if (second == 60) {
-			second = 0;
-			minute++;
-		}
-		if (minute == 60) {
-			minute = 0;
-			hour++;
-		}
-		if (hour == 24) {
-			hour = 0;
-			date++;
-		}
-
-		if (date > 31) {
-			date = 1;
-			month++;
-		}
-		if (month > 12) {
-			month = 1;
-		}
-
-		month = zeroFill(month, 2);
-		date = zeroFill(date, 2);
-		hour = zeroFill(hour, 2);
-		minute = zeroFill(minute, 2);
-		second = zeroFill(second, 2);
-
-		me.tid(hour + minute + second);
-		me.dat(month + date);
-	};
-
-	me.reset = function () {
-		me.synk(false);
-		me.eff("LÅG");
-		me.sdx(false);
-		me.opmtn(false);
-		me.rap("UPPK");
-	
-		me.channel1.reset();
-		me.channel1.fr("30025");
-		me.channel1.bd1("9000");
-		me.channel1.bd2("");
-
-		me.channel2.reset();
-		me.channel2.fr("40025");
-		me.channel2.bd1("9000");
-		me.channel2.bd2("");
-
-		me.channel3.reset();
-		me.channel3.fr("50025");
-		me.channel3.bd1("9000");
-		me.channel3.bd2("");
-
-		me.channel4.reset();
-		me.channel4.fr("60025");
-		me.channel4.bd1("9000");
-		me.channel4.bd2("");
-
-		me.channel5.reset();
-		me.channel5.fr("70025");
-		me.channel5.bd1("9000");
-		me.channel5.bd2("");
-
-		me.channel6.reset();
-		me.channel6.fr("80025");
-		me.channel6.bd1("9000");
-		me.channel6.bd2("");
-
-		me.channel7.reset();
-		me.channel7.fr("87975");
-		me.channel7.bd1("9000");
-		me.channel7.bd2("");
-
-		me.channel8.reset();
-		me.channel8.fr("42025");
-		me.channel8.bd1("9000");
-		me.channel8.bd2("");
-
-		me.isEmpty(true);
-	};
-}
-
-
-function Ra180ViewModel() {
+﻿function Ra180ViewModel() {
 	var me = this;
 	me.MOD_OFF = 3;
 	me.MOD_KLAR = 4;
@@ -685,7 +501,7 @@ function Ra180ViewModel() {
 		}
 
 		if (me.mod() != me.MOD_OFF && key == "BEL") {
-			toggleBrightness();
+			me.display.toggleBrightness();
 			return;
 		}
 
@@ -862,5 +678,185 @@ function Ra180ViewModel() {
 		}
 
 		me.context(ctx);
+	}
+
+	function zeroFill( number, width ) {
+		width -= number.toString().length;
+		if (width > 0) {
+			return new Array(width + (/\./.test( number ) ? 2 : 1)).join('0') + number;
+		}
+		return number + ""; // always return a string
+	}
+
+	function Ra180DisplayCharacter() {
+		var me = this;
+		me.character = ko.observable(" ");
+		me.isBlinking = ko.observable(false);
+		me.hasUnderscore = ko.observable(false);
+	}
+
+	function Ra180ChannelData() {
+		var me = this;
+		var subscribers = [];
+		me.fr = ko.observable();
+		me.bd1 = ko.observable();
+		me.bd2 = ko.observable();
+		me.pny = ko.observable();
+		me.pny2 = ko.observable();
+		me.nyk = ko.observable();
+		me.isKlarDisabled = ko.observable(false);
+
+		me.pny.subscribe(notifySubscribers);
+		me.pny2.subscribe(notifySubscribers);
+		me.nyk.subscribe(notifySubscribers);
+		
+		me.reset = function () {
+			me.fr("");
+			me.bd1("");
+			me.bd2("");
+			me.pny("");
+			me.pny2("");
+			me.nyk("");
+		}
+
+		me.subscribe = function (fn) {
+			subscribers.push(fn);
+		};
+
+		function notifySubscribers() {
+			for (var i=0; i < subscribers.length; i++) {
+				var subscriber = subscribers[i];
+				subscriber();
+			}
+		}
+	}
+
+	function Ra180Data() {
+		var me = this;
+		me.tid = ko.observable("000000");
+		me.dat = ko.observable("0101");
+
+		me.synk = ko.observable();
+		me.eff = ko.observable();
+		me.sdx = ko.observable();
+		me.opmtn = ko.observable();
+		me.rap = ko.observable();
+
+		me.channel1 = new Ra180ChannelData();
+		me.channel2 = new Ra180ChannelData();
+		me.channel3 = new Ra180ChannelData();
+		me.channel4 = new Ra180ChannelData();
+		me.channel5 = new Ra180ChannelData();
+		me.channel6 = new Ra180ChannelData();
+		me.channel7 = new Ra180ChannelData();
+		me.channel8 = new Ra180ChannelData();
+
+		me.isEmpty = ko.observable(true);
+		
+		function setNotEmpty() {
+			me.isEmpty(false);
+		}
+		
+		me.channel1.subscribe(setNotEmpty);
+		me.channel2.subscribe(setNotEmpty);
+		me.channel3.subscribe(setNotEmpty);
+		me.channel4.subscribe(setNotEmpty);
+		me.channel5.subscribe(setNotEmpty);
+		me.channel6.subscribe(setNotEmpty);
+		me.channel7.subscribe(setNotEmpty);
+		me.channel8.subscribe(setNotEmpty);
+
+		me.tick = function () {
+			var reTid = /([0-9]{2})([0-9]{2})([0-9]{2})/;
+			var reDat = /([0-9]{2})([0-9]{2})/;
+			var match;
+			match = reDat.exec(me.dat());
+			var month = parseInt(match[1]);
+			var date = parseInt(match[2]);
+			match = reTid.exec(me.tid());
+			var hour = parseInt(match[1]);
+			var minute = parseInt(match[2]);
+			var second = parseInt(match[3]);
+			second++;
+			if (second == 60) {
+				second = 0;
+				minute++;
+			}
+			if (minute == 60) {
+				minute = 0;
+				hour++;
+			}
+			if (hour == 24) {
+				hour = 0;
+				date++;
+			}
+
+			if (date > 31) {
+				date = 1;
+				month++;
+			}
+			if (month > 12) {
+				month = 1;
+			}
+
+			month = zeroFill(month, 2);
+			date = zeroFill(date, 2);
+			hour = zeroFill(hour, 2);
+			minute = zeroFill(minute, 2);
+			second = zeroFill(second, 2);
+
+			me.tid(hour + minute + second);
+			me.dat(month + date);
+		};
+
+		me.reset = function () {
+			me.synk(false);
+			me.eff("LÅG");
+			me.sdx(false);
+			me.opmtn(false);
+			me.rap("UPPK");
+		
+			me.channel1.reset();
+			me.channel1.fr("30025");
+			me.channel1.bd1("9000");
+			me.channel1.bd2("");
+
+			me.channel2.reset();
+			me.channel2.fr("40025");
+			me.channel2.bd1("9000");
+			me.channel2.bd2("");
+
+			me.channel3.reset();
+			me.channel3.fr("50025");
+			me.channel3.bd1("9000");
+			me.channel3.bd2("");
+
+			me.channel4.reset();
+			me.channel4.fr("60025");
+			me.channel4.bd1("9000");
+			me.channel4.bd2("");
+
+			me.channel5.reset();
+			me.channel5.fr("70025");
+			me.channel5.bd1("9000");
+			me.channel5.bd2("");
+
+			me.channel6.reset();
+			me.channel6.fr("80025");
+			me.channel6.bd1("9000");
+			me.channel6.bd2("");
+
+			me.channel7.reset();
+			me.channel7.fr("87975");
+			me.channel7.bd1("9000");
+			me.channel7.bd2("");
+
+			me.channel8.reset();
+			me.channel8.fr("42025");
+			me.channel8.bd1("9000");
+			me.channel8.bd2("");
+
+			me.isEmpty(true);
+		};
 	}
 }
