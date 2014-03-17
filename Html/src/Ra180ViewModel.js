@@ -61,7 +61,6 @@ function Ra180Data() {
 	me.sdx = ko.observable();
 	me.opmtn = ko.observable();
 	me.rap = ko.observable();
-	me.bel = ko.observable();
 
 	me.channel1 = new Ra180ChannelData();
 	me.channel2 = new Ra180ChannelData();
@@ -136,7 +135,6 @@ function Ra180Data() {
 		me.sdx(false);
 		me.opmtn(false);
 		me.rap("UPPK");
-		me.bel(3);
 	
 		me.channel1.reset();
 		me.channel1.fr("30025");
@@ -222,6 +220,15 @@ function Ra180ViewModel() {
 		char6: new Ra180DisplayCharacter(),
 		char7: new Ra180DisplayCharacter(),
 		char8: new Ra180DisplayCharacter(),
+
+		brightness: ko.observable(5),
+
+		toggleBrightness: function () {
+			var value = me.display.brightness();
+			value++;
+			if (value > 5) value = 0;
+			me.display.brightness(value);
+		},
 		
 		getPlainText: function () {
 			var result = "";
@@ -370,10 +377,6 @@ function Ra180ViewModel() {
 			}, me.SELFTEST_INTERVAL);
 		}, me.SELFTEST_INTERVAL);
 	}
-
-	me.getVredClass = function(value) {
-		return "vred-0" + value;
-	};
 
 	me.getChannelData = function () {
 		switch (me.channel()) {
@@ -680,6 +683,11 @@ function Ra180ViewModel() {
 			return;
 		}
 
+		if (me.mod() != me.MOD_OFF && key == "BEL") {
+			toggleBrightness();
+			return;
+		}
+
 		if (!me.isEnabled()) return;
 		if (me.mod() == me.MOD_DEBUG) {
 			me.display.setText(key);
@@ -691,11 +699,6 @@ function Ra180ViewModel() {
 			me.data.reset();
 			me.isEnabled(false);
 			runSelfTest(function() {});
-			return;
-		}
-
-		if (key == "BEL") {
-			toggleBel();
 			return;
 		}
 		
@@ -736,20 +739,6 @@ function Ra180ViewModel() {
 			me.sendKey(c);
 		});
 	};
-
-	me.channelVred = ko.computed(function() { return me.getVredClass(me.channel()); }, me);
-	me.volumeVred = ko.computed(function() { return me.getVredClass(me.volume()); }, me);
-	me.modVred = ko.computed(function() { return me.getVredClass(me.mod()); }, me);
-	me.displayLight = ko.computed(function() {
-		return "ra180-display-bel" + me.bel();
-	}, me);
-
-	function toggleBel() {
-		var bel = me.bel();
-		bel++;
-		if (bel > 5) bel = 0;
-		me.bel(bel);
-	}
 	
 	me.setChannel1 = function() { setChannel(1); };
 	me.setChannel2 = function() { setChannel(2); };
@@ -804,6 +793,7 @@ function Ra180ViewModel() {
 			case me.MOD_DRELAY: me.setModOff(); break;
 		}
 	};
+
 	me.sendKeyChannel = function () {
 		switch (me.channel())
 		{
@@ -817,6 +807,7 @@ function Ra180ViewModel() {
 			case 8: me.setChannel1(); break;
 		}
 	};
+
 	me.sendKeyVolume = function () {
 		switch (me.volume())
 		{
@@ -829,6 +820,26 @@ function Ra180ViewModel() {
 			case 7: me.setVolume8(); break;
 			case 8: me.setVolume1(); break;
 		}
+	};
+
+	me.css = new function() {
+		var self = this;
+		
+		self.brightness = ko.computed(function() {
+			return "ra180-display-bel" + me.display.brightness();
+		}, me.display);
+		
+		self.channel = ko.computed(function() {
+			return "vred-0" + me.channel();
+		}, self);
+
+		self.volume = ko.computed(function() {
+			return "vred-0"+ me.volume();
+		}, self);
+
+		self.mod = ko.computed(function() {
+			return "vred-0"+ me.mod();
+		}, self);
 	};
 
 	function refreshDisplay() {

@@ -27,7 +27,7 @@
 			<h1>Ra180 Simulering</h1>
 		</div>
 		<div id="ra180" class="ra180">
-			<div class="ra180-display" data-bind="css: displayLight">
+			<div class="ra180-display" data-bind="css: css.brightness">
 				<div class="text">
 					<span data-bind="css: {'blink': display.char1.isBlinking}, text: display.char1.character"></span>
 					<span data-bind="css: {'blink': display.char2.isBlinking}, text: display.char2.character"></span>
@@ -85,7 +85,7 @@
 				</div>
 			</div>
 			<div class="channel-mod">
-				<div class="channel" data-bind="css: channelVred">
+				<div class="channel" data-bind="css: css.channel">
 					<button id="channel-1" title="Kanal 1" data-bind="click: setChannel1">1</button>
 					<button id="channel-2" title="Kanal 2" data-bind="click: setChannel2">2</button>
 					<button id="channel-3" title="Kanal 3" data-bind="click: setChannel3">3</button>
@@ -96,7 +96,7 @@
 					<button id="channel-8" title="Kanal 8" data-bind="click: setChannel8">8</button>
 					<button id="channel-toggle"title="Byt kanal" data-bind="click: sendKeyChannel"></button>
 				</div>
-				<div class="mod" data-bind="css: modVred">
+				<div class="mod" data-bind="css: css.mod">
 					<button id="mod-off" title="FR&Aring;N" data-bind="click: setModOff">FR&Aring;N</button>
 					<button id="mod-klar" title="KLAR" data-bind="click: setModKlar">KLAR</button>
 					<button id="mod-skydd" title="SKYDD" data-bind="click: setModSkydd">SKYDD</button>
@@ -104,7 +104,7 @@
 					<button id="mod-toggle" title="Byt kanal" data-bind="click: sendKeyMod"></button>
 				</div>
 			</div>
-			<div class="volume" data-bind="css: volumeVred">
+			<div class="volume" data-bind="css: css.volume">
 				<button id="volume-1" title="Volym 1" data-bind="click: setVolume1">1</button>
 				<button id="volume-2" title="Volym 2" data-bind="click: setVolume2">2</button>
 				<button id="volume-3" title="Volym 3" data-bind="click: setVolume3">3</button>

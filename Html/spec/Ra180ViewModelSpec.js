@@ -335,7 +335,58 @@
 				expect(ra180.display.getPlainText()).toBe("        ");
 				ra180.setModDRelay();
 				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+
+			it("should not be possible to modify brightness while OFF", function () {
+				var initialValue = ra180.display.brightness();
+				ra180.sendKeyBel();
+				expect(ra180.display.brightness()).toBe(initialValue);
+			});
+
+			it("should be possible to modify brightness during self-test", function () {
+				var initialValue = ra180.display.brightness();
+				ra180.setModKlar();
+				ra180.sendKeyBel();
+				expect(ra180.display.brightness()).not.toBe(initialValue);
+			});
+
+			it("should not reset brightness", function () {
+				ra180.setModKlar();
+				ra180.sendKeyBel();
+				var expected = ra180.display.brightness();
+				ra180.sendKeyReset();
+				expect(ra180.display.brightness()).toBe(expected);
+			});
+
+			it("should be possible to change brightness at least 5 times", function () {
+				var initialValue = ra180.display.brightness();
+				var lastValue = initialValue;
+				ra180.setModKlar();
 				
+				ra180.sendKeyBel();
+				expect(ra180.display.brightness()).not.toBe(initialValue);
+				expect(ra180.display.brightness()).not.toBe(lastValue);
+				lastValue = ra180.display.brightness();
+				
+				ra180.sendKeyBel();
+				expect(ra180.display.brightness()).not.toBe(initialValue);
+				expect(ra180.display.brightness()).not.toBe(lastValue);
+				lastValue = ra180.display.brightness();
+				
+				ra180.sendKeyBel();
+				expect(ra180.display.brightness()).not.toBe(initialValue);
+				expect(ra180.display.brightness()).not.toBe(lastValue);
+				lastValue = ra180.display.brightness();
+				
+				ra180.sendKeyBel();
+				expect(ra180.display.brightness()).not.toBe(initialValue);
+				expect(ra180.display.brightness()).not.toBe(lastValue);
+				lastValue = ra180.display.brightness();
+				
+				ra180.sendKeyBel();
+				expect(ra180.display.brightness()).not.toBe(initialValue);
+				expect(ra180.display.brightness()).not.toBe(lastValue);
+				lastValue = ra180.display.brightness();
 			});
 		});
 		
