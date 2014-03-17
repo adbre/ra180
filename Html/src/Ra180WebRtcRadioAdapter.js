@@ -14,7 +14,7 @@ function Ra180WebRtcRadioAdapter(ra180, radio) {
 
 	me.ra180.isEnabled.subscribe(onRa180ModChanged);
 	me.ra180.context.subscribe(function () {
-		me.radio.changeContext(me.ra180.context());
+		//me.radio.changeContext(me.ra180.context());
 	});
 
 	onRa180ModChanged();

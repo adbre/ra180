@@ -114,7 +114,7 @@ function WebRtcRadio(options) {
 			rtc.bind(XSockets.WebRTC.Events.onContextChange, onContextChange);
 
 			rtc.getUserMedia({audio: true}, function () {
-				me.changeContext(myCtx);
+				me.changeContext(mainCtx);
 			});
 
 			me.receive();
