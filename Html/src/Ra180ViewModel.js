@@ -18,197 +18,14 @@
 	me.isEnabled = ko.observable(false);
 	me.context = ko.observable();
 	
-	me.pnyCalc = new Ra180PnyCalculator();
 	me.synchronizationContext = undefined;
 
-	function tick() {
-		me.data.tick();
-		if (me.currentMenu) {
-			me.currentMenu.refreshDisplay();
-		}
-	}
-	
-	me.display = {
-		char1: new Ra180DisplayCharacter(),
-		char2: new Ra180DisplayCharacter(),
-		char3: new Ra180DisplayCharacter(),
-		char4: new Ra180DisplayCharacter(),
-		char5: new Ra180DisplayCharacter(),
-		char6: new Ra180DisplayCharacter(),
-		char7: new Ra180DisplayCharacter(),
-		char8: new Ra180DisplayCharacter(),
+	me.display = new Ra180Display();
 
-		brightness: ko.observable(5),
+	var pnyCalculator = new Ra180PnyCalculator();
+	var currentMenu = null;
 
-		toggleBrightness: function () {
-			var value = me.display.brightness();
-			value++;
-			if (value > 5) value = 0;
-			me.display.brightness(value);
-		},
-		
-		getPlainText: function () {
-			var result = "";
-			result += me.display.char1.character();
-			result += me.display.char2.character();
-			result += me.display.char3.character();
-			result += me.display.char4.character();
-			result += me.display.char5.character();
-			result += me.display.char6.character();
-			result += me.display.char7.character();
-			result += me.display.char8.character();
-			return result;
-		},
-
-		setInputText: function (text) {
-			me.display.setText(text);
-			me.display.char8.hasUnderscore(text.length >= 7);
-			me.display.char7.hasUnderscore(text.length == 6);
-			me.display.char6.hasUnderscore(text.length == 5);
-			me.display.char5.hasUnderscore(text.length == 4);
-			me.display.char4.hasUnderscore(text.length == 3);
-			me.display.char3.hasUnderscore(text.length == 2);
-			me.display.char2.hasUnderscore(text.length == 1);
-			me.display.char1.hasUnderscore(text.length == 0);
-			me.display.char8.isBlinking(text.length >= 8);
-			me.display.char1.isBlinking(text.length > 0 && text[0] == ":");
-			me.display.char2.isBlinking(text.length > 1 && text[1] == ":");
-			me.display.char3.isBlinking(text.length > 2 && text[2] == ":");
-			me.display.char4.isBlinking(text.length > 3 && text[3] == ":");
-			me.display.char5.isBlinking(text.length > 4 && text[5] == ":");
-			me.display.char6.isBlinking(text.length > 5 && text[5] == ":");
-			me.display.char7.isBlinking(text.length > 6 && text[6] == ":");
-			me.display.char8.isBlinking(text.length > 7 && text[7] == ":");
-		},
-		
-		setText: function (text) {
-			me.display.char1.character(text.length > 0 ? text[0] : " ");
-			me.display.char2.character(text.length > 1 ? text[1] : " ");
-			me.display.char3.character(text.length > 2 ? text[2] : " ");
-			me.display.char4.character(text.length > 3 ? text[3] : " ");
-			me.display.char5.character(text.length > 4 ? text[4] : " ");
-			me.display.char6.character(text.length > 5 ? text[5] : " ");
-			me.display.char7.character(text.length > 6 ? text[6] : " ");
-			me.display.char8.character(text.length > 7 ? text[7] : " ");
-			me.display.setInputPos(-1);
-		},
-
-		getCharacter: function (pos) {
-			switch (pos) {
-				case 0: return me.display.char1; break;
-				case 1: return me.display.char2; break;
-				case 2: return me.display.char3; break;
-				case 3: return me.display.char4; break;
-				case 4: return me.display.char5; break;
-				case 5: return me.display.char6; break;
-				case 6: return me.display.char7; break;
-				case 7: return me.display.char8; break;
-			}
-		},
-
-		setCharacterBlinking: function (pos, value) {
-			var character = me.display.getCharacter(pos);
-			if (!character) {
-				return;
-			}
-			character.isBlinking(value);
-		},
-		
-		setInputPos: function (pos) {
-			me.display.setCharacterBlinking(0, pos == 0);
-			me.display.setCharacterBlinking(1, pos == 1);
-			me.display.setCharacterBlinking(2, pos == 2);
-			me.display.setCharacterBlinking(3, pos == 3);
-			me.display.setCharacterBlinking(4, pos == 4);
-			me.display.setCharacterBlinking(5, pos == 5);
-			me.display.setCharacterBlinking(6, pos == 6);
-			me.display.setCharacterBlinking(7, pos == 7);
-			me.display.char1.hasUnderscore(pos == 0);
-			me.display.char2.hasUnderscore(pos == 1);
-			me.display.char3.hasUnderscore(pos == 2);
-			me.display.char4.hasUnderscore(pos == 3);
-			me.display.char5.hasUnderscore(pos == 4);
-			me.display.char6.hasUnderscore(pos == 5);
-			me.display.char7.hasUnderscore(pos == 6);
-			me.display.char8.hasUnderscore(pos == 7);
-		}
-	};
-
-	function start(mod, shouldStartAsync) {
-		me.display.setText("");
-		if (shouldStartAsync) {
-			me.synchronizationContext.setInterval(tick, 1000);
-		}
-		me.isEnabled(mod != me.MOD_OFF);
-	}
-	
-	me.setMod = function (newValue) {
-		var currentValue = me.mod();
-		me.mod(newValue);
-		refreshDisplay();
-		
-		if (newValue != me.MOD_OFF && currentValue == me.MOD_OFF) {
-			var shouldStartAsync = false;
-			if (!me.data) {
-				me.data = new Ra180Data();
-				me.data.reset();
-				shouldStartAsync = true;
-			}
-			
-			runSelfTest(function() {
-				start(newValue, shouldStartAsync);
-			});
-		} else if (newValue == me.MOD_OFF) {
-			if (me.currentMenu) {
-				me.currentMenu.close();
-			}
-			start(newValue, false);
-		}
-	};
-
-	var isExecutingSelfTest = false;
-	function runSelfTest(fn) {
-		if (isExecutingSelfTest) return;
-		function complete() {
-			me.display.setText("");
-			refreshContext();
-			fn();
-			isExecutingSelfTest = false;
-		}
-		isExecutingSelfTest = true;
-		me.display.setText("TEST");
-		me.synchronizationContext.setTimeout(function() {
-			if (me.mod() == me.MOD_OFF) return;
-			me.display.setText("TEST OK");
-			me.synchronizationContext.setTimeout(function() {
-				if (me.mod() == me.MOD_OFF) return;
-				if (me.data.isEmpty()) {
-					me.display.setText("NOLLST");
-					me.synchronizationContext.setTimeout(function() {
-						if (me.mod() == me.MOD_OFF) return;
-						complete();
-					}, me.SELFTEST_INTERVAL);
-				} else {
-					complete();
-				}
-			}, me.SELFTEST_INTERVAL);
-		}, me.SELFTEST_INTERVAL);
-	}
-
-	me.getChannelData = function () {
-		switch (me.channel()) {
-			case 1: return me.data.channel1;
-			case 2: return me.data.channel2;
-			case 3: return me.data.channel3;
-			case 4: return me.data.channel4;
-			case 5: return me.data.channel5;
-			case 6: return me.data.channel6;
-			case 7: return me.data.channel7;
-			case 8: return me.data.channel8;
-		}
-	};
-
-	me.menuOptions = {
+	var menuOptions = {
 		tid: {
 			title: "TID",
 			submenus: [
@@ -265,7 +82,7 @@
 			submenus: [
 				{
 					prefix: function () {
-						if (me.getChannelData().isKlarDisabled()) {
+						if (getChannelData().isKlarDisabled()) {
 							return "**";
 						} else {
 							return "FR";
@@ -274,7 +91,7 @@
 					maxInputTextLength: 5,
 					canEdit: true,
 					getValue: function () {
-						var channelData = me.getChannelData();
+						var channelData = getChannelData();
 						if (channelData.isKlarDisabled() && me.mod() == me.MOD_KLAR) {
 							return "00000";
 						} else {
@@ -284,7 +101,7 @@
 					saveInput: function (text) {
 						if (/^\*{2,}$/.exec(text)) {
 							if (me.mod() == me.MOD_KLAR) return false;
-							var channelData = me.getChannelData();
+							var channelData = getChannelData();
 							var isKlarDisabled = channelData.isKlarDisabled();
 							channelData.isKlarDisabled(!isKlarDisabled);
 							return true;
@@ -299,7 +116,7 @@
 							return false;
 						}
 						
-						me.getChannelData().fr(text);
+						getChannelData().fr(text);
 						return true;
 					}
 				},
@@ -308,7 +125,7 @@
 					maxInputTextLength: 4,
 					canEdit: true,
 					getValue: function () {
-						return me.getChannelData().bd1();
+						return getChannelData().bd1();
 					},
 					hidden: function () { return me.mod() == me.MOD_KLAR; },
 					saveInput: function (text, menu) {
@@ -316,7 +133,7 @@
 							return;
 						}
 
-						me.getChannelData().bd1(text);
+						getChannelData().bd1(text);
 						menu.stopInput();
 						menu.nextSubmenu();
 						return false;
@@ -326,17 +143,17 @@
 					prefix: "BD2",
 					hidden: function () {
 						if (me.mod() == me.MOD_KLAR) return true;
-						return me.getChannelData().bd1() == "9000";
+						return getChannelData().bd1() == "9000";
 					},
 					maxInputTextLength: 4,
 					canEdit: true,
-					getValue: function () { return me.getChannelData().bd2(); },
+					getValue: function () { return getChannelData().bd2(); },
 					saveInput: function (text, menu) {
 						if (text.length != 4) {
 							return false;
 						}
 
-						me.getChannelData().bd2(text);
+						getChannelData().bd2(text);
 						menu.previousSubmenu();
 						return true;
 					},
@@ -372,7 +189,7 @@
 					hidden: function () { return me.mod() == me.MOD_KLAR; },
 					canEdit: true,
 					getValue: function () {
-						var pny = me.getChannelData().pny();
+						var pny = getChannelData().pny();
 						if (pny && pny.length == 3) {
 							return pny;
 						} else {
@@ -388,7 +205,7 @@
 					saveInput: function (text, menu) {
 						var self = menu.currentSubmenu;
 
-						if (!me.pnyCalc.isValidPn(text)) {
+						if (!pnyCalculator.isValidPn(text)) {
 							return false;
 						}
 
@@ -396,8 +213,8 @@
 						self.pnIndex = self.pnIndex + 1;
 
 						if (self.pnIndex == self.pn.length) {
-							var pny = me.pnyCalc.calculatePny(self.pn);
-							me.getChannelData().pny(pny);
+							var pny = pnyCalculator.calculatePny(self.pn);
+							getChannelData().pny(pny);
 							return true;
 						}
 
@@ -419,24 +236,24 @@
 					prefix: "NYK",
 					canEdit: false,
 					canSelect: function () {
-						var pny = me.getChannelData().pny();
-						var nyk = me.getChannelData().nyk();
+						var pny = getChannelData().pny();
+						var nyk = getChannelData().nyk();
 						return (pny && pny.length == 3) || (nyk && nyk.length == 3);
 					},
 					getValue: function (index) {
-						var nyk = me.getChannelData().nyk();
+						var nyk = getChannelData().nyk();
 						return (nyk && nyk.length == 3) ? nyk : "###";
 					},
 					nextOption: function (index) {
-						var channeldata = me.getChannelData();
+						var channeldata = getChannelData();
 						var nyk = channeldata.nyk();
 						var pny = channeldata.pny();
 						channeldata.nyk(pny);
 						channeldata.pny(nyk);
 					},
 					getOptions: function () {
-						var pny = me.getChannelData().pny();
-						var pny2 = me.getChannelData().pny2();
+						var pny = getChannelData().pny();
+						var pny2 = getChannelData().pny2();
 						var result = new Array();
 						if (pny) {
 							result.push(pny);
@@ -452,42 +269,47 @@
 		},
 		tjk: {
 			title: "TJK"
+		},
+		eff: new function() {
+			var self = this;
+
+			function nextEffValue(value) {
+				switch (value) {
+					case me.EFF_LOW: return me.EFF_NRM;
+					case me.EFF_NRM: return me.EFF_HIG;
+					case me.EFF_HIG: return me.EFF_LOW;
+					default: return me.EFF_LOW;
+				}
+			}
+
+			self.isStandAlone = true;
+			self.prefix = "EFF";
+
+			self.getValue = function () {
+				return me.eff();
+			};
+
+			self.sendKey = function (key) {
+				if (key == "SLT") {
+					self.completed();
+				}
+				
+				if (key == "EFF") {
+					var currentValue = me.eff();
+					var nextValue = nextEffValue(currentValue);
+					me.eff(nextValue);
+					self.refreshDisplay();
+				}
+			};
+
+			self.refreshDisplay = function () {
+				var text = self.prefix + ":" + self.getValue();
+				me.display.setText(text);
+			};
+
+			self.completed = function() {};
 		}
 	};
-	
-	me.effMenu = new function () {
-		var self = this;
-		self.sendKey = function (key) {
-			if (key == "SLT") {
-				self.completed();
-				return;
-			}
-
-			if (key == "EFF") {
-				var eff = me.eff();
-				switch (eff) {
-					case me.EFF_LOW: eff = me.EFF_NRM; break;
-					case me.EFF_NRM: eff = me.EFF_HIG; break;
-					case me.EFF_HIG: eff = me.EFF_LOW; break;
-					default: eff = me.EFF_LOW; break;
-				}
-				me.eff(eff);
-				self.refreshDisplay();
-			}
-		};
-		self.refreshDisplay = function () {
-			me.display.setText("EFF:" + me.eff());
-		};
-		self.completed = function () {
-		};
-	};
-
-	me.currentMenu = null;
-
-	function closeMenu() {		
-		me.currentMenu = undefined;
-		me.display.setText("");
-	}
 
 	me.sendKey = function (key, count) {
 		count = typeof count !== 'undefined' ? count : 1;
@@ -519,35 +341,10 @@
 			return;
 		}
 		
-		if (me.currentMenu) {
-			me.currentMenu.sendKey(key);
-		} else if (key.length > 1) {
-			if (key == "EFF") {
-				me.currentMenu = me.effMenu;
-				me.currentMenu.completed = closeMenu;
-				me.currentMenu.refreshDisplay();
-			}
+		if (currentMenu) {
+			currentMenu.sendKey(key);
 		} else {
-			var getMenuOptions = function () {
-				switch (key) {
-					case "1": return me.menuOptions.tid;
-					case "2": return me.menuOptions.rda;
-					case "3": return me.menuOptions.dtm;
-					case "4": return me.menuOptions.kda;
-					case "5": return me.menuOptions.niv;
-					case "6": return me.menuOptions.rap;
-					case "7": return me.menuOptions.nyk;
-					case "8": return null;
-					case "9": return me.menuOptions.tjk;
-				}
-			};
-
-			var options = getMenuOptions();
-			if (options) {
-				options.completed = closeMenu;
-				me.currentMenu = new Ra180Menu(options, me);
-				me.currentMenu.refreshDisplay();
-			}
+			openMenu(key);
 		}
 	};
 	
@@ -575,11 +372,11 @@
 	me.setVolume7 = function() { me.volume(7); };
 	me.setVolume8 = function() { me.volume(8); };
 
-	me.setModOff = function() { me.setMod(me.MOD_OFF); }
-	me.setModKlar = function() { me.setMod(me.MOD_KLAR); }
-	me.setModSkydd = function() { me.setMod(me.MOD_SKYDD); }
-	me.setModDRelay = function() { me.setMod(me.MOD_DRELAY); }
-	me.setModDebug = function() { me.setMod(me.MOD_DEBUG); }
+	me.setModOff = function() { setMod(me.MOD_OFF); }
+	me.setModKlar = function() { setMod(me.MOD_KLAR); }
+	me.setModSkydd = function() { setMod(me.MOD_SKYDD); }
+	me.setModDRelay = function() { setMod(me.MOD_DRELAY); }
+	me.setModDebug = function() { setMod(me.MOD_DEBUG); }
 
 	me.sendKey1 = function() { me.sendKey("1"); }
 	me.sendKey2 = function() { me.sendKey("2"); }
@@ -659,9 +456,125 @@
 		}, self);
 	};
 
+	function tick() {
+		me.data.tick();
+		if (currentMenu) {
+			currentMenu.refreshDisplay();
+		}
+	}
+	
+	function setMod(newValue) {
+		var currentValue = me.mod();
+		me.mod(newValue);
+		refreshDisplay();
+
+		var shouldStartAsync = false;
+
+		function start() {
+			me.display.setText("");
+			me.isEnabled(newValue != me.MOD_OFF);
+			if (!shouldStartAsync) return;
+			me.synchronizationContext.setInterval(tick, 1000);
+		}
+		
+		if (newValue != me.MOD_OFF && currentValue == me.MOD_OFF) {
+			if (!me.data) {
+				me.data = new Ra180Data();
+				me.data.reset();
+				shouldStartAsync = true;
+			}
+			
+			runSelfTest(function() {
+				start();
+			});
+		} else if (newValue == me.MOD_OFF) {
+			if (currentMenu) {
+				currentMenu.close();
+			}
+
+			start();
+		}
+	}
+
+	var isExecutingSelfTest = false;
+	function runSelfTest(fn) {
+		if (isExecutingSelfTest) return;
+		function complete() {
+			me.display.setText("");
+			refreshContext();
+			fn();
+			isExecutingSelfTest = false;
+		}
+		isExecutingSelfTest = true;
+		me.display.setText("TEST");
+		me.synchronizationContext.setTimeout(function() {
+			if (me.mod() == me.MOD_OFF) return;
+			me.display.setText("TEST OK");
+			me.synchronizationContext.setTimeout(function() {
+				if (me.mod() == me.MOD_OFF) return;
+				if (me.data.isEmpty()) {
+					me.display.setText("NOLLST");
+					me.synchronizationContext.setTimeout(function() {
+						if (me.mod() == me.MOD_OFF) return;
+						complete();
+					}, me.SELFTEST_INTERVAL);
+				} else {
+					complete();
+				}
+			}, me.SELFTEST_INTERVAL);
+		}, me.SELFTEST_INTERVAL);
+	}
+
+	function getChannelData() {
+		switch (me.channel()) {
+			case 1: return me.data.channel1;
+			case 2: return me.data.channel2;
+			case 3: return me.data.channel3;
+			case 4: return me.data.channel4;
+			case 5: return me.data.channel5;
+			case 6: return me.data.channel6;
+			case 7: return me.data.channel7;
+			case 8: return me.data.channel8;
+		}
+	}
+
+	function openMenu(key) {
+		var options = getMenu(key);
+		if (!options) return;
+
+		options.completed = closeMenu;
+
+		if (typeof options.isStandAlone === 'undefined' || !options.isStandAlone) {
+			options = new Ra180Menu(options, me);
+		}
+
+		currentMenu = options;
+		currentMenu.refreshDisplay();
+	}
+
+	function closeMenu() {		
+		currentMenu = undefined;
+		me.display.setText("");
+	}
+
+	function getMenu(key) {
+		switch (key) {
+			case "1": return menuOptions.tid;
+			case "2": return menuOptions.rda;
+			case "3": return menuOptions.dtm;
+			case "4": return menuOptions.kda;
+			case "5": return menuOptions.niv;
+			case "6": return menuOptions.rap;
+			case "7": return menuOptions.nyk;
+			case "8": return null;
+			case "9": return menuOptions.tjk;
+			case "EFF": return menuOptions.eff;
+		}
+	}
+
 	function refreshDisplay() {
-		if (me.currentMenu) {
-			me.currentMenu.refreshDisplay();
+		if (currentMenu) {
+			currentMenu.refreshDisplay();
 		}
 	}
 
@@ -674,7 +587,7 @@
 	function refreshContext() {
 		var ctx = "";
 		if (me.data) {
-			ctx += me.getChannelData().fr();
+			ctx += getChannelData().fr();
 		}
 
 		me.context(ctx);
@@ -857,6 +770,113 @@
 			me.channel8.bd2("");
 
 			me.isEmpty(true);
+		};
+	}
+
+	function Ra180Display() {
+		var self = this;
+		self.char1 = new Ra180DisplayCharacter();
+		self.char2 = new Ra180DisplayCharacter();
+		self.char3 = new Ra180DisplayCharacter();
+		self.char4 = new Ra180DisplayCharacter();
+		self.char5 = new Ra180DisplayCharacter();
+		self.char6 = new Ra180DisplayCharacter();
+		self.char7 = new Ra180DisplayCharacter();
+		self.char8 = new Ra180DisplayCharacter();
+
+		self.brightness = ko.observable(5);
+
+		self.toggleBrightness = function () {
+			var value = self.brightness();
+			value++;
+			if (value > 5) value = 0;
+			self.brightness(value);
+		};
+		
+		self.getPlainText = function () {
+			var result = "";
+			result += self.char1.character();
+			result += self.char2.character();
+			result += self.char3.character();
+			result += self.char4.character();
+			result += self.char5.character();
+			result += self.char6.character();
+			result += self.char7.character();
+			result += self.char8.character();
+			return result;
+		};
+
+		self.setInputText = function (text) {
+			self.setText(text);
+			self.char8.hasUnderscore(text.length >= 7);
+			self.char7.hasUnderscore(text.length == 6);
+			self.char6.hasUnderscore(text.length == 5);
+			self.char5.hasUnderscore(text.length == 4);
+			self.char4.hasUnderscore(text.length == 3);
+			self.char3.hasUnderscore(text.length == 2);
+			self.char2.hasUnderscore(text.length == 1);
+			self.char1.hasUnderscore(text.length == 0);
+			self.char8.isBlinking(text.length >= 8);
+			self.char1.isBlinking(text.length > 0 && text[0] == ":");
+			self.char2.isBlinking(text.length > 1 && text[1] == ":");
+			self.char3.isBlinking(text.length > 2 && text[2] == ":");
+			self.char4.isBlinking(text.length > 3 && text[3] == ":");
+			self.char5.isBlinking(text.length > 4 && text[5] == ":");
+			self.char6.isBlinking(text.length > 5 && text[5] == ":");
+			self.char7.isBlinking(text.length > 6 && text[6] == ":");
+			self.char8.isBlinking(text.length > 7 && text[7] == ":");
+		};
+		
+		self.setText = function (text) {
+			self.char1.character(text.length > 0 ? text[0] : " ");
+			self.char2.character(text.length > 1 ? text[1] : " ");
+			self.char3.character(text.length > 2 ? text[2] : " ");
+			self.char4.character(text.length > 3 ? text[3] : " ");
+			self.char5.character(text.length > 4 ? text[4] : " ");
+			self.char6.character(text.length > 5 ? text[5] : " ");
+			self.char7.character(text.length > 6 ? text[6] : " ");
+			self.char8.character(text.length > 7 ? text[7] : " ");
+			self.setInputPos(-1);
+		},
+
+		self.getCharacter = function (pos) {
+			switch (pos) {
+				case 0: return self.char1; break;
+				case 1: return self.char2; break;
+				case 2: return self.char3; break;
+				case 3: return self.char4; break;
+				case 4: return self.char5; break;
+				case 5: return self.char6; break;
+				case 6: return self.char7; break;
+				case 7: return self.char8; break;
+			}
+		};
+
+		self.setCharacterBlinking = function (pos, value) {
+			var character = self.getCharacter(pos);
+			if (!character) {
+				return;
+			}
+			character.isBlinking(value);
+		};
+		
+		self.setInputPos = function (pos) {
+			me.display.setCharacterBlinking(0, pos == 0);
+			me.display.setCharacterBlinking(1, pos == 1);
+			me.display.setCharacterBlinking(2, pos == 2);
+			me.display.setCharacterBlinking(3, pos == 3);
+			me.display.setCharacterBlinking(4, pos == 4);
+			me.display.setCharacterBlinking(5, pos == 5);
+			me.display.setCharacterBlinking(6, pos == 6);
+			me.display.setCharacterBlinking(7, pos == 7);
+			me.display.char1.hasUnderscore(pos == 0);
+			me.display.char2.hasUnderscore(pos == 1);
+			me.display.char3.hasUnderscore(pos == 2);
+			me.display.char4.hasUnderscore(pos == 3);
+			me.display.char5.hasUnderscore(pos == 4);
+			me.display.char6.hasUnderscore(pos == 5);
+			me.display.char7.hasUnderscore(pos == 6);
+			me.display.char8.hasUnderscore(pos == 7);
 		};
 	}
 }
