@@ -22,6 +22,7 @@
 
 	me.display = new Ra180Display();
 
+	var clock = new Ra180Clock();
 	var pnyCalculator = new Ra180PnyCalculator();
 	var currentMenu = null;
 
@@ -35,12 +36,11 @@
 					canEdit: true,
 					saveInput: function (text) { 
 						if (text.length == 6) {
-							me.data.tid(text);
-							return true;
+							return clock.setTid(text);
 						}
 						return false;
 					},
-					getValue: function () { return me.data.tid(); },
+					getValue: function () { return clock.getTid(); },
 				},
 				{
 					prefix: "DAT",
@@ -48,12 +48,11 @@
 					canEdit: true,
 					saveInput: function (text) {
 						if (text.length == 4) {
-							me.data.dat(text);
-							return true;
+							return clock.setDat(text);
 						}
 						return false;
 					},
-					getValue: function () { return me.data.dat(); },
+					getValue: function () { return clock.getDat(); },
 				}
 			]
 		},
@@ -457,7 +456,7 @@
 	};
 
 	function tick() {
-		me.data.tick();
+		clock.tick();
 		if (currentMenu) {
 			currentMenu.refreshDisplay();
 		}
@@ -644,10 +643,114 @@
 		}
 	}
 
+	function Ra180Clock() {
+		var me = this;
+
+		var seconds = 0;
+		var minutes = 0;
+		var hours = 0;
+		var day = 1;
+		var month = 1;
+
+		me.getTid = function () {
+			var text = zeroFill(hours, 2) + zeroFill(minutes, 2) + zeroFill(seconds, 2);
+			return text;
+		};
+		
+		me.getDat = function () {
+			var text = zeroFill(month, 2) + zeroFill(day, 2);
+			return text;
+		};
+
+		me.setTid = function (value) {
+			var regex = /^([0-9]{2})([0-9]{2})([0-9]{2})$/;
+			var match = regex.exec(value);
+			if (!match) return false;
+			var sHours = match[1];
+			var sMinutes = match[2];
+			var sSeconds = match[3];
+			var nHours = parseInt(sHours);
+			var nMinutes = parseInt(sMinutes);
+			var nSeconds = parseInt(sSeconds);
+			if (nHours < 0 || nHours > 23) return false;
+			if (nMinutes < 0 || nMinutes > 59) return false;
+			if (nSeconds < 0 || nSeconds > 59) return false;
+			seconds = nSeconds;
+			minutes = nMinutes;
+			hours = nHours;
+			return true;
+		};
+
+		me.setDat = function (value) {
+			var regex = /^([0-9]{2})([0-9]{2})$/;
+			var match = regex.exec(value);
+			if (!match) return false;
+			var sMonth = match[1];
+			var sDay = match[2];
+			var nMonth = parseInt(sMonth);
+			var nDay = parseInt(sDay);
+			if (nMonth < 1 || nMonth > 12) return false;
+			if (nDay < 1 || nDay > getDaysInMonth(nMonth)) return false;
+			month = nMonth;
+			day = nDay;
+			return true;
+		};
+
+		me.tick = function () {
+			seconds++;
+			
+			if (seconds >= 60) {
+				seconds = 0;
+				minutes++;
+			}
+
+			if (minutes >= 60) {
+				minutes = 0;
+				hours++;
+			}
+
+			if (hours >= 24) {
+				hours = 0;
+				day++;
+			}
+
+			var daysInMonth = getDaysInMonth(month);
+			if (day > daysInMonth) {
+				day = 1;
+				month++;
+			}
+
+			if (month > 12) {
+				month = 1;
+			}
+		};
+
+		function getDaysInMonth(month) {
+			switch (month) {
+				case 2:
+					return 28;
+
+				case 4:
+				case 6:
+				case 9:
+				case 11:
+					return 30;
+
+				case 1:
+				case 3:
+				case 5:
+				case 7:
+				case 8:
+				case 10:
+				case 12:
+				default:
+					return 31;
+			}
+		}
+	}
+
 	function Ra180Data() {
 		var me = this;
-		me.tid = ko.observable("000000");
-		me.dat = ko.observable("0101");
 
 		me.synk = ko.observable();
 		me.eff = ko.observable();
@@ -678,49 +781,6 @@
 		me.channel6.subscribe(setNotEmpty);
 		me.channel7.subscribe(setNotEmpty);
 		me.channel8.subscribe(setNotEmpty);
-
-		me.tick = function () {
-			var reTid = /([0-9]{2})([0-9]{2})([0-9]{2})/;
-			var reDat = /([0-9]{2})([0-9]{2})/;
-			var match;
-			match = reDat.exec(me.dat());
-			var month = parseInt(match[1]);
-			var date = parseInt(match[2]);
-			match = reTid.exec(me.tid());
-			var hour = parseInt(match[1]);
-			var minute = parseInt(match[2]);
-			var second = parseInt(match[3]);
-			second++;
-			if (second == 60) {
-				second = 0;
-				minute++;
-			}
-			if (minute == 60) {
-				minute = 0;
-				hour++;
-			}
-			if (hour == 24) {
-				hour = 0;
-				date++;
-			}
-
-			if (date > 31) {
-				date = 1;
-				month++;
-			}
-			if (month > 12) {
-				month = 1;
-			}
-
-			month = zeroFill(month, 2);
-			date = zeroFill(date, 2);
-			hour = zeroFill(hour, 2);
-			minute = zeroFill(minute, 2);
-			second = zeroFill(second, 2);
-
-			me.tid(hour + minute + second);
-			me.dat(month + date);
-		};
 
 		me.reset = function () {
 			me.synk(false);
