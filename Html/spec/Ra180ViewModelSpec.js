@@ -1209,6 +1209,12 @@
 				ra180.sendKeyEff();
 				expect(ra180.display.getPlainText()).toBe("EFF:LÅG ");
 			});
+
+			it("should exit on ENT", function () {
+				ra180.sendKeyEff();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
 		});
 	});
 });

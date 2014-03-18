@@ -289,7 +289,7 @@
 			};
 
 			self.sendKey = function (key) {
-				if (key == "SLT") {
+				if (key == "SLT" || key == "ENT") {
 					self.completed();
 				}
 				
