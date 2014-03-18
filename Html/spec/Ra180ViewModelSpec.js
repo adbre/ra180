@@ -397,42 +397,237 @@
 				ra180.synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
 				ra180.synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
 			});
-			describe("should tick", function () {
-				it("each second", function() {
-					ra180.sendKey1();
-					expect(ra180.display.getPlainText()).toBe("T:000000");
-					synchronizationContext.tick(1000);
-					expect(ra180.display.getPlainText()).toBe("T:000001");
-					synchronizationContext.tick(1000);
-					expect(ra180.display.getPlainText()).toBe("T:000002");
-				});
-				it("each minute", function() {
-					ra180.sendKey1();
-					expect(ra180.display.getPlainText()).toBe("T:000000");
-					synchronizationContext.tick(60 * 1000);
-					expect(ra180.display.getPlainText()).toBe("T:000100");
-					synchronizationContext.tick(60 * 1000);
-					expect(ra180.display.getPlainText()).toBe("T:000200");
-				});
-				it("each hour", function() {
-					ra180.sendKey1();
-					expect(ra180.display.getPlainText()).toBe("T:000000");
-					synchronizationContext.tick(60 * 60 * 1000);
-					expect(ra180.display.getPlainText()).toBe("T:010000");
-					synchronizationContext.tick(60 * 60 * 1000);
-					expect(ra180.display.getPlainText()).toBe("T:020000");
-				});
-				it("each day", function() {
-					ra180.sendKey1();
-					ra180.sendKeyEnt();
-					expect(ra180.display.getPlainText()).toBe("DAT:0101");
-					synchronizationContext.tick(24 * 60 * 60 * 1000);
-					expect(ra180.display.getPlainText()).toBe("DAT:0102");
-					synchronizationContext.tick(24 * 60 * 60 * 1000);
-					expect(ra180.display.getPlainText()).toBe("DAT:0103");
-				});
+
+			it("should be 1000 milliseconds per second", function () {
+				ra180.sendKey1();
+				synchronizationContext.tick(999);
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+				synchronizationContext.tick(1);
+				expect(ra180.display.getPlainText()).toBe("T:000001");
 			});
 
+			it("should be 59 seconds per minute", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("000059");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("T:000100");
+			});
+
+			it("should be 59 minutes per hour", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("005959");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("T:010000");
+			});
+
+			it("should have 24 hours per day", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:0102");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
+
+			it("should have 31 days in January", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("0131");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:0201");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
+
+			it("should have 28 days in February", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("0228");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:0301");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
+
+			it("should have 31 days in March", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("0331");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:0401");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
+
+			it("should have 30 days in April", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("0430");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:0501");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
+
+			it("should have 31 days in May", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("0531");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:0601");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
+
+			it("should have 30 days in June", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("0630");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:0701");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
+
+			it("should have 31 days in July", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("0731");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:0801");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
+
+			it("should have 31 days in August", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("0831");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:0901");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
+
+			it("should have 30 days in September", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("0930");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:1001");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
+
+			it("should have 31 days in October", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("1031");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:1101");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
+
+			it("should have 30 days in November", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("1130");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:1201");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
+
+			it("should have 31 days in December", function () {
+				ra180.sendKey1();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("235959");
+				ra180.sendKeyEnt();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("1231");
+				ra180.sendKeyEnt();
+				synchronizationContext.tick(1000);
+				expect(ra180.display.getPlainText()).toBe("DAT:0101");
+				ra180.sendKeySlt();
+				ra180.sendKey1();
+				expect(ra180.display.getPlainText()).toBe("T:000000");
+			});
 		});
 	});
 
