@@ -69,6 +69,7 @@ function WebRtcRadio(options) {
 	me.changeContext = function(ctx) {
 		myCtx = ctx;
 		if (rtc) {
+			console.log("Changing context", ctx);
 			rtc.changeContext(ctx);
 		}
 	};
@@ -114,7 +115,7 @@ function WebRtcRadio(options) {
 			rtc.bind(XSockets.WebRTC.Events.onContextChange, onContextChange);
 
 			rtc.getUserMedia({audio: true}, function () {
-				me.changeContext(mainCtx);
+				me.changeContext(myCtx);
 			});
 
 			me.receive();
