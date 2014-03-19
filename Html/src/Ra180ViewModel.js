@@ -468,6 +468,7 @@
 		var currentValue = me.mod();
 		me.mod(newValue);
 		refreshDisplay();
+		refreshContext();
 
 		var shouldStartAsync = false;
 
@@ -585,10 +586,45 @@
 		refreshContext();
 	}
 
-	function refreshContext() {
-		var ctx = "00000000000000000000000000000000";
+	function refreshContext() {		
+		function toHex(number, width) {
+			if (number === undefined) {
+				number = 0;
+			} else if (typeof number !== 'number') {
+				number = parseInt(number);
+			}
+			if (isNaN(number)) number = 0;
+			number = number.toString(16);
+			return zeroFill(number, width);
+		}
+
+		var isSkydd = me.mod() == me.MOD_SKYDD;
+		
+		var ctx = "";
+		var currentTime = clock.getCurrentTime();
 		if (me.data) {
-			var fr = getChannelData().fr();
+			var channelData = getChannelData();
+			ctx += toHex(channelData.fr(), 6);
+			if (isSkydd) {
+				ctx += toHex(channelData.bd1(), 4);
+				ctx += toHex(channelData.bd1(), 4);
+				ctx += toHex(channelData.nyk(), 4);
+			} else {
+				ctx += zeroFill("0", 12);
+			}
+			ctx += "0000";
+		} else {
+			ctx += zeroFill("0", 22);
+		}
+		
+		if (me.mod() == me.MOD_SKYDD) {
+			ctx += toHex(currentTime.month, 2);
+			ctx += toHex(currentTime.day, 2);
+			ctx += toHex(currentTime.hours, 2);
+			ctx += toHex(currentTime.minutes, 2);
+			ctx += toHex(currentTime.seconds, 2);
+		} else {
+			ctx += zeroFill("0", 10);
 		}
 
 		me.context(ctx);
@@ -653,6 +689,16 @@
 		var hours = 0;
 		var day = 1;
 		var month = 1;
+
+		me.getCurrentTime = function () {
+			return {
+				seconds: seconds,
+				minutes: minutes,
+				hours: hours,
+				day: day,
+				month: month
+			};
+		};
 
 		me.getTid = function () {
 			var text = zeroFill(hours, 2) + zeroFill(minutes, 2) + zeroFill(seconds, 2);

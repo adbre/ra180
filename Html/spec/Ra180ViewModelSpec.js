@@ -1213,11 +1213,6 @@
 				expect(ra180.display.getPlainText()).toMatch(/^PNY:[0-9]{3} $/);
 			});
 
-			it("should set context after ON", function () {
-				expect(ra180.context()).not.toBe(undefined);
-				expect(ra180.context()).toMatch(/^.+$/);
-			});
-
 			describe("when changing channel", function () {
 				it("should refresh FR", function () {
 					ra180.sendKey4();
@@ -1248,30 +1243,41 @@
 					expect(channel7).not.toBe(channel8);
 					expect(channel8).not.toBe(channel1);
 				});
-
-				it("should notify context listeners", function() {
-					var ctx;
-					ra180.context.subscribe(function() {
-						ctx = ra180.context();
-					});
-
-					ra180.setChannel2();
-					expect(ctx).not.toBe(undefined);
-				});
 			});
 		});
 
 		describe("RTC Context", function() {
+			beforeEach(function() {
+				ra180.setModKlar();
+			});
+
+			it("should notify subscriber for KO value", function() {
+				var subscriberCalled = false;
+				var knockoutObservable = ko.observable();
+				knockoutObservable.subscribe(function() {
+					subscriberCalled = true;
+				});
+
+				knockoutObservable("changed");
+
+				expect(subscriberCalled).toBe(true);
+			});
+
+			it("should set context after ON", function () {
+				expect(ra180.context()).not.toBe(undefined);
+				expect(ra180.context()).toMatch(/^[0-9a-f]{32}$/);
+			});
+			
 			it("should notify subscribers when changed", function() {
-				var ctx;
+				var subscriberCalled = false;
 				ra180.context.subscribe(function() {
-					ctx = ra180.context();
+					subscriberCalled = true;
 				});
 
 				ra180.setModKlar();
 				ra180.setChannel8();
 
-				expect(ctx).not.toBe(undefined);
+				expect(subscriberCalled).toBe(true);
 			});
 
 			describe("should be a UUID string", function () {
@@ -1319,6 +1325,194 @@
 					expectValidUuid(ra180.context());
 					ra180.setChannel1();
 					expectValidUuid(ra180.context());
+				});
+			});
+
+			describe("should be unique for each frequency", function () {
+				it("in KLAR", function () {
+					ra180.setModKlar();
+					
+					var ctx, lastCtx;
+					
+					ra180.setChannel2();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel3();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel4();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel5();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel6();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel7();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel8();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel1();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+				});
+
+				it("in SKYDD", function () {
+					ra180.setModSkydd();
+					
+					var ctx, lastCtx;
+					
+					ra180.setChannel2();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel3();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel4();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel5();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel6();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel7();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel8();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+					
+					ra180.setChannel1();
+					lastCtx = ctx;
+					ctx = ra180.context();
+					expect(ctx).not.toBe(lastCtx);
+				});
+			});
+
+			describe("should not be identical between KLAR and SKYDD", function () {
+				var klarCtx, skyddCtx;
+
+				it("Channel 1", function () {				
+					ra180.setChannel1();
+					ra180.setModKlar();
+					klarCtx = ra180.context();
+					ra180.setModSkydd();
+					skyddCtx = ra180.context();
+					
+					expect(skyddCtx).not.toBe(klarCtx);
+				});
+
+				it("Channel 2", function () {				
+					ra180.setChannel2();
+					ra180.setModKlar();
+					klarCtx = ra180.context();
+					ra180.setModSkydd();
+					skyddCtx = ra180.context();
+					
+					expect(skyddCtx).not.toBe(klarCtx);
+				});
+
+				it("Channel 2", function () {				
+					ra180.setChannel2();
+					ra180.setModKlar();
+					klarCtx = ra180.context();
+					ra180.setModSkydd();
+					skyddCtx = ra180.context();
+					
+					expect(skyddCtx).not.toBe(klarCtx);
+				});
+
+				it("Channel 3", function () {				
+					ra180.setChannel3();
+					ra180.setModKlar();
+					klarCtx = ra180.context();
+					ra180.setModSkydd();
+					skyddCtx = ra180.context();
+					
+					expect(skyddCtx).not.toBe(klarCtx);
+				});
+
+				it("Channel 4", function () {				
+					ra180.setChannel4();
+					ra180.setModKlar();
+					klarCtx = ra180.context();
+					ra180.setModSkydd();
+					skyddCtx = ra180.context();
+					
+					expect(skyddCtx).not.toBe(klarCtx);
+				});
+
+				it("Channel 5", function () {				
+					ra180.setChannel5();
+					ra180.setModKlar();
+					klarCtx = ra180.context();
+					ra180.setModSkydd();
+					skyddCtx = ra180.context();
+					
+					expect(skyddCtx).not.toBe(klarCtx);
+				});
+
+				it("Channel 6", function () {				
+					ra180.setChannel6();
+					ra180.setModKlar();
+					klarCtx = ra180.context();
+					ra180.setModSkydd();
+					skyddCtx = ra180.context();
+					
+					expect(skyddCtx).not.toBe(klarCtx);
+				});
+
+				it("Channel 7", function () {				
+					ra180.setChannel7();
+					ra180.setModKlar();
+					klarCtx = ra180.context();
+					ra180.setModSkydd();
+					skyddCtx = ra180.context();
+					
+					expect(skyddCtx).not.toBe(klarCtx);
+				});
+
+				it("Channel 8", function () {				
+					ra180.setChannel8();
+					ra180.setModKlar();
+					klarCtx = ra180.context();
+					ra180.setModSkydd();
+					skyddCtx = ra180.context();
+					
+					expect(skyddCtx).not.toBe(klarCtx);
 				});
 			});
 		});
