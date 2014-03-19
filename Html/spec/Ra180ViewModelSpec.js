@@ -1250,28 +1250,75 @@
 				});
 
 				it("should notify context listeners", function() {
-					var ctx = ra180.context(), lastCtx;
+					var ctx;
 					ra180.context.subscribe(function() {
-						lastCtx = ctx;
 						ctx = ra180.context();
 					});
 
 					ra180.setChannel2();
-					expect(ctx).not.toBe(lastCtx);
+					expect(ctx).not.toBe(undefined);
+				});
+			});
+		});
+
+		describe("RTC Context", function() {
+			it("should notify subscribers when changed", function() {
+				var ctx;
+				ra180.context.subscribe(function() {
+					ctx = ra180.context();
+				});
+
+				ra180.setModKlar();
+				ra180.setChannel8();
+
+				expect(ctx).not.toBe(undefined);
+			});
+
+			describe("should be a UUID string", function () {
+				var ctx, lastCtx;
+
+				function expectValidUuid(value) {
+					expect(value).toMatch(/^[0-9a-f]{32}$/);
+				}
+				
+				it("in KLAR", function() {
+					ra180.setModKlar();
+					ra180.setChannel2();
+					expectValidUuid(ra180.context());
 					ra180.setChannel3();
-					expect(ctx).not.toBe(lastCtx);
+					expectValidUuid(ra180.context());
 					ra180.setChannel4();
-					expect(ctx).not.toBe(lastCtx);
+					expectValidUuid(ra180.context());
 					ra180.setChannel5();
-					expect(ctx).not.toBe(lastCtx);
+					expectValidUuid(ra180.context());
 					ra180.setChannel6();
-					expect(ctx).not.toBe(lastCtx);
+					expectValidUuid(ra180.context());
 					ra180.setChannel7();
-					expect(ctx).not.toBe(lastCtx);
+					expectValidUuid(ra180.context());
 					ra180.setChannel8();
-					expect(ctx).not.toBe(lastCtx);
+					expectValidUuid(ra180.context());
 					ra180.setChannel1();
-					expect(ctx).not.toBe(lastCtx);
+					expectValidUuid(ra180.context());
+				});
+
+				it("in SKYDD", function() {
+					ra180.setModSkydd();					
+					ra180.setChannel2();
+					expectValidUuid(ra180.context());
+					ra180.setChannel3();
+					expectValidUuid(ra180.context());
+					ra180.setChannel4();
+					expectValidUuid(ra180.context());
+					ra180.setChannel5();
+					expectValidUuid(ra180.context());
+					ra180.setChannel6();
+					expectValidUuid(ra180.context());
+					ra180.setChannel7();
+					expectValidUuid(ra180.context());
+					ra180.setChannel8();
+					expectValidUuid(ra180.context());
+					ra180.setChannel1();
+					expectValidUuid(ra180.context());
 				});
 			});
 		});

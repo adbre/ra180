@@ -26,6 +26,8 @@
 	var pnyCalculator = new Ra180PnyCalculator();
 	var currentMenu = null;
 
+	refreshContext();
+
 	var menuOptions = {
 		tid: {
 			title: "TID",
@@ -584,9 +586,9 @@
 	}
 
 	function refreshContext() {
-		var ctx = "";
+		var ctx = "00000000000000000000000000000000";
 		if (me.data) {
-			ctx += getChannelData().fr();
+			var fr = getChannelData().fr();
 		}
 
 		me.context(ctx);
