@@ -37,8 +37,9 @@
 					maxInputTextLength: 6,
 					canEdit: true,
 					saveInput: function (text) { 
-						if (text.length == 6) {
-							return clock.setTid(text);
+						if (text.length == 6 && clock.setTid(text)) {
+							refreshContext();
+							return true;
 						}
 						return false;
 					},
@@ -49,8 +50,9 @@
 					maxInputTextLength: 4,
 					canEdit: true,
 					saveInput: function (text) {
-						if (text.length == 4) {
-							return clock.setDat(text);
+						if (text.length == 4 && clock.setDat(text)) {
+							refreshContext();
+							return true;
 						}
 						return false;
 					},
@@ -118,6 +120,7 @@
 						}
 						
 						getChannelData().fr(text);
+						refreshContext();
 						return true;
 					}
 				},
@@ -156,6 +159,7 @@
 
 						getChannelData().bd2(text);
 						menu.previousSubmenu();
+						refreshContext();
 						return true;
 					},
 					onKey: function (key, menu) {
@@ -251,6 +255,7 @@
 						var pny = channeldata.pny();
 						channeldata.nyk(pny);
 						channeldata.pny(nyk);
+						refreshContext();
 					},
 					getOptions: function () {
 						var pny = getChannelData().pny();
@@ -468,7 +473,6 @@
 		var currentValue = me.mod();
 		me.mod(newValue);
 		refreshDisplay();
-		refreshContext();
 
 		var shouldStartAsync = false;
 
@@ -495,6 +499,8 @@
 			}
 
 			start();
+		} else {
+			refreshContext();
 		}
 	}
 
@@ -607,7 +613,11 @@
 			ctx += toHex(channelData.fr(), 6);
 			if (isSkydd) {
 				ctx += toHex(channelData.bd1(), 4);
-				ctx += toHex(channelData.bd1(), 4);
+				if (channelData.bd1() != "9000") {
+					ctx += toHex(channelData.bd2(), 4);
+				} else {
+					ctx += "0000";
+				}
 				ctx += toHex(channelData.nyk(), 4);
 			} else {
 				ctx += zeroFill("0", 12);
@@ -617,12 +627,21 @@
 			ctx += zeroFill("0", 22);
 		}
 		
-		if (me.mod() == me.MOD_SKYDD) {
+		if (isSkydd) {
 			ctx += toHex(currentTime.month, 2);
 			ctx += toHex(currentTime.day, 2);
 			ctx += toHex(currentTime.hours, 2);
-			ctx += toHex(currentTime.minutes, 2);
-			ctx += toHex(currentTime.seconds, 2);
+			var minutes = currentTime.minutes;
+			var seconds = currentTime.seconds;
+			if (minutes >= 0 && minutes < 30) {
+				minutes = 0;
+			} else {
+				minutes = 30;
+			}
+			seconds = 0;
+			console.log("Refreshing context", minutes, seconds);
+			ctx += toHex(minutes, 2);
+			ctx += toHex(seconds, 2);
 		} else {
 			ctx += zeroFill("0", 10);
 		}

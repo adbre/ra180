@@ -20,16 +20,24 @@
 		ra180.sendKeyEnt(); // spara BD2
 		ra180.sendKeyEnt(); // SYNK
 		ra180.sendKeyEnt(); // PNY=###
-		expect(ra180.display.getPlainText()).toMatch(/^PNY\:.{3} $/);
 		ra180.sendKeyAnd();
-		
-		var calc = new Ra180PnyCalculator();
-		var pn = calc.generateKeys().pn;
-		for (var i=0; i < pn.length; i++) {
-			ra180.sendKeys(pn[1]);
-			ra180.sendKeyEnt();
-		}
-
+		ra180.sendKeys("4422");
+		ra180.sendKeyEnt();
+		ra180.sendKeys("2211");
+		ra180.sendKeyEnt();
+		ra180.sendKeys("3300");
+		ra180.sendKeyEnt();
+		ra180.sendKeys("5511");
+		ra180.sendKeyEnt();
+		ra180.sendKeys("4325");
+		ra180.sendKeyEnt();
+		ra180.sendKeys("5621");
+		ra180.sendKeyEnt();
+		ra180.sendKeys("3201");
+		ra180.sendKeyEnt();
+		ra180.sendKeys("5104");
+		ra180.sendKeyEnt();
+		expect(ra180.display.getPlainText()).toBe("PNY:762 ");
 		ra180.sendKeySlt();
 	}
 
@@ -1268,16 +1276,65 @@
 				expect(ra180.context()).toMatch(/^[0-9a-f]{32}$/);
 			});
 			
-			it("should notify subscribers when changed", function() {
-				var subscriberCalled = false;
-				ra180.context.subscribe(function() {
-					subscriberCalled = true;
+			it("should notify subscribers when channel changed", function() {
+				ra180.setModKlar();
+				
+				var wasNotifiedOfChange = false;
+				ra180.context.subscribe(function () {
+					wasNotifiedOfChange = true;
 				});
 
-				ra180.setModKlar();
 				ra180.setChannel8();
+				expect(wasNotifiedOfChange).toBe(true);
+			});
 
-				expect(subscriberCalled).toBe(true);
+			it("Should change context when changing FR", function () {
+				ra180.setModSkydd();
+				ra180.sendKey4();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("42424");
+				
+				var wasNotifiedOfChange = false;
+				ra180.context.subscribe(function () {
+					wasNotifiedOfChange = true;
+				});
+				
+				ra180.sendKeyEnt();
+				expect(wasNotifiedOfChange).toBe(true);
+			});
+
+			it("Should change context when changing BD", function () {
+				ra180.setModSkydd();
+
+				ra180.sendKey4();
+				ra180.sendKeyEnt();
+				ra180.sendKeyAnd();
+				ra180.sendKeys("3040");
+				ra180.sendKeyEnt();
+				ra180.sendKeys("5060");
+				
+				var wasNotifiedOfChange = false;
+				ra180.context.subscribe(function () {
+					wasNotifiedOfChange = true;
+				});
+				
+				ra180.sendKeyEnt();
+				expect(wasNotifiedOfChange).toBe(true);
+			});
+
+			it("Should change context when changing NYK", function () {
+				ra180.setModSkydd();
+				
+				enterNewPny();
+				ra180.sendKey7();
+				
+				var wasNotifiedOfChange = false;
+				ra180.context.subscribe(function () {
+					wasNotifiedOfChange = true;
+				});
+				
+				ra180.sendKeyAnd();
+				expect(wasNotifiedOfChange).toBe(true);
 			});
 
 			describe("should be a UUID string", function () {
@@ -1419,6 +1476,81 @@
 					lastCtx = ctx;
 					ctx = ra180.context();
 					expect(ctx).not.toBe(lastCtx);
+				});
+			});
+
+			describe("Grovtid", function () {
+				beforeEach(function () {
+					ra180.setModSkydd();
+					enterNewPny();
+				});
+
+				it("Should be same context while 17:00:00-17:29:59", function () {
+					ra180.sendKey1();
+					ra180.sendKeyAnd();
+					ra180.sendKeys("170000");
+					ra180.sendKeyEnt();
+
+					var ctx1 = ra180.context();
+
+					ra180.sendKeyAnd();
+					ra180.sendKeys("172959");
+					ra180.sendKeyEnt();
+
+					var ctx2 = ra180.context();
+
+					expect(ctx2).toBe(ctx1);
+				});
+
+				it("Should be same context while 17:30:00-17:59:59", function () {
+					ra180.sendKey1();
+					ra180.sendKeyAnd();
+					ra180.sendKeys("173000");
+					ra180.sendKeyEnt();
+
+					var ctx1 = ra180.context();
+
+					ra180.sendKeyAnd();
+					ra180.sendKeys("175959");
+					ra180.sendKeyEnt();
+
+					var ctx2 = ra180.context();
+
+					expect(ctx2).toBe(ctx1);
+				});
+
+				it("Should not be same context between 17:29:59 and 17:30:00", function () {
+					ra180.sendKey1();
+					ra180.sendKeyAnd();
+					ra180.sendKeys("172959");
+					ra180.sendKeyEnt();
+
+					var ctx1 = ra180.context();
+
+					ra180.sendKeyAnd();
+					ra180.sendKeys("173000");
+					ra180.sendKeyEnt();
+
+					var ctx2 = ra180.context();
+
+					expect(ctx2).not.toBe(ctx1);
+				});
+
+				it("Should not be same context between 17:59:59 and 18:00:00", function () {
+					ra180.sendKey1();
+					ra180.sendKeyAnd();
+					ra180.sendKeys("175959");
+					ra180.sendKeyEnt();
+
+					var ctx1 = ra180.context();
+
+					ra180.sendKeyAnd();
+					ra180.sendKeys("180000");
+					ra180.sendKeyEnt();
+
+					var ctx2 = ra180.context();
+
+					expect(ctx2).not.toBe(ctx1);
 				});
 			});
 
