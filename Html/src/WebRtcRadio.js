@@ -67,9 +67,14 @@ function WebRtcRadio(options) {
 	};
 
 	me.changeContext = function(ctx) {
+		if (myCtx == ctx) return;
 		myCtx = ctx;
 		if (rtc) {
 			console.log("Changing context", ctx);
+			var ids = rtc.getRemotePeers();
+			for (var i=0; i < ids.length; i++) {
+				rtc.removePeerConnection(ids[i]);
+			}
 			rtc.changeContext(ctx);
 		}
 	};
