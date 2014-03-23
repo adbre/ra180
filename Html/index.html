@@ -11,12 +11,10 @@
 		<script src="lib/xsockets/XSockets.WebRTC.latest.js"></script>
 		
 		<script type="text/javascript" src="src/SynchronizationContext.js"></script>
-		<script type="text/javascript" src="src/Ra180Menu.js"></script>
 		<script type="text/javascript" src="src/Ra180PnyCalculator.js"></script>
 		<script type="text/javascript" src="src/Ra180ViewModel.js"></script>
 
-		<script type="text/javascript" src="src/WebRtcRadio.js"></script>
-		<script type="text/javascript" src="src/Ra180WebRtcRadioAdapter.js"></script>
+		<script type="text/javascript" src="src/RtcRadio.js"></script>
 
 		<script>
 			var brokerUri = "ws://malinrocks.cloudapp.net:4502/CustomBroker";
@@ -130,11 +128,8 @@
 	<script type="text/javascript">
 		$(function() {
 			var syncContext = new SynchronizationContext();
-			var ra180 = new Ra180ViewModel(syncContext);
-			var radio = new WebRtcRadio(brokerUri);
-			
-			ra180.synchronizationContext = syncContext;
-			var adapter = new Ra180WebRtcRadioAdapter(ra180, radio);
+			var radio = new RtcRadio(brokerUri);
+			var ra180 = new Ra180ViewModel(syncContext, radio);
 
 			ko.applyBindings(ra180, $("#ra180")[0]);
 			ko.applyBindings(radio, $("#webrtc-radio")[0]);

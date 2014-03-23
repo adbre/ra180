@@ -1,9 +1,40 @@
-﻿describe("Ra180", function() {
+﻿function MockRtcRadio() {
+	var isEnabled = false;
+	var currentCtx;
+	this.changeContext = function (ctx) {
+		currentCtx = ctx;
+	};
+	this.enable = function () {
+		isEnabled = true;
+	};
+	this.disable = function () {
+		isEnabled = false;
+	};
+	this.isEnabled = function () {
+		return isEnabled;
+	};
+	this.getContext = function () {
+		return currentCtx;
+	};
+}
+
+describe("Ra180", function() {
 	var ra180;
+	var synchronizationContext;
+	var rtcRadio;
+
+	function getSystemUnderTest() {
+		return new Ra180ViewModel(
+			synchronizationContext,
+			rtcRadio
+		);
+	}
 	
 	beforeEach(function() {
-		ra180 = new Ra180ViewModel();
-		ra180.synchronizationContext = new InstantSynchronizationContext();
+		synchronizationContext = new InstantSynchronizationContext();
+		rtcRadio = new MockRtcRadio();
+		ra180 = getSystemUnderTest();
+		ra180.synchronizationContext = synchronizationContext;
 	});
 
 	function enterNewPny() {
@@ -209,11 +240,9 @@
 	});
 	
 	describe("Async tests", function () {
-		var synchronizationContext;
-	
 		beforeEach(function() {
 			synchronizationContext = new MockSynchronizationContext();
-			ra180.synchronizationContext = synchronizationContext;
+			ra180 = getSystemUnderTest();
 		});
 
 		describe("Self test", function () {
@@ -401,9 +430,9 @@
 		describe("TID", function () {
 			beforeEach(function () {
 				ra180.setModKlar();
-				ra180.synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
-				ra180.synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
-				ra180.synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
+				synchronizationContext.tick(ra180.SELFTEST_INTERVAL);
 			});
 
 			it("should be 1000 milliseconds per second", function () {
@@ -1259,33 +1288,18 @@
 				ra180.setModKlar();
 			});
 
-			it("should notify subscriber for KO value", function() {
-				var subscriberCalled = false;
-				var knockoutObservable = ko.observable();
-				knockoutObservable.subscribe(function() {
-					subscriberCalled = true;
-				});
-
-				knockoutObservable("changed");
-
-				expect(subscriberCalled).toBe(true);
-			});
-
 			it("should set context after ON", function () {
-				expect(ra180.context()).not.toBe(undefined);
-				expect(ra180.context()).toMatch(/^[0-9a-f]{32}$/);
+				expect(rtcRadio.getContext()).not.toBe(undefined);
+				expect(rtcRadio.getContext()).toMatch(/^[0-9a-f]{32}$/);
 			});
 			
 			it("should notify subscribers when channel changed", function() {
 				ra180.setModKlar();
 				
-				var wasNotifiedOfChange = false;
-				ra180.context.subscribe(function () {
-					wasNotifiedOfChange = true;
-				});
+				spyOn(rtcRadio, "changeContext").and.callThrough();
 
 				ra180.setChannel8();
-				expect(wasNotifiedOfChange).toBe(true);
+				expect(rtcRadio.changeContext).toHaveBeenCalled();
 			});
 
 			it("Should change context when changing FR", function () {
@@ -1294,13 +1308,10 @@
 				ra180.sendKeyAnd();
 				ra180.sendKeys("42424");
 				
-				var wasNotifiedOfChange = false;
-				ra180.context.subscribe(function () {
-					wasNotifiedOfChange = true;
-				});
+				spyOn(rtcRadio, "changeContext").and.callThrough();
 				
 				ra180.sendKeyEnt();
-				expect(wasNotifiedOfChange).toBe(true);
+				expect(rtcRadio.changeContext).toHaveBeenCalled();
 			});
 
 			it("Should change context when changing BD", function () {
@@ -1313,13 +1324,10 @@
 				ra180.sendKeyEnt();
 				ra180.sendKeys("5060");
 				
-				var wasNotifiedOfChange = false;
-				ra180.context.subscribe(function () {
-					wasNotifiedOfChange = true;
-				});
+				spyOn(rtcRadio, "changeContext").and.callThrough();
 				
 				ra180.sendKeyEnt();
-				expect(wasNotifiedOfChange).toBe(true);
+				expect(rtcRadio.changeContext).toHaveBeenCalled();
 			});
 
 			it("Should change context when changing NYK", function () {
@@ -1328,13 +1336,10 @@
 				enterNewPny();
 				ra180.sendKey7();
 				
-				var wasNotifiedOfChange = false;
-				ra180.context.subscribe(function () {
-					wasNotifiedOfChange = true;
-				});
+				spyOn(rtcRadio, "changeContext").and.callThrough();
 				
 				ra180.sendKeyAnd();
-				expect(wasNotifiedOfChange).toBe(true);
+				expect(rtcRadio.changeContext).toHaveBeenCalled();
 			});
 
 			describe("should be a UUID string", function () {
@@ -1347,41 +1352,41 @@
 				it("in KLAR", function() {
 					ra180.setModKlar();
 					ra180.setChannel2();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel3();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel4();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel5();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel6();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel7();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel8();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel1();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 				});
 
 				it("in SKYDD", function() {
 					ra180.setModSkydd();					
 					ra180.setChannel2();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel3();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel4();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel5();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel6();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel7();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel8();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 					ra180.setChannel1();
-					expectValidUuid(ra180.context());
+					expectValidUuid(rtcRadio.getContext());
 				});
 			});
 
@@ -1393,42 +1398,42 @@
 					
 					ra180.setChannel2();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel3();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel4();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel5();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel6();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel7();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel8();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel1();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 				});
 
@@ -1439,42 +1444,42 @@
 					
 					ra180.setChannel2();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel3();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel4();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel5();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel6();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel7();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel8();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 					
 					ra180.setChannel1();
 					lastCtx = ctx;
-					ctx = ra180.context();
+					ctx = rtcRadio.getContext();
 					expect(ctx).not.toBe(lastCtx);
 				});
 			});
@@ -1491,13 +1496,13 @@
 					ra180.sendKeys("170000");
 					ra180.sendKeyEnt();
 
-					var ctx1 = ra180.context();
+					var ctx1 = rtcRadio.getContext();
 
 					ra180.sendKeyAnd();
 					ra180.sendKeys("172959");
 					ra180.sendKeyEnt();
 
-					var ctx2 = ra180.context();
+					var ctx2 = rtcRadio.getContext();
 
 					expect(ctx2).toBe(ctx1);
 				});
@@ -1508,13 +1513,13 @@
 					ra180.sendKeys("173000");
 					ra180.sendKeyEnt();
 
-					var ctx1 = ra180.context();
+					var ctx1 = rtcRadio.getContext();
 
 					ra180.sendKeyAnd();
 					ra180.sendKeys("175959");
 					ra180.sendKeyEnt();
 
-					var ctx2 = ra180.context();
+					var ctx2 = rtcRadio.getContext();
 
 					expect(ctx2).toBe(ctx1);
 				});
@@ -1525,13 +1530,13 @@
 					ra180.sendKeys("172959");
 					ra180.sendKeyEnt();
 
-					var ctx1 = ra180.context();
+					var ctx1 = rtcRadio.getContext();
 
 					ra180.sendKeyAnd();
 					ra180.sendKeys("173000");
 					ra180.sendKeyEnt();
 
-					var ctx2 = ra180.context();
+					var ctx2 = rtcRadio.getContext();
 
 					expect(ctx2).not.toBe(ctx1);
 				});
@@ -1542,13 +1547,13 @@
 					ra180.sendKeys("175959");
 					ra180.sendKeyEnt();
 
-					var ctx1 = ra180.context();
+					var ctx1 = rtcRadio.getContext();
 
 					ra180.sendKeyAnd();
 					ra180.sendKeys("180000");
 					ra180.sendKeyEnt();
 
-					var ctx2 = ra180.context();
+					var ctx2 = rtcRadio.getContext();
 
 					expect(ctx2).not.toBe(ctx1);
 				});
@@ -1560,9 +1565,9 @@
 				it("Channel 1", function () {				
 					ra180.setChannel1();
 					ra180.setModKlar();
-					klarCtx = ra180.context();
+					klarCtx = rtcRadio.getContext();
 					ra180.setModSkydd();
-					skyddCtx = ra180.context();
+					skyddCtx = rtcRadio.getContext();
 					
 					expect(skyddCtx).not.toBe(klarCtx);
 				});
@@ -1570,9 +1575,9 @@
 				it("Channel 2", function () {				
 					ra180.setChannel2();
 					ra180.setModKlar();
-					klarCtx = ra180.context();
+					klarCtx = rtcRadio.getContext();
 					ra180.setModSkydd();
-					skyddCtx = ra180.context();
+					skyddCtx = rtcRadio.getContext();
 					
 					expect(skyddCtx).not.toBe(klarCtx);
 				});
@@ -1580,9 +1585,9 @@
 				it("Channel 2", function () {				
 					ra180.setChannel2();
 					ra180.setModKlar();
-					klarCtx = ra180.context();
+					klarCtx = rtcRadio.getContext();
 					ra180.setModSkydd();
-					skyddCtx = ra180.context();
+					skyddCtx = rtcRadio.getContext();
 					
 					expect(skyddCtx).not.toBe(klarCtx);
 				});
@@ -1590,9 +1595,9 @@
 				it("Channel 3", function () {				
 					ra180.setChannel3();
 					ra180.setModKlar();
-					klarCtx = ra180.context();
+					klarCtx = rtcRadio.getContext();
 					ra180.setModSkydd();
-					skyddCtx = ra180.context();
+					skyddCtx = rtcRadio.getContext();
 					
 					expect(skyddCtx).not.toBe(klarCtx);
 				});
@@ -1600,9 +1605,9 @@
 				it("Channel 4", function () {				
 					ra180.setChannel4();
 					ra180.setModKlar();
-					klarCtx = ra180.context();
+					klarCtx = rtcRadio.getContext();
 					ra180.setModSkydd();
-					skyddCtx = ra180.context();
+					skyddCtx = rtcRadio.getContext();
 					
 					expect(skyddCtx).not.toBe(klarCtx);
 				});
@@ -1610,9 +1615,9 @@
 				it("Channel 5", function () {				
 					ra180.setChannel5();
 					ra180.setModKlar();
-					klarCtx = ra180.context();
+					klarCtx = rtcRadio.getContext();
 					ra180.setModSkydd();
-					skyddCtx = ra180.context();
+					skyddCtx = rtcRadio.getContext();
 					
 					expect(skyddCtx).not.toBe(klarCtx);
 				});
@@ -1620,9 +1625,9 @@
 				it("Channel 6", function () {				
 					ra180.setChannel6();
 					ra180.setModKlar();
-					klarCtx = ra180.context();
+					klarCtx = rtcRadio.getContext();
 					ra180.setModSkydd();
-					skyddCtx = ra180.context();
+					skyddCtx = rtcRadio.getContext();
 					
 					expect(skyddCtx).not.toBe(klarCtx);
 				});
@@ -1630,9 +1635,9 @@
 				it("Channel 7", function () {				
 					ra180.setChannel7();
 					ra180.setModKlar();
-					klarCtx = ra180.context();
+					klarCtx = rtcRadio.getContext();
 					ra180.setModSkydd();
-					skyddCtx = ra180.context();
+					skyddCtx = rtcRadio.getContext();
 					
 					expect(skyddCtx).not.toBe(klarCtx);
 				});
@@ -1640,9 +1645,9 @@
 				it("Channel 8", function () {				
 					ra180.setChannel8();
 					ra180.setModKlar();
-					klarCtx = ra180.context();
+					klarCtx = rtcRadio.getContext();
 					ra180.setModSkydd();
-					skyddCtx = ra180.context();
+					skyddCtx = rtcRadio.getContext();
 					
 					expect(skyddCtx).not.toBe(klarCtx);
 				});

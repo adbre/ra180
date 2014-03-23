@@ -1,4 +1,4 @@
-function WebRtcRadio(options) {
+function RtcRadio(options) {
 	var me = this;
 	var peerBroker, rtc, myCtx, mainCtx = "ee58a08bf68043539ef41d7c0ed0c553";
 	var isAudioMuted = false;
