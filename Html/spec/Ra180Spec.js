@@ -1283,6 +1283,44 @@ describe("Ra180", function() {
 			});
 		});
 
+		describe("RTC On/Off", function () {
+			beforeEach(function () {
+				spyOn(rtcRadio, "enable").and.callThrough();
+				spyOn(rtcRadio, "disable").and.callThrough();
+				ra180 = getSystemUnderTest();
+			});
+
+			it("should enable RTC radio when in KLAR", function () {
+				ra180.setModKlar();
+				expect(rtcRadio.enable).toHaveBeenCalled();
+				ra180.setModOff();
+				expect(rtcRadio.disable).toHaveBeenCalled();
+			});
+
+			it("should enable RTC radio when in SKYDD", function () {
+				ra180.setModSkydd();
+				expect(rtcRadio.enable).toHaveBeenCalled();
+				ra180.setModOff();
+				expect(rtcRadio.disable).toHaveBeenCalled();
+			});
+
+			it("should enable RTC radio when in DRELÄ", function () {
+				ra180.setModDRelay();
+				expect(rtcRadio.enable).toHaveBeenCalled();
+				ra180.setModOff();
+				expect(rtcRadio.disable).toHaveBeenCalled();
+			});
+
+			it("should not disable RTC radio when switching between mods", function () {
+				ra180.setModKlar();
+				expect(rtcRadio.enable).toHaveBeenCalled();
+				ra180.setModSkydd();
+				ra180.setModDRelay();
+				ra180.setModKlar();
+				expect(rtcRadio.disable).not.toHaveBeenCalled();
+			});
+		});
+
 		describe("RTC Context", function() {
 			beforeEach(function() {
 				ra180.setModKlar();

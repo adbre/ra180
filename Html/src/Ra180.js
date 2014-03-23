@@ -343,9 +343,7 @@
 		}
 
 		if (key == "RESET") {
-			me.data.reset();
-			me.isEnabled(false);
-			runSelfTest(function() {});
+			reset();
 			return;
 		}
 		
@@ -469,6 +467,24 @@
 			currentMenu.refreshDisplay();
 		}
 	}
+
+	function setIsEnabled(isEnabled) {
+		var currentValue = me.isEnabled();
+		if (currentValue == isEnabled) return;
+		me.isEnabled(isEnabled);
+
+		if (isEnabled) {
+			rtcRadio.enable();
+		} else {
+			rtcRadio.disable();
+		}
+	}
+
+	function reset() {		
+		me.data.reset();
+		setIsEnabled(false);
+		runSelfTest(function() {});
+	}
 	
 	function setMod(newValue) {
 		var currentValue = me.mod();
@@ -477,9 +493,9 @@
 
 		var shouldStartAsync = false;
 
-		function start() {
+		function postSelfTest() {
 			me.display.setText("");
-			me.isEnabled(newValue != me.MOD_OFF);
+			setIsEnabled(newValue != me.MOD_OFF);
 			if (!shouldStartAsync) return;
 			clock.start();
 		}
@@ -491,15 +507,13 @@
 				shouldStartAsync = true;
 			}
 			
-			runSelfTest(function() {
-				start();
-			});
+			runSelfTest(postSelfTest);
 		} else if (newValue == me.MOD_OFF) {
 			if (currentMenu) {
 				currentMenu.close();
 			}
 
-			start();
+			postSelfTest();
 		} else {
 			refreshContext();
 		}
