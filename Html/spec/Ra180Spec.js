@@ -1693,8 +1693,22 @@ describe("Ra180", function() {
 		});
 
 		describe("NIV", function () {
+			it("should display empty", function () {
+				ra180.sendKey5();
+				expect(ra180.display.getPlainText()).toBe("N:      ");
+			});
 			it("should display title", function () {
 				ra180.sendKey5();
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("  (NIV) ");
+				ra180.sendKeyEnt();
+				expect(ra180.display.getPlainText()).toBe("        ");
+			});
+			it("should be read-only", function () {
+				ra180.sendKey5();
+				ra180.sendKeyAnd();
+				expect(ra180.display.getPlainText()).toBe("N:      ");
+				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toBe("  (NIV) ");
 				ra180.sendKeyEnt();
 				expect(ra180.display.getPlainText()).toBe("        ");

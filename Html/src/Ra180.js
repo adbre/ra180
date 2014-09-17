@@ -231,7 +231,12 @@
 			]
 		},
 		niv: {
-			title: "NIV"
+			title: "NIV",
+			submenus: [{
+				prefix: "N",
+				canEdit: false,
+				canSelect: true
+			}]
 		},
 		rap: {
 			title: "RAP"
