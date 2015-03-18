@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ra180", "Ra180\Ra180.csproj", "{ABDFD455-1039-4187-B88A-ABDBD3D0CB69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ra180.Tests", "Ra180.Tests\Ra180.Tests.csproj", "{B28198DB-8EDB-4717-98F2-AC2F6304C1FF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ABDFD455-1039-4187-B88A-ABDBD3D0CB69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABDFD455-1039-4187-B88A-ABDBD3D0CB69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABDFD455-1039-4187-B88A-ABDBD3D0CB69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABDFD455-1039-4187-B88A-ABDBD3D0CB69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B28198DB-8EDB-4717-98F2-AC2F6304C1FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B28198DB-8EDB-4717-98F2-AC2F6304C1FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B28198DB-8EDB-4717-98F2-AC2F6304C1FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B28198DB-8EDB-4717-98F2-AC2F6304C1FF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
