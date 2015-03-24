@@ -41,15 +41,30 @@
   <ItemGroup>
     <Compile Include="Dart380.cs" />
     <Compile Include="DelayedSynchronizationContext.cs" />
+    <Compile Include="EmptyRa180Network.cs" />
     <Compile Include="InstantSynchronizationContext.cs" />
+    <Compile Include="IRa180Network.cs" />
     <Compile Include="ISynchronizationContext.cs" />
     <Compile Include="LedCharacter.cs" />
     <Compile Include="LedDisplay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ra180.cs" />
     <Compile Include="Ra180Channel.cs" />
-    <Compile Include="Ra180Converter.cs" />
-    <Compile Include="Ra180KeyCode.cs" />
+    <Compile Include="Ra180ChannelData.cs" />
+    <Compile Include="Ra180ChannelDataCollection.cs" />
+    <Compile Include="Ra180Clock.cs" />
+    <Compile Include="Ra180Data.cs" />
+    <Compile Include="Ra180DataKey.cs" />
+    <Compile Include="Ra180DtmProgram.cs" />
+    <Compile Include="Ra180EditMenuItem.cs" />
+    <Compile Include="Ra180Eff.cs" />
+    <Compile Include="Ra180KdaProgram.cs" />
+    <Compile Include="Ra180Key.cs" />
+    <Compile Include="Ra180MenuProgram.cs" />
+    <Compile Include="Ra180Mod.cs" />
+    <Compile Include="Ra180Program.cs" />
+    <Compile Include="Ra180RdaProgram.cs" />
+    <Compile Include="Ra180TidProgram.cs" />
     <Compile Include="Ra180Volume.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

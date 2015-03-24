@@ -94,6 +94,12 @@ namespace Ra180
             ResumeLayout();
         }
 
+        public void SetTextFormat(string format, params object[] args)
+        {
+            var text = string.Format(format, args);
+            SetText(text);
+        }
+
         public void SetText(string text)
         {
             if (string.IsNullOrEmpty(text))

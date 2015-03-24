@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 
 namespace Ra180
 {
@@ -9,19 +9,25 @@ namespace Ra180
         internal const int SELFTEST_INTERVAL = 2000;
         internal const int SELFTEST = SELFTEST_INTERVAL * 4;
 
+        private readonly IRa180Network _network;
         private readonly ISynchronizationContext _synchronizationContext;
         private readonly LedDisplay _display = new LedDisplay(8);
 
+        private readonly Stack<Ra180Program> _programStack = new Stack<Ra180Program>();
+
         private Ra180Mod _mod;
-        private Ra180Channel _channel;
         private Ra180Volume _volume;
         private bool _online;
 
         private Ra180Clock _clock;
+        private readonly Ra180Data _data = new Ra180Data();
 
-        public Ra180(ISynchronizationContext synchronizationContext)
+        public Ra180(IRa180Network network, ISynchronizationContext synchronizationContext)
         {
+            if (network == null) throw new ArgumentNullException("network");
             if (synchronizationContext == null) throw new ArgumentNullException("synchronizationContext");
+            _network = network;
+            _network.ReceivedSynk += (sender, args) => _data.CurrentChannelData.Synk = true;
             _synchronizationContext = synchronizationContext;
         }
 
@@ -30,19 +36,19 @@ namespace Ra180
         public Ra180Mod Mod
         {
             get { return _mod; }
-            set { SendKey(Ra180Converter.ToKeyCode(value)); }
+            set { SendKey(Ra180Key.From(value)); }
         }
 
         public Ra180Channel Channel
         {
-            get { return _channel; }
-            set { SendKey(Ra180Converter.ToKeyCode(value));}
+            get { return Data.Channel; }
+            set { SendKey(Ra180Key.From(value)); }
         }
 
         public Ra180Volume Volume
         {
             get { return _volume; }
-            set { SendKey(Ra180Converter.ToKeyCode(value)); }
+            set { SendKey(Ra180Key.From(value)); }
         }
 
         internal Ra180Clock Clock
@@ -50,69 +56,129 @@ namespace Ra180
             get { return _clock; }
         }
 
-        public void SendKeys(params Ra180KeyCode[] keys)
+        internal Ra180Data Data { get { return _data; } }
+
+        public void SendKeys(string keys)
         {
+            if (keys.Contains(Ra180Key.NOLLST))
+            {
+                SendKey(Ra180Key.NOLLST);
+                return;
+            }
+
+            foreach (var character in keys)
+            {
+                SendKey(character.ToString(CultureInfo.InvariantCulture));
+            }
+        }
+
+        public void SendKeys(params string[] keys)
+        {
+            if (string.Join("", keys).Contains(Ra180Key.NOLLST))
+            {
+                SendKey(Ra180Key.NOLLST);
+                return;
+            }
+
             foreach (var key in keys)
                 SendKey(key);
         }
 
-        public void SendKey(Ra180KeyCode key)
+        public void SendKey(string key)
         {
-            SendKey(new Ra180KeyEventArgs {KeyCode = key});
+            if (HandleSystemEvents(key))
+            {
+                RefreshDisplay();
+                return;
+            }
+
+            SendKeyToPrograms(key);
         }
 
-        public void SendKey(Ra180KeyEventArgs args)
+        private bool HandleSystemEvents(string key)
         {
-            if (IsModKey(args.KeyCode))
+            Ra180Mod newMod;
+            if (Ra180Key.TryParseMod(key, out newMod))
             {
-                SetMod(Ra180Converter.ToMod(args.KeyCode));
-                return;
+                SetMod(newMod);
+                return true;
             }
 
             if (_mod == Ra180Mod.FR)
-                return;
+                return true;
 
-            if (args.KeyCode.HasFlag(Ra180KeyCode.Asterix | Ra180KeyCode.NumberSign))
+            if (key == Ra180Key.NOLLST)
             {
                 Reset();
-                return;
+                return true;
             }
 
-            if (args.KeyCode == Ra180KeyCode.BEL)
+            if (key == Ra180Key.BEL)
             {
                 _display.ChangeBrightness();
-                return;
+                return true;
+            }
+
+            Ra180Channel channel;
+            if (Ra180Key.TryParseChannel(key, out channel))
+            {
+                _data.Channel = channel;
+                return true;
             }
 
             if (!_online)
-                return;
+                return true;
 
-            if (_currentMenus.Count > 0)
-            {
-                var currentMenu = _currentMenus.Peek();
-                if (currentMenu != null)
-                {
-                    currentMenu.SendKey(args);
-                    currentMenu.Display();
-                    return;
-                }
-            }
-
-            var newMenu = GetMenu(args.KeyCode);
-            if (newMenu != null)
-            {
-                _currentMenus.Push(newMenu);
-                newMenu.Closed += (sender, eventArgs) => _currentMenus.Pop();
-                newMenu.Display();
-            }
+            return false;
         }
 
-        private Ra180MenuItem GetMenu(Ra180KeyCode keyCode)
+        private void SendKeyToPrograms(string key)
         {
-            switch (keyCode)
+            if (SendKeyToCurrentProgram(key))
+                return;
+
+            StartNewProgram(key);
+        }
+
+        private bool SendKeyToCurrentProgram(string key)
+        {
+            var program = GetCurrentProgram();
+            if (program == null)
+                return false;
+
+            program.SendKey(key);
+            program.Display();
+            return true;
+        }
+
+        private Ra180Program GetCurrentProgram()
+        {
+            if (_programStack.Count == 0)
+                return null;
+
+            return _programStack.Peek();
+        }
+
+        private void StartNewProgram(string key)
+        {
+            var program = CreateProgram(key);
+            if (program == null)
+                return;
+
+            _programStack.Push(program);
+            program.Closed += (sender, eventArgs) => _programStack.Pop();
+            program.Display();
+        }
+
+        private Ra180Program CreateProgram(string key)
+        {
+            switch (key)
             {
-                case Ra180KeyCode.TID:
-                    return new Ra180TidMenu(this);
+                case Ra180Key.TID: return new Ra180TidProgram(this);
+                case Ra180Key.RDA: return new Ra180RdaProgram(this);
+                case Ra180Key.DTM: return new Ra180DtmProgram(this);
+                case Ra180Key.KDA: return new Ra180KdaProgram(this);
+                case Ra180Key.NYK: return new Ra180NykProgram(this);
 
                 default:
                     return null;
@@ -153,12 +219,6 @@ namespace Ra180
             _online = false;
         }
 
-        private bool IsModKey(Ra180KeyCode keyCode)
-        {
-            var modKeys = new[] {Ra180KeyCode.ModFR, Ra180KeyCode.ModKLAR, Ra180KeyCode.ModSKYDD, Ra180KeyCode.ModDRELÄ};
-            return modKeys.Contains(keyCode);
-        }
-
         private void RunSelfTest()
         {
             _online = false;
@@ -178,7 +238,7 @@ namespace Ra180
                     _synchronizationContext.Schedule(() =>
                     {
                         Display.Clear();
-                        
+
                         if (_clock == null)
                             _clock = new Ra180Clock(this, _synchronizationContext);
 
@@ -188,270 +248,47 @@ namespace Ra180
             }, SELFTEST_INTERVAL);
         }
 
-        private Stack<Ra180MenuItem> _currentMenus = new Stack<Ra180MenuItem>();
-
         public void RefreshDisplay()
         {
-            if (_currentMenus.Count <= 0) return;
-            var currentMenu = _currentMenus.Peek();
-            if (currentMenu == null) return;
-            currentMenu.Display();
-        }
-    }
+            if (!_online)
+                return;
 
-    public class Ra180Clock
-    {
-        private readonly Ra180 _ra180;
-        private readonly ISynchronizationContext _synchronizationContext;
-        private readonly object _token;
-
-        public Ra180Clock(Ra180 ra180, ISynchronizationContext synchronizationContext)
-        {
-            if (synchronizationContext == null) throw new ArgumentNullException("synchronizationContext");
-            _ra180 = ra180;
-            _synchronizationContext = synchronizationContext;
-            _token = _synchronizationContext.Repeat(Tick, 1000);
-
-            Day = 1;
-            Month = 1;
-        }
-
-        ~Ra180Clock()
-        {
-            _synchronizationContext.Cancel(_token);
-        }
-
-        public int Second { get; private set; }
-        public int Minute { get; private set; }
-        public int Hour { get; private set; }
-        public int Day { get; private set; }
-        public int Month { get; private set; }
-
-        private void Tick()
-        {
-            Second += 1;
-
-            if (Second >= 60)
+            var program = GetCurrentProgram();
+            if (program != null)
             {
-                Second = 0;
-                Minute++;
-            }
-
-            if (Minute >= 60)
-            {
-                Minute = 0;
-                Hour++;
-            }
-
-            if (Hour >= 24)
-            {
-                Hour = 0;
-                Day++;
-            }
-
-            _ra180.RefreshDisplay();
-        }
-
-        public bool TrySetTime(string text)
-        {
-            return false;
-        }
-
-        public bool TrySetDate(string text)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetTime()
-        {
-            return string.Format("{0:00}{1:00}{2:00}", Hour, Minute, Second);
-        }
-
-        public string GetDate()
-        {
-            return string.Format("{0:00}{1:00}", Month, Day);
-        }
-    }
-
-    internal class Ra180TidMenu : Ra180MenuItemContainer
-    {
-        public Ra180TidMenu(Ra180 ra180) : base(ra180)
-        {
-            Title = "TID";
-
-            AddChild(new Ra180EditMenuItem
-            {
-                Prefix = () => "T",
-                MaxInputTextLength = () => 6,
-                CanEdit = () => true,
-                SaveInput = text =>
-                {
-                    if (text.Length == 6 && ra180.Clock.TrySetTime(text))
-                        return true;
-
-                    return false;
-                },
-                GetValue = () => ra180.Clock.GetTime()
-            });
-
-            AddChild(new Ra180EditMenuItem
-            {
-                Prefix = () => "DAT",
-                MaxInputTextLength = () => 4,
-                CanEdit = () => true,
-                SaveInput = text =>
-                {
-                    if (text.Length == 4 && ra180.Clock.TrySetDate(text))
-                        return true;
-
-                    return false;
-                },
-                GetValue = () => ra180.Clock.GetDate()
-            });
-        }
-    }
-
-    internal class Ra180EditMenuItem : Ra180MenuItem
-    {
-        public Ra180EditMenuItem()
-        {
-            Prefix = () => string.Empty;
-
-            MaxInputTextLength = () =>
-            {
-                var prefix = Prefix() ?? string.Empty;
-                return Ra180.Display.Count - prefix.Length - 1;
-            };
-
-            CanEdit = () => false;
-            SaveInput = text => true;
-            GetValue = () => null;
-        }
-
-        public Func<string> Prefix { get; set; }
-        public Func<int> MaxInputTextLength { get; set; }
-        public Func<bool> CanEdit { get; set; }
-        public Func<string, bool> SaveInput { get; set; }
-        public Func<string> GetValue { get; set; }
-
-        public override void Display()
-        {
-            if (CanEdit())
-            {
-                Ra180.Display.SetText(Prefix() + ":" + GetValue());
-            }
-            else
-            {
-                Ra180.Display.SetText(Prefix() + "=" + GetValue());
-            }
-        }
-    }
-
-    internal abstract class Ra180MenuItemContainer : Ra180MenuItem
-    {
-        private readonly List<Ra180MenuItem> _children = new List<Ra180MenuItem>();
-        private int _currentMenuItemIndex = 0;
-
-        protected Ra180MenuItemContainer(Ra180 ra180) : base(ra180)
-        {
-        }
-
-        public string Title { get; set; }
-
-        public IList<Ra180MenuItem> Children { get { return _children; } }
-
-        public void AddChild(Ra180MenuItem child)
-        {
-            child.Ra180 = Ra180;
-            _children.Add(child);
-        }
-
-        public override bool SendKey(Ra180KeyEventArgs e)
-        {
-            if (e.KeyCode == Ra180KeyCode.ENT)
-            {
-                _currentMenuItemIndex++;
-                if (_currentMenuItemIndex > _children.Count)
-                    Close();
-
-                return true;
-            }
-
-            if (_currentMenuItemIndex < _children.Count)
-            {
-                var currentMenuItem = _children[_currentMenuItemIndex];
-                return currentMenuItem.SendKey(e);
-            }
-
-            return base.SendKey(e);
-        }
-
-        public override void Display()
-        {
-            if (_currentMenuItemIndex < _children.Count)
-            {
-                var currentMenuItem = _children[_currentMenuItemIndex];
-                currentMenuItem.Display();
+                program.Display();
                 return;
             }
 
-            Ra180.Display.SetText(string.Format("({0})", Title));
+            Display.Clear();
         }
     }
 
-    internal abstract class Ra180MenuItem
+    internal class Ra180NykProgram : Ra180MenuProgram
     {
-
-        protected Ra180MenuItem(Ra180 ra180)
+        public Ra180NykProgram(Ra180 ra180) : base(ra180)
         {
-            Ra180 = ra180;
-        }
+            Title = "NYK";
 
-        protected Ra180MenuItem()
-        {
-        }
-
-        public Ra180 Ra180 { get; set; }
-
-        public virtual bool SendKey(Ra180KeyEventArgs e)
-        {
-            if (e.KeyCode == Ra180KeyCode.SLT)
+            AddChild(new Ra180EditMenuItem
             {
-                Close();
-                return true;
-            }
+                Prefix = () => "NYK",
+                CanEdit = () =>
+                {
+                    var any = Ra180.Data.CurrentChannelData.NYK;
+                    var pny = Ra180.Data.CurrentChannelData.PNY;
 
-            return false;
+                    return any != null || pny != null;
+                },
+                GetValue = () =>
+                {
+                    var any = Ra180.Data.CurrentChannelData.NYK;
+                    if (any == null)
+                        return "###";
+
+                    return any.Checksum;
+                }
+            });
         }
-
-        public event EventHandler Closed;
-
-        public virtual void Display()
-        {
-        }
-
-        public virtual void Close()
-        {
-            OnClosed();
-        }
-
-        protected virtual void OnClosed()
-        {
-            EventHandler handler = Closed;
-            if (handler != null) handler(this, EventArgs.Empty);
-        }
-    }
-
-    public class Ra180KeyEventArgs
-    {
-        public Ra180KeyCode KeyCode { get; set; }
-    }
-
-    public enum Ra180Mod
-    {
-        FR,
-        KLAR,
-        SKYDD,
-        DRELÄ
     }
 }
