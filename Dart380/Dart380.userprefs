@@ -1,8 +1,8 @@
 ﻿<Properties StartupItem="Dart380_Android\Dart380_Android.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Android.015d321fed640402" />
-  <MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench ActiveDocument="Dart380_Android\Dart380View.cs">
     <Files>
-      <File FileName="Dart380_Android\MainActivity.fs" Line="1" Column="1" />
+      <File FileName="Dart380_Android\Dart380View.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
