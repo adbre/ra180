@@ -6,18 +6,51 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.OS;
+using Ra180;
+using System.Timers;
 
 namespace Dart380_Android
 {
 	[Activity (Label = "Dart380_Android", MainLauncher = true, Icon = "@drawable/icon", Theme = "@android:style/Theme.Black.NoTitleBar.Fullscreen")]
 	public class MainActivity : Activity
 	{
+		private const int BlinkingIntervalInMilliseconds = 500;
+		private readonly Timer _timer;
+		private Dart380View _view;
+
+		public MainActivity ()
+		{
+			_timer = new Timer (BlinkingIntervalInMilliseconds);
+			_timer.Elapsed += (sender, e) =>  {
+				if (_view != null) {
+					RunOnUiThread(() =>  _view.ToggleBlinking());
+				}
+			};
+		}
+
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
 
 			// Set our view from the "main" layout resource
-			SetContentView (new Dart380View(this));
+			_view = new Dart380View (this, new FakeDart380());
+			SetContentView (_view);
+
+			_timer.Start ();
+		}
+
+		protected override void OnStop ()
+		{
+			_timer.Stop ();
+			base.OnStop ();
+		}
+	}
+
+	public class FakeDart380 : Dart380Base {
+
+		public override void SendKey (string key)
+		{
+			LargeDisplay.SetText (string.Format ("Key={0}", key), 3, trailingUnderscore: true);
 		}
 	}
 }

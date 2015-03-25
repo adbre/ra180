@@ -51,7 +51,9 @@
     <Compile Include="DrawableExtensions.cs" />
     <Compile Include="RectExtensions.cs" />
     <Compile Include="BitmapExtensions.cs" />
-    <Compile Include="Dart380Keyboard.cs" />
+    <Compile Include="Dart380Button.cs" />
+    <Compile Include="HotArea.cs" />
+    <Compile Include="Dart380Control.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -71,5 +73,11 @@
   <ItemGroup>
     <Folder Include="Resources\drawable\" />
     <Folder Include="Resources\layout\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ra180\Ra180.csproj">
+      <Project>{A181FB6F-78AE-46CC-95FB-BF1FA22D28FC}</Project>
+      <Name>Ra180</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

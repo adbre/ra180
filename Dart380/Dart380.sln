@@ -1,7 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dart380_Android", "Dart380_Android\Dart380_Android.csproj", "{12F55839-6D3C-4FA3-B012-074D4FD36D3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ra180", "Ra180\Ra180.csproj", "{A181FB6F-78AE-46CC-95FB-BF1FA22D28FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ra180.Tests", "Ra180.Tests\Ra180.Tests.csproj", "{E89C7EFD-79D5-43C6-9758-891102DC18E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,5 +19,16 @@ Global
 		{12F55839-6D3C-4FA3-B012-074D4FD36D3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12F55839-6D3C-4FA3-B012-074D4FD36D3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12F55839-6D3C-4FA3-B012-074D4FD36D3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A181FB6F-78AE-46CC-95FB-BF1FA22D28FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A181FB6F-78AE-46CC-95FB-BF1FA22D28FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A181FB6F-78AE-46CC-95FB-BF1FA22D28FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A181FB6F-78AE-46CC-95FB-BF1FA22D28FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E89C7EFD-79D5-43C6-9758-891102DC18E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E89C7EFD-79D5-43C6-9758-891102DC18E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E89C7EFD-79D5-43C6-9758-891102DC18E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E89C7EFD-79D5-43C6-9758-891102DC18E0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

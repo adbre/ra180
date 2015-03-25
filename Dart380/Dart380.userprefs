@@ -1,8 +1,16 @@
 ﻿<Properties StartupItem="Dart380_Android\Dart380_Android.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Android.015d321fed640402" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Dart380_Android\Dart380View.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Ra180\Ra180DisplayCharacter.cs">
     <Files>
-      <File FileName="Dart380_Android\Dart380View.cs" Line="1" Column="1" />
+      <File FileName="Dart380_Android\Dart380View.cs" Line="3" Column="3" />
+      <File FileName="Dart380_Android\Dart380Controls.cs" Line="4" Column="4" />
+      <File FileName="Dart380_Android\RectExtensions.cs" Line="1" Column="1" />
+      <File FileName="Dart380_Android\HotArea.cs" Line="4" Column="4" />
+      <File FileName="Dart380_Android\Dart380Button.cs" Line="1" Column="1" />
+      <File FileName="Dart380_Android\MainActivity.cs" Line="19" Column="19" />
+      <File FileName="Ra180\Ra180DisplayCharacter.cs" Line="3" Column="3" />
+      <File FileName="Ra180\Ra180Display.cs" Line="2" Column="2" />
+      <File FileName="Ra180\ChangeableBase.cs" Line="4" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
