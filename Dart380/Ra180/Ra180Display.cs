@@ -6,8 +6,14 @@ using System.Text;
 namespace Ra180
 {
 	public class Ra180Display : ChangeableBase
-	{
+    {
+        private const int BRIGHTNESS_MINIMUM = 0;
+        private const int BRIGHTNESS_MAXIMUM = 5;
+        private const int BRIGHTNESS_DEFAULT = 3;
+
 		private readonly List<Ra180DisplayCharacter> _characters;
+
+        private int _brightness = BRIGHTNESS_DEFAULT;
 
 	    public Ra180Display() : this(8)
 	    {
@@ -27,7 +33,19 @@ namespace Ra180
 			get { return _characters; }
 		}
 
-		public void SetText(string text) {
+        public int Length { get { return Characters.Count; } }
+
+        public int Brightness { get { return _brightness; } }
+
+	    public void ChangeBrightness()
+	    {
+	        _brightness++;
+
+	        if (_brightness > BRIGHTNESS_MAXIMUM)
+	            _brightness = BRIGHTNESS_MINIMUM;
+	    }
+
+	    public void SetText(string text) {
 			SetText (text, new int[0], new int[0]);
 		}
 

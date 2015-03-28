@@ -9,24 +9,46 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ra180", "Ra180\Ra180.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ra180.Tests", "Ra180.Tests\Ra180.Tests.csproj", "{E89C7EFD-79D5-43C6-9758-891102DC18E0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ra180.Server", "Ra180.Server\Ra180.Server.csproj", "{594D8B85-CF10-4269-A62F-B1E408ADD417}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ra180.DebugWebClient", "Ra180.DebugWebClient\Ra180.DebugWebClient.csproj", "{74A35896-11E1-4AC4-A4A3-1C4A9287B83E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug (without Xamarin)|Any CPU = Debug (without Xamarin)|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12F55839-6D3C-4FA3-B012-074D4FD36D3F}.Debug (without Xamarin)|Any CPU.ActiveCfg = Debug|Any CPU
 		{12F55839-6D3C-4FA3-B012-074D4FD36D3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{12F55839-6D3C-4FA3-B012-074D4FD36D3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12F55839-6D3C-4FA3-B012-074D4FD36D3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12F55839-6D3C-4FA3-B012-074D4FD36D3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A181FB6F-78AE-46CC-95FB-BF1FA22D28FC}.Debug (without Xamarin)|Any CPU.ActiveCfg = Debug|Any CPU
+		{A181FB6F-78AE-46CC-95FB-BF1FA22D28FC}.Debug (without Xamarin)|Any CPU.Build.0 = Debug|Any CPU
 		{A181FB6F-78AE-46CC-95FB-BF1FA22D28FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A181FB6F-78AE-46CC-95FB-BF1FA22D28FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A181FB6F-78AE-46CC-95FB-BF1FA22D28FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A181FB6F-78AE-46CC-95FB-BF1FA22D28FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E89C7EFD-79D5-43C6-9758-891102DC18E0}.Debug (without Xamarin)|Any CPU.ActiveCfg = Debug|Any CPU
+		{E89C7EFD-79D5-43C6-9758-891102DC18E0}.Debug (without Xamarin)|Any CPU.Build.0 = Debug|Any CPU
 		{E89C7EFD-79D5-43C6-9758-891102DC18E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E89C7EFD-79D5-43C6-9758-891102DC18E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E89C7EFD-79D5-43C6-9758-891102DC18E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E89C7EFD-79D5-43C6-9758-891102DC18E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{594D8B85-CF10-4269-A62F-B1E408ADD417}.Debug (without Xamarin)|Any CPU.ActiveCfg = Debug|Any CPU
+		{594D8B85-CF10-4269-A62F-B1E408ADD417}.Debug (without Xamarin)|Any CPU.Build.0 = Debug|Any CPU
+		{594D8B85-CF10-4269-A62F-B1E408ADD417}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{594D8B85-CF10-4269-A62F-B1E408ADD417}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{594D8B85-CF10-4269-A62F-B1E408ADD417}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{594D8B85-CF10-4269-A62F-B1E408ADD417}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74A35896-11E1-4AC4-A4A3-1C4A9287B83E}.Debug (without Xamarin)|Any CPU.ActiveCfg = Debug|Any CPU
+		{74A35896-11E1-4AC4-A4A3-1C4A9287B83E}.Debug (without Xamarin)|Any CPU.Build.0 = Debug|Any CPU
+		{74A35896-11E1-4AC4-A4A3-1C4A9287B83E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74A35896-11E1-4AC4-A4A3-1C4A9287B83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74A35896-11E1-4AC4-A4A3-1C4A9287B83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74A35896-11E1-4AC4-A4A3-1C4A9287B83E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

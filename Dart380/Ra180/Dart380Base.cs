@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Ra180
+﻿namespace Ra180
 {
-	public abstract class Dart380Base : IDart380
+	public abstract class Dart380Base : Ra180Device, IDart380
 	{
-		private Ra180Display _largeDisplay;
-		private Ra180Display _smallDisplay;
+		private readonly Ra180Display _largeDisplay;
+		private readonly Ra180Display _smallDisplay;
 
 		protected Dart380Base ()
 		{
@@ -26,7 +21,13 @@ namespace Ra180
 			get { return _smallDisplay; }
 		}
 
-		public abstract void SendKey (string key);
+        public Ra180 Ra180 { get; set; }
+
+	    protected override void ClearDisplay()
+	    {
+	        _largeDisplay.Clear();
+            _smallDisplay.Clear();
+	    }
 	}
 }
 

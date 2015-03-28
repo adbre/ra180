@@ -1,16 +1,17 @@
 ﻿<Properties StartupItem="Dart380_Android\Dart380_Android.csproj">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Android.015d321fed640402" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Ra180\Ra180DisplayCharacter.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Android.SelectDevice" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Ra180.Transports.SignalR\MyClass.cs">
     <Files>
-      <File FileName="Dart380_Android\Dart380View.cs" Line="3" Column="3" />
-      <File FileName="Dart380_Android\Dart380Controls.cs" Line="4" Column="4" />
-      <File FileName="Dart380_Android\RectExtensions.cs" Line="1" Column="1" />
+      <File FileName="Dart380_Android\Dart380View.cs" Line="33" Column="33" />
+      <File FileName="Dart380_Android\RectExtensions.cs" Line="2" Column="2" />
       <File FileName="Dart380_Android\HotArea.cs" Line="4" Column="4" />
       <File FileName="Dart380_Android\Dart380Button.cs" Line="1" Column="1" />
-      <File FileName="Dart380_Android\MainActivity.cs" Line="19" Column="19" />
-      <File FileName="Ra180\Ra180DisplayCharacter.cs" Line="3" Column="3" />
-      <File FileName="Ra180\Ra180Display.cs" Line="2" Column="2" />
-      <File FileName="Ra180\ChangeableBase.cs" Line="4" Column="4" />
+      <File FileName="Dart380_Android\MainActivity.cs" Line="29" Column="29" />
+      <File FileName="Ra180\Ra180DisplayCharacter.cs" Line="4" Column="4" />
+      <File FileName="Ra180\Ra180Display.cs" Line="4" Column="4" />
+      <File FileName="Ra180\ChangeableBase.cs" Line="1" Column="1" />
+      <File FileName="c:\dev\ra180\Dart380\Ra180.Server\Program.cs" Line="1" Column="1" />
+      <File FileName="Ra180.Transports.SignalR\MyClass.cs" Line="7" Column="7" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

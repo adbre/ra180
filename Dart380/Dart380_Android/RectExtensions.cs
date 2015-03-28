@@ -7,7 +7,6 @@ using Android.Graphics;
 
 namespace Dart380_Android
 {
-
 	public static class RectExtensions
 	{
 		public static Rect PlaceInside(this Rect src, Rect container)
