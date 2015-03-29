@@ -79,9 +79,12 @@ namespace Ra180
                     return true;
                 }
 
-                if (AcceptInput(EditValue, key) && EditValue.Length < MaxInputTextLength())
+                if (AcceptInput(EditValue, key))
                 {
-                    EditValue += key;
+                    if (EditValue.Length < MaxInputTextLength())
+                        EditValue += key;
+                    else
+                        EditValue = EditValue.Substring(0, EditValue.Length - 1) + key;
                     return true;
                 }
             }
@@ -102,10 +105,13 @@ namespace Ra180
                 if (IsEditing)
                 {
                     var editValue = EditValue;
-                    if (editValue.Length < MaxInputTextLength())
-                        Display.SetText(Prefix() + ":" + EditValue, EditValue.Length, EditValue.Length);
-                    else
-                        Display.SetText(Prefix() + ":" + EditValue, EditValue.Length - 1, null);
+                    var text = string.Format("{0}:{1}", Prefix(), editValue);
+                    var blinkingPos = text.Length;
+                    var underscorePos = text.Length;
+                    if (text.Length >= Display.Length)
+                        blinkingPos = text.Length - 1;
+
+                    Display.SetText(text, blinkingPos, underscorePos);
                 }
                 else
                 {

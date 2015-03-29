@@ -104,6 +104,7 @@ namespace Ra180
                 AcceptInput = (text, key) => key.All(Char.IsDigit),
                 IsDisabled = () =>
                 {
+                    return false;
                     return Ra180.Data.CurrentChannelData.BD1.Start == 90;
                 },
                 SaveInput = text =>

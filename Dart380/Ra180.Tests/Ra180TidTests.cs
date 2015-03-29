@@ -93,7 +93,7 @@ namespace Ra180.Tests
         }
 
         [Test]
-        public void EditTime_IgnoreInputAfterDisplayIsFilled()
+        public void EditTime_OverwriteLastCharacterAfterDisplayIsFilled()
         {
             _ra180.SendKey(Ra180Key.TID);
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("T:000000"), "#1");
@@ -103,7 +103,7 @@ namespace Ra180.Tests
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("T:123456"), "#8");
 
             _ra180.SendKey(Ra180Key.Num7);
-            Assert.That(_ra180.Display.ToString(), Is.EqualTo("T:123456"), "#9");
+            Assert.That(_ra180.Display.ToString(), Is.EqualTo("T:123457"), "#9");
         }
 
         [Test]
@@ -170,11 +170,11 @@ namespace Ra180.Tests
             _ra180.SendKey(Ra180Key.TID);
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("T:000000"), "#1");
             _ra180.SendKey(Ra180Key.ÄND);
-            Assert.That(_ra180.Display.Characters.Skip(3).First().HasUnderscore, Is.True, "#3 HAsUnderscore");
+            Assert.That(_ra180.Display.Characters.Skip(2).First().HasUnderscore, Is.True, "#3 HasUnderscore");
             Assert.That(_ra180.Display.Characters.Count(c => c.HasUnderscore), Is.EqualTo(1), "#4 HasUnderscore - Count");
             _ra180.SendKey("1");
-            Assert.That(_ra180.Display.Characters.Skip(4).First().HasUnderscore, Is.True, "#3 HAsUnderscore");
-            Assert.That(_ra180.Display.Characters.Count(c => c.HasUnderscore), Is.EqualTo(1), "#4 HasUnderscore - Count");
+            Assert.That(_ra180.Display.Characters.Skip(3).First().HasUnderscore, Is.True, "#5 HasUnderscore");
+            Assert.That(_ra180.Display.Characters.Count(c => c.HasUnderscore), Is.EqualTo(1), "#6 HasUnderscore - Count");
         }
 
         [Test]
@@ -196,9 +196,6 @@ namespace Ra180.Tests
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("T:12345 "), "#7");
             _ra180.SendKey(Ra180Key.Num6);
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("T:123456"), "#8");
-            
-            _ra180.SendKey(Ra180Key.Num7);
-            Assert.That(_ra180.Display.ToString(), Is.EqualTo("T:123456"), "#9");
 
             _ra180.SendKey(Ra180Key.ÄND);
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("T:12345 "), "#10");

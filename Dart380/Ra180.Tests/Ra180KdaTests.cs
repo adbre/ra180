@@ -119,12 +119,12 @@ namespace Ra180.Tests
         }
 
         [Test]
-        public void should_not_display_BD2_when_BD1_is_9000()
+        public void should_display_b2_0000_when_bd1_is_9000()
         {
             _ra180.SendKey("4");
             _ra180.SendKey(Ra180Key.ENT);
             _ra180.SendKey(Ra180Key.ENT);
-            Assert.That(_ra180.Display.ToString(), Is.Not.StringMatching(@"^BD2:[0-9]{4}$"));
+            Assert.That(_ra180.Display.ToString(), Is.EqualTo("BD2:0000"));
         }
 
         [Test]
@@ -152,6 +152,8 @@ namespace Ra180.Tests
             Assert.That(_ra180.Display.ToString(), Is.StringMatching(@"^FR:[0-9]{5}$"));
             _ra180.SendKey(Ra180Key.ENT);
             Assert.That(_ra180.Display.ToString(), Is.StringMatching(@"^BD1:[0-9]{4}$"));
+            _ra180.SendKey(Ra180Key.ENT);
+            Assert.That(_ra180.Display.ToString(), Is.StringMatching(@"^BD2:0000$"));
             _ra180.SendKey(Ra180Key.ENT);
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("SYNK=NEJ"));
             _ra180.SendKey(Ra180Key.ENT);
@@ -184,9 +186,10 @@ namespace Ra180.Tests
         [Test]
         public void should_return_to_main_menu_on_SLT_from_SYNK()
         {
-            _ra180.SendKey("4");
-            _ra180.SendKey(Ra180Key.ENT);
-            _ra180.SendKey(Ra180Key.ENT);
+            _ra180.SendKey("4"); // FR
+            _ra180.SendKey(Ra180Key.ENT); // BD1
+            _ra180.SendKey(Ra180Key.ENT); // BD2
+            _ra180.SendKey(Ra180Key.ENT); // SYNK
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("SYNK=NEJ"));
             _ra180.SendKey(Ra180Key.SLT);
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("        "));
@@ -195,10 +198,11 @@ namespace Ra180.Tests
         [Test]
         public void should_return_to_main_menu_on_SLT_from_PNY()
         {
-            _ra180.SendKey("4");
-            _ra180.SendKey(Ra180Key.ENT);
-            _ra180.SendKey(Ra180Key.ENT);
-            _ra180.SendKey(Ra180Key.ENT);
+            _ra180.SendKey("4"); // FR
+            _ra180.SendKey(Ra180Key.ENT); // BD1
+            _ra180.SendKey(Ra180Key.ENT); // BD2
+            _ra180.SendKey(Ra180Key.ENT); // SYNK
+            _ra180.SendKey(Ra180Key.ENT); // PNY
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("PNY:### "));
             _ra180.SendKey(Ra180Key.SLT);
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("        "));
@@ -207,10 +211,11 @@ namespace Ra180.Tests
         [Test]
         public void should_return_to_main_menu_on_SLT_from_KDA()
         {
-            _ra180.SendKey("4");
-            _ra180.SendKey(Ra180Key.ENT);
-            _ra180.SendKey(Ra180Key.ENT);
-            _ra180.SendKey(Ra180Key.ENT);
+            _ra180.SendKey("4"); // FR
+            _ra180.SendKey(Ra180Key.ENT); // BD1
+            _ra180.SendKey(Ra180Key.ENT); // BD2
+            _ra180.SendKey(Ra180Key.ENT); // SYNK
+            _ra180.SendKey(Ra180Key.ENT); // PNY
             _ra180.SendKey(Ra180Key.ENT);
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("  (KDA) "));
             _ra180.SendKey(Ra180Key.SLT);
@@ -222,6 +227,7 @@ namespace Ra180.Tests
         {
             _network.Raise(m => m.ReceivedSynk += null, EventArgs.Empty);
             _ra180.SendKey("4");
+            _ra180.SendKey(Ra180Key.ENT);
             _ra180.SendKey(Ra180Key.ENT);
             _ra180.SendKey(Ra180Key.ENT);
             Assert.That(_ra180.Display.ToString(), Is.EqualTo("SYNK:JA "));
@@ -401,6 +407,8 @@ namespace Ra180.Tests
             Assert.That(_ra180.Display.ToString(), Is.StringMatching("^FR:"));
             _ra180.SendKey(Ra180Key.ENT); // BD1
             Assert.That(_ra180.Display.ToString(), Is.StringMatching("^BD1:"));
+            _ra180.SendKey(Ra180Key.ENT); // BD2
+            Assert.That(_ra180.Display.ToString(), Is.StringMatching("^BD2:"));
             _ra180.SendKey(Ra180Key.ENT); // SYNK
             Assert.That(_ra180.Display.ToString(), Is.StringMatching("^SYNK"));
             _ra180.SendKey(Ra180Key.ENT); // PNY=###
@@ -436,6 +444,8 @@ namespace Ra180.Tests
             Assert.That(_ra180.Display.ToString(), Is.StringMatching("^FR:"));
             _ra180.SendKey(Ra180Key.ENT);
             Assert.That(_ra180.Display.ToString(), Is.StringMatching("^BD1:"));
+            _ra180.SendKey(Ra180Key.ENT);
+            Assert.That(_ra180.Display.ToString(), Is.StringMatching("^BD2:"));
             _ra180.SendKey(Ra180Key.ENT);
             Assert.That(_ra180.Display.ToString(), Is.StringMatching("^SYNK"));
             _ra180.SendKey(Ra180Key.ENT);

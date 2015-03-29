@@ -98,6 +98,8 @@
             switch (key)
             {
                 case Ra180Key.TID: return new Ra180TidProgram(Ra180, SmallDisplay);
+                case Ra180Key.KDA: return new Ra180KdaProgram(Ra180, SmallDisplay);
+                case Ra180Key.RDA: return new Ra180RdaProgram(Ra180, SmallDisplay, true);
 
                 default:
                     return null;

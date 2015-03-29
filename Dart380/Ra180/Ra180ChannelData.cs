@@ -15,8 +15,8 @@ namespace Ra180
         public Ra180ChannelData()
         {
             FR = 00000;
-            _bd1 = new Ra180Band();
-            _bd2 = new Ra180Band();
+            _bd1 = new Ra180Band() {Start = 90, End = 00};
+            _bd2 = new Ra180Band() {Start = 00, End = 00};
 
             _bd1.Changed += (sender, args) => OnChanged(args);
             _bd2.Changed += (sender, args) => OnChanged(args);
