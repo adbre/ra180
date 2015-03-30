@@ -56,6 +56,7 @@
     <Compile Include="Ra180DtmProgram.cs" />
     <Compile Include="Ra180EditMenuItem.cs" />
     <Compile Include="Ra180Eff.cs" />
+    <Compile Include="Ra180EffProgram.cs" />
     <Compile Include="Ra180KdaProgram.cs" />
     <Compile Include="Ra180Key.cs" />
     <Compile Include="Ra180MenuProgram.cs" />

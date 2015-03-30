@@ -105,11 +105,17 @@ namespace Ra180
                 IsDisabled = () =>
                 {
                     return false;
-                    return Ra180.Data.CurrentChannelData.BD1.Start == 90;
                 },
                 SaveInput = text =>
                 {
-                    if (string.IsNullOrEmpty(text)) return false;
+                    if (string.IsNullOrEmpty(text))
+                    {
+                        Ra180.Data.CurrentChannelData.BD2.Start = 00;
+                        Ra180.Data.CurrentChannelData.BD2.End = 00;
+                        CurrentChild = _bd1;
+                        return true;
+                    }
+
                     if (text.Length != 4) return false;
                     if (!text.All(Char.IsDigit)) return false;
 

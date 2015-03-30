@@ -97,9 +97,12 @@
 
             switch (key)
             {
+                case Ra180Key.EFF: return new Ra180EffProgram(Ra180, SmallDisplay);
+
                 case Ra180Key.TID: return new Ra180TidProgram(Ra180, SmallDisplay);
                 case Ra180Key.KDA: return new Ra180KdaProgram(Ra180, SmallDisplay);
                 case Ra180Key.RDA: return new Ra180RdaProgram(Ra180, SmallDisplay, true);
+                case Ra180Key.NYK: return new Ra180NykProgram(Ra180, SmallDisplay);
 
                 default:
                     return null;
