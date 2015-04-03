@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using Ra180.Devices.Dart380;
 
 namespace Ra180.Tests
 {

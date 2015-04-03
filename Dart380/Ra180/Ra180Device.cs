@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using Ra180.Programs;
 
 namespace Ra180
 {
     public abstract class Ra180Device
     {
-        private readonly Stack<Ra180Program> _programStack = new Stack<Ra180Program>();
+        private readonly Stack<ProgramBase> _programStack = new Stack<ProgramBase>();
 
         public abstract bool IsOnline { get; }
         public abstract bool IsPoweredOn { get; }
@@ -56,7 +57,7 @@ namespace Ra180
                 return true;
             }
 
-            if (key == Ra180Key.RESET)
+            if (key == Ra180Key.NOLLST)
             {
                 OnKeyReset();
                 return true;
@@ -108,7 +109,7 @@ namespace Ra180
             return true;
         }
 
-        protected Ra180Program GetCurrentProgram()
+        protected ProgramBase GetCurrentProgram()
         {
             if (_programStack.Count == 0)
                 return null;
@@ -128,7 +129,7 @@ namespace Ra180
             return true;
         }
 
-        protected abstract Ra180Program CreateProgram(string key);
+        protected abstract ProgramBase CreateProgram(string key);
 
 
         protected void RefreshDisplay()

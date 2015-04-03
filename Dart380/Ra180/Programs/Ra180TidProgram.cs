@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Ra180
+namespace Ra180.Programs
 {
     internal class Ra180TidProgram : Ra180MenuProgram
     {

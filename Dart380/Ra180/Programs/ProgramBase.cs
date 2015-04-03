@@ -1,22 +1,23 @@
 using System;
 
-namespace Ra180
+namespace Ra180.Programs
 {
-    public abstract class Ra180Program
+    public abstract class ProgramBase
     {
-        protected Ra180Program(Ra180 ra180, Ra180Display display)
+        protected ProgramBase(Ra180Device device, Ra180Display display)
         {
-            Ra180 = ra180;
+            Device = device;
             Display = display;
         }
 
-        protected Ra180Program()
+        protected ProgramBase()
         {
         }
 
         public string Title { get; set; }
 
-        public Ra180 Ra180 { get; set; }
+        public Ra180Device Device { get; set; }
+
         public Ra180Display Display { get; set; }
 
         public bool IsClosed { get; private set; }
@@ -56,6 +57,24 @@ namespace Ra180
         {
             EventHandler handler = Closed;
             if (handler != null) handler(this, EventArgs.Empty);
+        }
+    }
+
+    public abstract class ProgramBase<TDevice> : ProgramBase
+        where TDevice : Ra180Device
+    {
+        protected ProgramBase(TDevice device, Ra180Display display) : base(device, display)
+        {
+        }
+
+        protected ProgramBase()
+        {
+        }
+
+        public new TDevice Device
+        {
+            get { return (TDevice)base.Device; }
+            set { base.Device = value; }
         }
     }
 }

@@ -1,60 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using Ra180.Programs;
 
 namespace Ra180
 {
-    public static class Dart380Key
-    {
-        public const string ModFRÅN = Ra180Key.ModFRÅN;
-        public const string ModTE = "TE";
-        public const string ModKLAR = Ra180Key.ModKLAR;
-        public const string ModSKYDD = Ra180Key.ModSKYDD;
-        public const string ModDRELÄ = Ra180Key.ModDRELÄ;
-        public const string ModTD = "TD";
-        public const string ModNG = "NG";
-        public const string ModFmP = "FmP";
-
-        public static bool TryParseMod(string key, out Dart380Mod mod)
-        {
-            switch (key)
-            {
-                case ModFRÅN:
-                    mod = Dart380Mod.FR;
-                    return true;
-
-                case ModTE:
-                    mod = Dart380Mod.TE;
-                    return true;
-
-                case ModKLAR:
-                    mod = Dart380Mod.KLAR;
-                    return true;
-
-                case ModSKYDD:
-                    mod = Dart380Mod.SKYDD;
-                    return true;
-
-                case ModDRELÄ:
-                    mod = Dart380Mod.DRELÄ;
-                    return true;
-
-                case ModTD:
-                    mod = Dart380Mod.TD;
-                    return true;
-
-                case ModFmP:
-                    mod = Dart380Mod.FmP;
-                    return true;
-
-                default:
-                    mod = default(Dart380Mod);
-                    return false;
-            }
-        }
-    }
-
     public static class Ra180Key
     {
         public const string Num0 = "0";
@@ -88,7 +38,6 @@ namespace Ra180
         public const string ENT = "ENT";
 
         public const string NOLLST = Asterix + NumberSign;
-        public const string RESET = NOLLST;
 
         public const string ModFRÅN = "FRÅN";
         public const string ModKLAR = "KLAR";

@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
 
-namespace Ra180
+namespace Ra180.Programs
 {
-    internal abstract class Ra180MenuProgram : Ra180Program
+    public abstract class MenuProgram<TDevice> : ProgramBase<TDevice> where TDevice : Ra180Device
     {
-        private readonly List<Ra180Program> _children = new List<Ra180Program>();
+        private readonly List<ProgramBase> _children = new List<ProgramBase>();
         private bool _initialized;
         private int _currentMenuItemIndex = -1;
-        private Ra180Program _currentChild;
+        private ProgramBase _currentChild;
 
-        protected Ra180MenuProgram(Ra180 ra180, Ra180Display display) : base(ra180, display)
+        protected MenuProgram(TDevice device, Ra180Display display) : base(device, display)
         {
         }
 
-        public IList<Ra180Program> Children { get { return _children; } }
+        public IList<ProgramBase> Children { get { return _children; } }
 
         protected int CurrentChildIndex
         {
@@ -22,7 +22,7 @@ namespace Ra180
             set { _currentMenuItemIndex = value; }
         }
 
-        protected Ra180Program CurrentChild
+        protected ProgramBase CurrentChild
         {
             get
             {
@@ -41,9 +41,9 @@ namespace Ra180
             }
         }
 
-        public void AddChild(Ra180Program child)
+        public void AddChild(ProgramBase child)
         {
-            child.Ra180 = Ra180;
+            child.Device = Device;
             child.Display = Display;
             _children.Add(child);
         }

@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Ra180
+namespace Ra180.Programs
 {
     internal class Ra180KdaProgram : Ra180MenuProgram
     {
@@ -21,7 +21,7 @@ namespace Ra180
             {
                 Prefix = () =>
                 {
-                    if (Ra180.Data.CurrentChannelData.IsKLARDisabled)
+                    if (Device.Data.CurrentChannelData.IsKLARDisabled)
                         return "**";
 
                     return "FR";
@@ -41,8 +41,8 @@ namespace Ra180
                     
                     if (text == "**")
                     {
-                        var value = Ra180.Data.CurrentChannelData.IsKLARDisabled;
-                        Ra180.Data.CurrentChannelData.IsKLARDisabled = !value;
+                        var value = Device.Data.CurrentChannelData.IsKLARDisabled;
+                        Device.Data.CurrentChannelData.IsKLARDisabled = !value;
                         return true;
                     }
 
@@ -52,19 +52,19 @@ namespace Ra180
 
                     if ((fr%25) != 0) return false;
 
-                    Ra180.Data.CurrentChannelData.FR = fr;
+                    Device.Data.CurrentChannelData.FR = fr;
                     return true;
                 },
                 GetValue = () =>
                 {
-                    if (Ra180.Data.CurrentChannelData.IsKLARDisabled && Ra180.Mod == Ra180Mod.KLAR)
+                    if (Device.Data.CurrentChannelData.IsKLARDisabled && Device.Mod == Ra180Mod.KLAR)
                         return "00000";
 
-                    return string.Format("{0:00000}", Ra180.Data.CurrentChannelData.FR);
+                    return string.Format("{0:00000}", Device.Data.CurrentChannelData.FR);
                 }
             });
 
-            if (Ra180.Mod == Ra180Mod.KLAR)
+            if (Device.Mod == Ra180Mod.KLAR)
                 return;
 
             _bd1 = new Ra180EditMenuItem
@@ -81,8 +81,8 @@ namespace Ra180
                     var from = short.Parse(text.Substring(0, 2));
                     var end = short.Parse(text.Substring(2, 2));
 
-                    Ra180.Data.CurrentChannelData.BD1.Start = @from;
-                    Ra180.Data.CurrentChannelData.BD1.End = end;
+                    Device.Data.CurrentChannelData.BD1.Start = @from;
+                    Device.Data.CurrentChannelData.BD1.End = end;
 
                     if (from == 90)
                         return true;
@@ -94,7 +94,7 @@ namespace Ra180
                     _bd2.EditValue = null;
                     return false;
                 },
-                GetValue = () => string.Format("{0:00}{1:00}", Ra180.Data.CurrentChannelData.BD1.Start, Ra180.Data.CurrentChannelData.BD1.End)
+                GetValue = () => string.Format("{0:00}{1:00}", Device.Data.CurrentChannelData.BD1.Start, Device.Data.CurrentChannelData.BD1.End)
             };
 
             _bd2 = new Ra180EditMenuItem
@@ -110,8 +110,8 @@ namespace Ra180
                 {
                     if (string.IsNullOrEmpty(text))
                     {
-                        Ra180.Data.CurrentChannelData.BD2.Start = 00;
-                        Ra180.Data.CurrentChannelData.BD2.End = 00;
+                        Device.Data.CurrentChannelData.BD2.Start = 00;
+                        Device.Data.CurrentChannelData.BD2.End = 00;
                         CurrentChild = _bd1;
                         return true;
                     }
@@ -122,12 +122,12 @@ namespace Ra180
                     var from = short.Parse(text.Substring(0, 2));
                     var end = short.Parse(text.Substring(2, 2));
 
-                    Ra180.Data.CurrentChannelData.BD2.Start = @from;
-                    Ra180.Data.CurrentChannelData.BD2.End = end;
+                    Device.Data.CurrentChannelData.BD2.Start = @from;
+                    Device.Data.CurrentChannelData.BD2.End = end;
                     CurrentChild = _bd1;
                     return true;
                 },
-                GetValue = () => string.Format("{0:00}{1:00}", Ra180.Data.CurrentChannelData.BD2.Start, Ra180.Data.CurrentChannelData.BD2.End),
+                GetValue = () => string.Format("{0:00}{1:00}", Device.Data.CurrentChannelData.BD2.Start, Device.Data.CurrentChannelData.BD2.End),
                 OnKey = key =>
                 {
                     if (key == Ra180Key.ÄND && !_bd2.IsEditing)
@@ -148,13 +148,13 @@ namespace Ra180
             AddChild(new Ra180EditMenuItem
             {
                 Prefix = () => "SYNK",
-                CanEdit = () => Ra180.Data.CurrentChannelData.Synk,
-                GetValue = () => Ra180.Data.CurrentChannelData.Synk ? "JA" : "NEJ",
+                CanEdit = () => Device.Data.CurrentChannelData.Synk,
+                GetValue = () => Device.Data.CurrentChannelData.Synk ? "JA" : "NEJ",
                 OnKey = key =>
                 {
                     if (key == Ra180Key.ÄND)
                     {
-                        Ra180.Data.CurrentChannelData.Synk = !Ra180.Data.CurrentChannelData.Synk;
+                        Device.Data.CurrentChannelData.Synk = !Device.Data.CurrentChannelData.Synk;
                         return true;
                     }
 
@@ -174,7 +174,7 @@ namespace Ra180
                 CanEdit = () => true,
                 GetValue = () =>
                 {
-                    var pny = Ra180.Data.CurrentChannelData.PNY;
+                    var pny = Device.Data.CurrentChannelData.PNY;
                     if (pny != null)
                         return pny.Checksum;
 
@@ -200,7 +200,7 @@ namespace Ra180
                     if (_pnyIndex < _pnyInput.Length)
                         return false;
 
-                    Ra180.Data.CurrentChannelData.PNY = new Ra180DataKey(_pnyInput);
+                    Device.Data.CurrentChannelData.PNY = new Ra180DataKey(_pnyInput);
                     return true;
                 }
             };

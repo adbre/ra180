@@ -1,8 +1,8 @@
 using System;
 
-namespace Ra180
+namespace Ra180.Programs
 {
-    internal class Ra180EditMenuItem : Ra180Program
+    public class Ra180EditMenuItem : Ra180Program
     {
         private string _editValue;
 
@@ -13,7 +13,7 @@ namespace Ra180
             MaxInputTextLength = () =>
             {
                 var prefix = Prefix() ?? string.Empty;
-                return Ra180.Display.Length - prefix.Length - 1;
+                return Display.Length - prefix.Length - 1;
             };
 
             CanEdit = () => false;

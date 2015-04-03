@@ -1,12 +1,31 @@
-﻿namespace Ra180
+﻿using Ra180.Programs;
+
+namespace Ra180.Devices.Dart380
 {
+    public class Dart380Data
+    {
+        public Dart380Data()
+        {
+            Address = "*";
+            Operatörsmeddelandeton = true;
+            Summer = true;
+            Tangentklick = true;
+        }
+
+        public string Address { get; set; }
+        public Dart380PrinterOption Printer { get; set; }
+        public bool Operatörsmeddelandeton { get; set; }
+        public bool Summer { get; set; }
+        public bool Tangentklick { get; set; }
+    }
+
     public class Dart380 : Dart380Base
     {
         private readonly ISynchronizationContext _synchronizationContext;
         private object _clearDisplayToken;
         private Dart380Mod _mod;
         private bool _isOnline;
-        private bool _hasData;
+        private Dart380Data _data;
 
         public Dart380(ISynchronizationContext synchronizationContext)
         {
@@ -35,6 +54,11 @@
             get { return _mod; }
         }
 
+        public Dart380Data Data
+        {
+            get { return _data; }
+        }
+
         protected override void OnKeyBEL()
         {
             SmallDisplay.ChangeBrightness();
@@ -57,7 +81,7 @@
 
         protected override void OnKeyReset()
         {
-            _hasData = false;
+            _data = null;
             RunSelfTest();
         }
 
@@ -76,8 +100,13 @@
             return false;
         }
 
-        protected override Ra180Program CreateProgram(string key)
+        protected override ProgramBase CreateProgram(string key)
         {
+            switch (key)
+            {
+                case Dart380Key.DDA: return new Dart380DdaProgram(this, SmallDisplay);
+            }
+
             var program = CreateRa180Program(key);
             if (program != null)
                 return program;
@@ -85,7 +114,7 @@
             return null;
         }
 
-        private Ra180Program CreateRa180Program(string key)
+        private ProgramBase CreateRa180Program(string key)
         {
             if (!IsFjärr())
             {
@@ -152,12 +181,12 @@
             var selftest = new SelfTest(_synchronizationContext, SmallDisplay)
             {
                 Abort = () => _mod == Dart380Mod.FR,
-                IsNOLLST = () => !_hasData,
+                IsNOLLST = () => _data == null,
                 Complete = () =>
                 {
                     RefreshDisplay();
                     _isOnline = true;
-                    _hasData = true;
+                    _data = new Dart380Data();
                 }
             };
 

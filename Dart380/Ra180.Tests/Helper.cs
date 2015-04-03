@@ -1,3 +1,5 @@
+using Ra180.Devices.Dart380;
+
 namespace Ra180.Tests
 {
     public sealed class Helper

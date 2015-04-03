@@ -1,4 +1,4 @@
-namespace Ra180
+namespace Ra180.Programs
 {
     public enum Ra180Volume
     {

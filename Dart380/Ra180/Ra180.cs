@@ -1,4 +1,5 @@
 using System;
+using Ra180.Programs;
 
 namespace Ra180
 {
@@ -102,7 +103,7 @@ namespace Ra180
             return false;
         }
 
-        protected override Ra180Program CreateProgram(string key)
+        protected override ProgramBase CreateProgram(string key)
         {
             switch (key)
             {

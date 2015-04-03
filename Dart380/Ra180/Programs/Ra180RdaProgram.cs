@@ -1,4 +1,4 @@
-namespace Ra180
+namespace Ra180.Programs
 {
     internal class Ra180RdaProgram : Ra180MenuProgram
     {

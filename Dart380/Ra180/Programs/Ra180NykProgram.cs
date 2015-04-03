@@ -1,4 +1,4 @@
-namespace Ra180
+namespace Ra180.Programs
 {
     internal class Ra180NykProgram : Ra180MenuProgram
     {
@@ -11,8 +11,8 @@ namespace Ra180
                 Prefix = () => "NYK",
                 CanEdit = () =>
                 {
-                    var any = Ra180.Data.CurrentChannelData.NYK;
-                    var pny = Ra180.Data.CurrentChannelData.PNY;
+                    var any = Device.Data.CurrentChannelData.NYK;
+                    var pny = Device.Data.CurrentChannelData.PNY;
 
                     return any != null || pny != null;
                 },
@@ -20,7 +20,7 @@ namespace Ra180
                 {
                     if (key == Ra180Key.ÄND)
                     {
-                        var currentChannelData = Ra180.Data.CurrentChannelData;
+                        var currentChannelData = Device.Data.CurrentChannelData;
                         var any = currentChannelData.NYK;
                         var pny = currentChannelData.PNY;
                         currentChannelData.NYK = pny;
@@ -32,7 +32,7 @@ namespace Ra180
                 },
                 GetValue = () =>
                 {
-                    var any = Ra180.Data.CurrentChannelData.NYK;
+                    var any = Device.Data.CurrentChannelData.NYK;
                     if (any == null)
                         return "###";
 
