@@ -31,7 +31,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Devices\Dart380\Dart380.cs" />
+    <Compile Include="Devices\Dart380\Dart380Data.cs" />
     <Compile Include="Devices\Dart380\Dart380PrinterOption.cs" />
+    <Compile Include="Devices\Dart380\DartFormatCollection.cs" />
     <Compile Include="Programs\Dart380DdaProgram.cs" />
     <Compile Include="Devices\Dart380\Dart380Key.cs" />
     <Compile Include="Devices\Dart380\Dart380Mod.cs" />
@@ -40,6 +42,13 @@
     <Compile Include="InstantSynchronizationContext.cs" />
     <Compile Include="IRa180Network.cs" />
     <Compile Include="ISynchronizationContext.cs" />
+    <Compile Include="Programs\Dart380FmtProgram.cs" />
+    <Compile Include="Programs\DartFormat.cs" />
+    <Compile Include="Programs\DartMessage.cs" />
+    <Compile Include="Programs\DartMessageCharacter.cs" />
+    <Compile Include="Programs\DartMessageEditor.cs" />
+    <Compile Include="Programs\DartMessageLine.cs" />
+    <Compile Include="Programs\DisplayWriter.cs" />
     <Compile Include="Programs\ProgramBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Devices\Dart380\IDart380.cs" />

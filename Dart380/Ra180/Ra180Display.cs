@@ -63,7 +63,7 @@ namespace Ra180
 
 		public void SetText(string text, int[] blinkingPositions, int[] underscorePositions) {
 			if (text == null) throw new ArgumentNullException ("text");
-			if (text.Length > _characters.Count) throw new ArgumentException (string.Format ("text must not be longer than size of display ({0} characters)", _characters.Count), "text");
+			if (text.Length > _characters.Count) throw new ArgumentException (string.Format ("text must not be longer than size of display ({0} characters): {1}", _characters.Count, text), "text");
 
 			this.Update (() => {
 				for (var i=0; i < _characters.Count; i++) {

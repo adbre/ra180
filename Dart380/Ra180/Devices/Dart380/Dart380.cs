@@ -2,23 +2,6 @@
 
 namespace Ra180.Devices.Dart380
 {
-    public class Dart380Data
-    {
-        public Dart380Data()
-        {
-            Address = "*";
-            Operatörsmeddelandeton = true;
-            Summer = true;
-            Tangentklick = true;
-        }
-
-        public string Address { get; set; }
-        public Dart380PrinterOption Printer { get; set; }
-        public bool Operatörsmeddelandeton { get; set; }
-        public bool Summer { get; set; }
-        public bool Tangentklick { get; set; }
-    }
-
     public class Dart380 : Dart380Base
     {
         private readonly ISynchronizationContext _synchronizationContext;
@@ -105,6 +88,7 @@ namespace Ra180.Devices.Dart380
             switch (key)
             {
                 case Dart380Key.DDA: return new Dart380DdaProgram(this, SmallDisplay);
+                case Dart380Key.FMT: return new Dart380FmtProgram(this, SmallDisplay);
             }
 
             var program = CreateRa180Program(key);
