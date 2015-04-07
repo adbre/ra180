@@ -49,7 +49,9 @@ namespace Ra180.Programs
 
         public void MoveUp()
         {
-            
+            _lineIndex--;
+            if (_lineIndex < 0)
+                _lineIndex = 0;
         }
 
         public void MoveDown()

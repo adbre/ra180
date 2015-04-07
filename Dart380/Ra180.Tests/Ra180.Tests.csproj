@@ -46,13 +46,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dart380FjärrTests.cs" />
+    <Compile Include="Dart380Helper.cs" />
     <Compile Include="Dart380RadioprogramTests.cs" />
     <Compile Include="Dart380Tests.cs" />
+    <Compile Include="Dart380Tests2.cs" />
     <Compile Include="Dart380TidTests.cs" />
     <Compile Include="Dart380_SelfTestTests.cs" />
+    <Compile Include="DartMessageTests.cs" />
     <Compile Include="DelayedSynchronizationContextTests.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="InstantSynchronizationContextTests.cs" />
+    <Compile Include="IskTests.cs" />
     <Compile Include="Ra180DataKeyTests.cs" />
     <Compile Include="Ra180DisplayTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

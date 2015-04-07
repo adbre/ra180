@@ -4,34 +4,25 @@ using Ra180.Devices.Dart380;
 
 namespace Ra180.Programs
 {
-    public class Dart380FmtProgram : ProgramBase<Dart380>
+    public class FmtProgram : Dart380Program
     {
-        private Action _action;
-        private string _key = "";
         private string _inputBuffer = "";
         private DartFormat _fmt;
         private DartMessageEditor _msgEditor;
 
-        public Dart380FmtProgram(Dart380 device, Ra180Display display) : base(device, display)
+        public FmtProgram(Dart380 device) : base(device)
         {
-            LargeDisplay = new DisplayWriter(device.LargeDisplay);
-            SmallDisplay = new DisplayWriter(device.SmallDisplay);
-
-            Next(ReadFmt);
         }
 
-        private DisplayWriter LargeDisplay { get; set; }
-        private DisplayWriter SmallDisplay { get; set; }
-        
-        private void ReadFmt()
+        protected override void Execute()
         {
-            if (_key == Ra180Key.SLT)
+            if (Key == Ra180Key.SLT)
             {
                 Close();
                 return;
             }
 
-            if (_key == Ra180Key.ENT)
+            if (Key == Ra180Key.ENT)
             {
                 if (_inputBuffer.All(Char.IsDigit) && (_fmt = Device.Data.Format.GetFormat(_inputBuffer)) != null)
                 {
@@ -40,8 +31,8 @@ namespace Ra180.Programs
                 }
             }
 
-            if (_key.Length == 1)
-                _inputBuffer += _key;
+            if (Key.Length == 1)
+                _inputBuffer += Key;
 
             LargeDisplay.SetText(string.Format("FORMAT:{0}", _inputBuffer));
             SmallDisplay.SetText(Device.Data.Format.GetShortName(_inputBuffer));
@@ -49,17 +40,20 @@ namespace Ra180.Programs
 
         private void DisplayFmt()
         {
-            if (_key == Ra180Key.SLT)
+            if (Key == Ra180Key.SLT)
             {
                 Close();
                 return;
             }
 
-            if (_key == Ra180Key.ENT)
+            if (Key == Ra180Key.ENT)
             {
                 var msg = new DartMessage(_fmt);
                 msg.Sender = Device.Data.Address;
                 msg.Timestamp = string.Format("{0:00}{1:00}{2:00}", Device.Ra180.Clock.Day, Device.Ra180.Clock.Hour, Device.Ra180.Clock.Minute);
+
+                Device.Data.Messages.Isk.Add(msg);
+
                 _msgEditor = new DartMessageEditor(msg);
 
                 Next(ShowMsg);
@@ -72,9 +66,9 @@ namespace Ra180.Programs
 
         private void ShowMsg()
         {
-            if (!NavigateMsg(_key))
+            if (!NavigateMsg(Key))
             {
-                switch (_key)
+                switch (Key)
                 {
                     case Ra180Key.SLT:
                         Close();
@@ -92,17 +86,17 @@ namespace Ra180.Programs
 
         private void EditMsg()
         {
-            if (!NavigateMsg(_key))
+            if (!NavigateMsg(Key))
             {
-                switch (_key)
+                switch (Key)
                 {
                     case Ra180Key.SLT:
                         Next(ShowMsg);
                         return;
 
                     default:
-                        if (_key.Length == 1)
-                            _msgEditor.Write(_key);
+                        if (Key.Length == 1)
+                            _msgEditor.Write(Key);
                         break;
                 }
             }
@@ -116,11 +110,11 @@ namespace Ra180.Programs
             switch (key)
             {
                 case Ra180Key.ENT:
-                case Dart380Key.PGDOWN:
+                case Dart380Key.DARROW:
                     _msgEditor.MoveDown();
                     return true;
 
-                case Dart380Key.PGUP:
+                case Dart380Key.UARROW:
                     _msgEditor.MoveUp();
                     return true;
 
@@ -134,35 +128,6 @@ namespace Ra180.Programs
             }
 
             return false;
-        }
-
-        private void Next(Action action)
-        {
-            _key = "";
-            _action = action;
-            action();
-        }
-
-        public override bool SendKey(string key)
-        {
-            _key = key;
-            _action();
-            _key = "";
-            return true;
-        }
-
-        public override void UpdateDisplay()
-        {
-            if (IsClosed)
-            {
-                LargeDisplay.Clear();
-                SmallDisplay.Clear();
-                base.UpdateDisplay();
-                return;
-            }
-
-            LargeDisplay.Refresh();
-            SmallDisplay.Refresh();
         }
     }
 }

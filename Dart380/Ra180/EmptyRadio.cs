@@ -2,12 +2,17 @@ using System;
 
 namespace Ra180
 {
-    public class EmptyRa180Network : IRa180Network
+    public class EmptyRadio : IRadio
     {
         public event EventHandler ReceivedSynk;
 
-        public virtual void ChannelData(Ra180ChannelData channelData, DateTime dateTime)
+        public virtual void SetChannelData(Ra180ChannelData channelData, DateTime dateTime)
         {
+        }
+
+        public virtual bool SendDataMessage(string[] data, Action callback)
+        {
+            return false;
         }
 
         protected virtual void OnReceivedSynk()

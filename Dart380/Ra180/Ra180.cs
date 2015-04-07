@@ -8,7 +8,7 @@ namespace Ra180
         internal const int SELFTEST_INTERVAL = SelfTest.INTERVAL;
         internal const int SELFTEST = SELFTEST_INTERVAL * 4;
 
-        private readonly IRa180Network _network;
+        private readonly IRadio _network;
         private readonly ISynchronizationContext _synchronizationContext;
         private readonly Ra180Display _display = new Ra180Display(8);
 
@@ -19,7 +19,7 @@ namespace Ra180
         private Ra180Clock _clock;
         private readonly Ra180Data _data = new Ra180Data();
 
-        public Ra180(IRa180Network network, ISynchronizationContext synchronizationContext)
+        public Ra180(IRadio network, ISynchronizationContext synchronizationContext)
         {
             if (network == null) throw new ArgumentNullException("network");
             if (synchronizationContext == null) throw new ArgumentNullException("synchronizationContext");
@@ -64,6 +64,11 @@ namespace Ra180
         }
 
         internal Ra180Data Data { get { return _data; } }
+
+        public IRadio Radio
+        {
+            get { return _network; }
+        }
 
         protected override void OnKeyBEL()
         {

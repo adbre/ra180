@@ -22,6 +22,11 @@ namespace Ra180.Devices.Dart380
                 RefreshDisplay();
         }
 
+        public ISynchronizationContext SynchronizationContext
+        {
+            get { return _synchronizationContext; }
+        }
+
         public override bool IsOnline
         {
             get { return _isOnline; }
@@ -88,7 +93,8 @@ namespace Ra180.Devices.Dart380
             switch (key)
             {
                 case Dart380Key.DDA: return new Dart380DdaProgram(this, SmallDisplay);
-                case Dart380Key.FMT: return new Dart380FmtProgram(this, SmallDisplay);
+                case Dart380Key.FMT: return new FmtProgram(this);
+                case Dart380Key.ISK: return new IskProgram(this);
             }
 
             var program = CreateRa180Program(key);

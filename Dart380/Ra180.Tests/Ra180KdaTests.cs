@@ -10,13 +10,13 @@ namespace Ra180.Tests
     {
         private Ra180 _ra180;
         private DelayedSynchronizationContext _synchronizationContext;
-        private Mock<IRa180Network> _network;
+        private Mock<IRadio> _network;
 
         [SetUp]
         public void SetUp()
         {
             _synchronizationContext = new DelayedSynchronizationContext();
-            _network = new Mock<IRa180Network>();
+            _network = new Mock<IRadio>();
             _ra180 = new Ra180(_network.Object, _synchronizationContext);
 
             _ra180.SendKey(Ra180Key.ModSKYDD);

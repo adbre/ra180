@@ -13,7 +13,7 @@ namespace Ra180.Tests
         public void SetUp()
         {
             _synchronizationContext = new DelayedSynchronizationContext();
-            _ra180 = new Ra180(new EmptyRa180Network(), _synchronizationContext);
+            _ra180 = new Ra180(new EmptyRadio(), _synchronizationContext);
         }
 
         [Test]

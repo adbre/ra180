@@ -1,91 +1,14 @@
-using System.Linq;
+using System;
+using Moq;
 using NUnit.Framework;
 using Ra180.Devices.Dart380;
-using Ra180.Programs;
 
 namespace Ra180.Tests
 {
     [TestFixture]
-    public class DartMessageTests
-    {
-        private DartFormatCollection _formats;
-        private DartFormat _fmt100;
-
-        [SetUp]
-        public void SetUp()
-        {
-
-            _formats = new DartFormatCollection();
-            _fmt100 = _formats.GetFormat(100);
-        }
-
-        [Test]
-        public void Fmt100()
-        {
-            var expected = new[]
-            {
-                "TEXT:           ", // 1
-                "                ", // 2
-                "                ", // 3
-                "                ", // 4
-                "                ", // 5
-                "                ", // 6
-                "                ", // 7
-                "                ", // 8
-                "                ", // 9
-                "                ", // 10
-                "                ", // 11
-                "                ", // 12
-            };
-
-            var actual = _fmt100.BodyFormat;
-            Assert.That(actual, Is.EqualTo(expected));
-        }
-
-        [Test]
-        public void Editor()
-        {
-            var message = new DartMessage(_fmt100);
-            message.Timestamp = "052156";
-            message.Sender = "CR";
-
-            var editor = new DartMessageEditor(message);
-            editor.Write("RG");
-            editor.MoveDown();
-            editor.MoveDown();
-            editor.MoveDown();
-            editor.MoveDown();
-            editor.MoveDown();
-            editor.Write("HELLO WORLD");
-
-            var actual = editor.ToStringArray();
-            Assert.That(actual, Is.EqualTo(new[]
-            {
-                "TILL:RG         ",
-                "                ",
-                "052156*FR:CR    ",
-                "                ",
-                "FRÅN:     *U:   ",
-                "TEXT:HELLO WORLD", // 1
-                "                ", // 2
-                "                ", // 3
-                "                ", // 4
-                "                ", // 5
-                "                ", // 6
-                "                ", // 7
-                "                ", // 8
-                "                ", // 9
-                "                ", // 10
-                "                ", // 11
-                "                ", // 12
-                "------SLUT------",
-            }));
-        }
-    }
-
-    [TestFixture]
     public class Dart380Tests
     {
+        private FakeRadio _radio;
         private Dart380 _dart;
         private Ra180 _ra180;
         private DelayedSynchronizationContext _synchronizationContext;
@@ -93,8 +16,9 @@ namespace Ra180.Tests
         [SetUp]
         public void SetUp()
         {
+            _radio = new FakeRadio();
             _synchronizationContext = new DelayedSynchronizationContext();
-            _ra180 = new Ra180(new EmptyRa180Network(), _synchronizationContext);
+            _ra180 = new Ra180(_radio, _synchronizationContext);
             _dart = new Dart380(_synchronizationContext) { Ra180 = _ra180 };
 
             _dart.SendKey(Ra180Key.ModSKYDD);
@@ -271,7 +195,39 @@ namespace Ra180.Tests
             Assert.That(_dart.LargeDisplay.ToString(), Is.EqualTo("K 10 LAG        "));
             _dart.SendKey(Dart380Key.SLT);
             Assert.That(_dart.LargeDisplay.ToString(), Is.EqualTo("                "));
+            
+            _dart.SendKey(Dart380Key.ISK);
+            Assert.That(_dart.LargeDisplay.ToString(), Is.EqualTo("291504*FR:CR    "));
+            Assert.That(_dart.SmallDisplay.ToString(), Is.EqualTo("FRI*TEXT"));
+            _dart.SendKey(Dart380Key.SND);
+            Assert.That(_dart.LargeDisplay.ToString(), Is.EqualTo("     SÄNDER     "));
+            Assert.That(_dart.SmallDisplay.ToString(), Is.EqualTo("FRI*TEXT"));
+            Assert.That(_radio.PendingMessage.Data, Is.EqualTo(new[]
+            {
+                "TILL:JA         ",
+                "                ",
+                "291504*FR:CR    ",
+                "                ",
+                "FRÅN:     *U:   ",
+                "TEXT:FÖRBERED RÖ", // 1
+                "K 10 LAG        ", // 2
+                "                ", // 3
+                "                ", // 4
+                "                ", // 5
+                "                ", // 6
+                "                ", // 7
+                "                ", // 8
+                "                ", // 9
+                "                ", // 10
+                "                ", // 11
+                "                ", // 12
+                "------SLUT------",
+            }));
+            _radio.PendingMessage.MarkAsSent();
+            Assert.That(_dart.LargeDisplay.ToString(), Is.EqualTo("      SÄNT      "));
+            _dart.SendKey(Dart380Key.SLT);
+            Assert.That(_dart.LargeDisplay.ToString(), Is.EqualTo("                "));
+
         }
-        
     }
 }

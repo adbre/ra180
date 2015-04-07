@@ -30,7 +30,12 @@ namespace Ra180.Programs
             Lines = Join(_headerFormat, _bodyFormat, _footerFormat).Select(formatLine => new DartMessageLine(formatLine)).ToArray();
         }
 
-        public DartMessageLine[] Lines { get; set; }
+        public DartFormat Format
+        {
+            get { return _format; }
+        }
+
+        public DartMessageLine[] Lines { get; private set; }
 
         public string Timestamp
         {
@@ -51,6 +56,23 @@ namespace Ra180.Programs
                 lines[i] = Lines[i].ToString();
 
             return lines;
+        }
+
+
+        public DartMessage Clone()
+        {
+            var clone = new DartMessage(_format);
+
+            for (var i = 0; i < Lines.Length; i++)
+            {
+                for (var j = 0; j < Lines[i].Characters.Length; j++)
+                {
+                    if (Lines[i].Characters[j].IsReadOnly) continue;
+                    clone.Lines[i].Characters[j].Char = Lines[i].Characters[j].Char;
+                }
+            }
+
+            return clone;
         }
 
         private string Read(int lineIndex, int index, int length)
