@@ -45,14 +45,6 @@ namespace Dart380_Android
 			base.OnStop ();
 		}
 	}
-
-	public class FakeDart380 : Dart380Base {
-
-		public override void SendKey (string key)
-		{
-			LargeDisplay.SetText (string.Format ("Key={0}", key), 3, trailingUnderscore: true);
-		}
-	}
 }
 
 

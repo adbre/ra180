@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ra180.Server", "Ra180.Serve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ra180.DebugWebClient", "Ra180.DebugWebClient\Ra180.DebugWebClient.csproj", "{74A35896-11E1-4AC4-A4A3-1C4A9287B83E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ra180.Client.WinForms", "Ra180.Client.WinForms\Ra180.Client.WinForms.csproj", "{A2A8DA36-0769-456A-A7F6-87963E6ABCB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug (without Xamarin)|Any CPU = Debug (without Xamarin)|Any CPU
@@ -49,6 +51,12 @@ Global
 		{74A35896-11E1-4AC4-A4A3-1C4A9287B83E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74A35896-11E1-4AC4-A4A3-1C4A9287B83E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74A35896-11E1-4AC4-A4A3-1C4A9287B83E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2A8DA36-0769-456A-A7F6-87963E6ABCB7}.Debug (without Xamarin)|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2A8DA36-0769-456A-A7F6-87963E6ABCB7}.Debug (without Xamarin)|Any CPU.Build.0 = Debug|Any CPU
+		{A2A8DA36-0769-456A-A7F6-87963E6ABCB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2A8DA36-0769-456A-A7F6-87963E6ABCB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2A8DA36-0769-456A-A7F6-87963E6ABCB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2A8DA36-0769-456A-A7F6-87963E6ABCB7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

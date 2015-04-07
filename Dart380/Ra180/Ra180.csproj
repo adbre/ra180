@@ -86,6 +86,23 @@
     <Compile Include="Programs\Ra180TidProgram.cs" />
     <Compile Include="Programs\Ra180Volume.cs" />
     <Compile Include="SelfTest.cs" />
+    <Compile Include="UI\Dart380Button.cs" />
+    <Compile Include="UI\Dart380Drawable.cs" />
+    <Compile Include="UI\Color.cs" />
+    <Compile Include="UI\Drawables.cs" />
+    <Compile Include="UI\HotArea.cs" />
+    <Compile Include="UI\IBitmapDrawable.cs" />
+    <Compile Include="UI\ICanvas.cs" />
+    <Compile Include="UI\IGraphic.cs" />
+    <Compile Include="UI\MotionEventActions.cs" />
+    <Compile Include="UI\MotionEventArgs.cs" />
+    <Compile Include="UI\MotionEventHandler.cs" />
+    <Compile Include="UI\PaintEventArgs.cs" />
+    <Compile Include="UI\PaintEventHandler.cs" />
+    <Compile Include="UI\Rectangle.cs" />
+    <Compile Include="UI\RectangleExtensions.cs" />
+    <Compile Include="UI\SizeChangedEventArgs.cs" />
+    <Compile Include="UI\SizeChangedEventHandler.cs" />
     <Compile Include="Utils\StringExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

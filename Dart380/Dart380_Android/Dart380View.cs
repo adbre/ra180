@@ -5,9 +5,7 @@ using Android.Graphics.Drawables;
 using Android.Graphics.Drawables.Shapes;
 using Android.Graphics;
 using System.Collections.Generic;
-using Android.Widget;
 using System.Linq;
-using Android.OS;
 using Ra180;
 using System.Text;
 
