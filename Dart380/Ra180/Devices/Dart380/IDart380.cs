@@ -4,6 +4,10 @@ namespace Ra180
 {
 	public interface IDart380
 	{
+        Ra180Channel Channel { get; set; }
+        Dart380Mod Mod { get; set; }
+        Ra180Volume Volume { get; set; }
+
 		Ra180Display LargeDisplay { get; }
 		Ra180Display SmallDisplay { get; }
 		void SendKey (string key);

@@ -121,4 +121,28 @@
   <data name="Dart380_1363x1018" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Dart380_1363x1018.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Vred_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Vred-1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Vred_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Vred-2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Vred_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Vred-3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Vred_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Vred-4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Vred_5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Vred-5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Vred_6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Vred-6.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Vred_7" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Vred-7.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Vred_8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Vred-8.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

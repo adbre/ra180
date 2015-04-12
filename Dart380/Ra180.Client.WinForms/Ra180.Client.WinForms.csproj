@@ -99,6 +99,30 @@
   <ItemGroup>
     <None Include="Resources\Dart380_1363x1018.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Vred-1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Vred-2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Vred-3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Vred-4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Vred-5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Vred-6.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Vred-7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Vred-8.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

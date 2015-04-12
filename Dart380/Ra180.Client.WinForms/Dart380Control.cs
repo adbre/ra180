@@ -66,7 +66,7 @@ namespace Ra180.Client.WinForms
         private void synchronizationContextTimer_Tick(object sender, System.EventArgs e)
         {
             if (_drawable != null)
-                _drawable.ToggleBlinking();
+                _drawable.Tick();
         }
     }
 }

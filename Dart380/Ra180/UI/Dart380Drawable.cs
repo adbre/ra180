@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Ra180.Devices.Dart380;
+using Ra180.Programs;
 
 namespace Ra180.UI
 {
@@ -19,6 +19,46 @@ namespace Ra180.UI
         private Dart380Control _smallDisplay;
         private bool _blinkNow;
 
+        private HotArea _vredKanal;
+        private HotArea _vredMod;
+        private HotArea _vredVolym;
+
+        private readonly Dictionary<Ra180Channel, string> _channelVredResourceMap = new Dictionary<Ra180Channel, string>
+        {
+            {Ra180Channel.Channel1, Drawables.Vred1},
+            {Ra180Channel.Channel2, Drawables.Vred2},
+            {Ra180Channel.Channel3, Drawables.Vred3},
+            {Ra180Channel.Channel4, Drawables.Vred4},
+            {Ra180Channel.Channel5, Drawables.Vred5},
+            {Ra180Channel.Channel6, Drawables.Vred6},
+            {Ra180Channel.Channel7, Drawables.Vred7},
+            {Ra180Channel.Channel8, Drawables.Vred8},
+        };
+
+        private readonly Dictionary<Dart380Mod, string> _modVredResourceMap = new Dictionary<Dart380Mod, string>
+        {
+            {Dart380Mod.FR, Drawables.Vred1},
+            {Dart380Mod.TE, Drawables.Vred2},
+            {Dart380Mod.KLAR, Drawables.Vred3},
+            {Dart380Mod.SKYDD, Drawables.Vred4},
+            {Dart380Mod.DRELÄ, Drawables.Vred5},
+            {Dart380Mod.TD, Drawables.Vred6},
+            {Dart380Mod.NG, Drawables.Vred7},
+            {Dart380Mod.FmP, Drawables.Vred8},
+        };
+
+        private readonly Dictionary<Ra180Volume, string> _volumeVredResourceMap = new Dictionary<Ra180Volume, string>
+        {
+            {Ra180Volume.Volume1, Drawables.Vred1},
+            {Ra180Volume.Volume2, Drawables.Vred2},
+            {Ra180Volume.Volume3, Drawables.Vred3},
+            {Ra180Volume.Volume4, Drawables.Vred4},
+            {Ra180Volume.Volume5, Drawables.Vred5},
+            {Ra180Volume.Volume6, Drawables.Vred6},
+            {Ra180Volume.Volume7, Drawables.Vred7},
+            {Ra180Volume.Volume8, Drawables.Vred8},
+        };
+
         public Dart380Drawable(IGraphic graphic, IDart380 dart380)
         {
             _graphic = graphic;
@@ -28,6 +68,14 @@ namespace Ra180.UI
 
             _largeDisplay = new Dart380Control(491, 95, 379, 29);
             _smallDisplay = new Dart380Control(911, 95, 294, 29);
+
+            _vredKanal = new HotArea(1229, 400, 94, 94, () => _dart380.Channel = Next(_dart380.Channel));
+            _vredMod = new HotArea(1229, 610, 94, 94, () => _dart380.Mod = Next(_dart380.Mod));
+            _vredVolym = new HotArea(1229, 820, 94, 94, () => _dart380.Volume = Next(_dart380.Volume));
+
+            _hotAreas.Add(_vredKanal);
+            _hotAreas.Add(_vredMod);
+            _hotAreas.Add(_vredVolym);
 
             _hotAreas.AddRange(GetButtonHotAreas());
         }
@@ -45,13 +93,23 @@ namespace Ra180.UI
                 canvas.DrawRectangle(btn.Rectangle, fgColor);
             }
 
-            foreach (var btn in _hotAreas.OfType<Dart380Button>())
+            foreach (var btn in _hotAreas)
             {
                 canvas.DrawRectangle(btn.Rectangle, fgColor);
             }
 
             DrawDisplay(_dart380.LargeDisplay, _largeDisplay.Rectangle, fgColor, canvas);
             DrawDisplay(_dart380.SmallDisplay, _smallDisplay.Rectangle, fgColor, canvas);
+
+            DrawBitmap(_channelVredResourceMap[_dart380.Channel], _vredKanal.Rectangle, canvas);
+            DrawBitmap(_modVredResourceMap[_dart380.Mod], _vredMod.Rectangle, canvas);
+            DrawBitmap(_volumeVredResourceMap[_dart380.Volume], _vredVolym.Rectangle, canvas);
+        }
+
+        private void DrawBitmap(string id, Rectangle rectangle, ICanvas canvas)
+        {
+            using (var bitmap = _graphic.GetDrawable(id))
+                canvas.DrawBitmap(bitmap, rectangle);
         }
 
         public void OnTouchEvent(MotionEventArgs e)
@@ -65,7 +123,7 @@ namespace Ra180.UI
             ConfigureMeasurements(e.Width, e.Height);
         }
 
-        public void ToggleBlinking()
+        public void Tick()
         {
             _blinkNow = !_blinkNow;
             _graphic.Invalidate();
@@ -246,6 +304,57 @@ namespace Ra180.UI
 				new Dart380Button("PGUP", 877,884, 61,59),
 				new Dart380Button("PGDOWN", 958,884, 61,59),
 			};
+        }
+
+        private static Ra180Channel Next(Ra180Channel channel)
+        {
+            switch (channel)
+            {
+                case Ra180Channel.Channel1: return Ra180Channel.Channel2;
+                case Ra180Channel.Channel2: return Ra180Channel.Channel3;
+                case Ra180Channel.Channel3: return Ra180Channel.Channel4;
+                case Ra180Channel.Channel4: return Ra180Channel.Channel5;
+                case Ra180Channel.Channel5: return Ra180Channel.Channel6;
+                case Ra180Channel.Channel6: return Ra180Channel.Channel7;
+                case Ra180Channel.Channel7: return Ra180Channel.Channel8;
+                case Ra180Channel.Channel8: return Ra180Channel.Channel1;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private static Dart380Mod Next(Dart380Mod channel)
+        {
+            switch (channel)
+            {
+                case Dart380Mod.FR: return Dart380Mod.TE;
+                case Dart380Mod.TE: return Dart380Mod.KLAR;
+                case Dart380Mod.KLAR: return Dart380Mod.SKYDD;
+                case Dart380Mod.SKYDD: return Dart380Mod.DRELÄ;
+                case Dart380Mod.DRELÄ: return Dart380Mod.TD;
+                case Dart380Mod.TD: return Dart380Mod.NG;
+                case Dart380Mod.NG: return Dart380Mod.FmP;
+                case Dart380Mod.FmP: return Dart380Mod.FR;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private static Ra180Volume Next(Ra180Volume channel)
+        {
+            switch (channel)
+            {
+                case Ra180Volume.Volume1: return Ra180Volume.Volume2;
+                case Ra180Volume.Volume2: return Ra180Volume.Volume3;
+                case Ra180Volume.Volume3: return Ra180Volume.Volume4;
+                case Ra180Volume.Volume4: return Ra180Volume.Volume5;
+                case Ra180Volume.Volume5: return Ra180Volume.Volume6;
+                case Ra180Volume.Volume6: return Ra180Volume.Volume7;
+                case Ra180Volume.Volume7: return Ra180Volume.Volume8;
+                case Ra180Volume.Volume8: return Ra180Volume.Volume1;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

@@ -8,6 +8,12 @@ namespace Ra180.UI
         {
         }
 
+        public HotArea(int x, int y, int w, int h, Action onTouch)
+            : this(new Rectangle(x, y, x+w, y+h), onTouch)
+        {
+            
+        }
+
         public HotArea(Rectangle originalRectangle, Action callback)
         {
             OriginalRect = originalRectangle;
