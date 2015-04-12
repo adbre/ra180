@@ -1,3 +1,5 @@
+using System;
+
 namespace Ra180
 {
     public static class Dart380Key
@@ -94,6 +96,10 @@ namespace Ra180
                     mod = Dart380Mod.TD;
                     return true;
 
+                case ModNG:
+                    mod = Dart380Mod.NG;
+                    return true;
+
                 case ModFmP:
                     mod = Dart380Mod.FmP;
                     return true;
@@ -101,6 +107,23 @@ namespace Ra180
                 default:
                     mod = default(Dart380Mod);
                     return false;
+            }
+        }
+
+        public static string From(Dart380Mod value)
+        {
+            switch (value)
+            {
+                case Dart380Mod.FR: return ModFRÅN;
+                case Dart380Mod.TE: return ModTE;
+                case Dart380Mod.KLAR: return ModKLAR;
+                case Dart380Mod.SKYDD: return ModSKYDD;
+                case Dart380Mod.DRELÄ: return ModDRELÄ;
+                case Dart380Mod.TD: return ModTD;
+                case Dart380Mod.NG: return ModTD;
+                case Dart380Mod.FmP: return ModFmP;
+                default:
+                    throw new ArgumentOutOfRangeException("value");
             }
         }
     }

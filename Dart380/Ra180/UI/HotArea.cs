@@ -14,13 +14,14 @@ namespace Ra180.UI
             
         }
 
-        public HotArea(Rectangle originalRectangle, Action callback)
+        public HotArea(Rectangle originalRectangle, Action clicked)
         {
             OriginalRect = originalRectangle;
-            Callback = callback;
+            Rectangle = originalRectangle;
+            Clicked += (sender, args) => clicked();
         }
 
-        public Action Callback { get; set; }
+        public event EventHandler Clicked;
         public Rectangle OriginalRect { get; set; }
         public Rectangle Rectangle { get; set; }
 
@@ -29,24 +30,15 @@ namespace Ra180.UI
             Rectangle = OriginalRect.Scale(scale).PlaceInside(area);
         }
 
-        protected virtual void OnTouchEventDown()
+        public virtual void OnTouchEventDown()
         {
-            var handler = Callback;
+            var handler = Clicked;
             if (handler != null)
-                handler();
+                handler(this, EventArgs.Empty);
         }
 
-        protected virtual void OnTouchEventUp()
+        public virtual void OnTouchEventUp()
         {
-        }
-
-        public virtual void OnTouchEvent(MotionEventArgs e)
-        {
-            var contains = Rectangle.Contains(e.X, e.Y);
-            if (contains && e.Action == MotionEventActions.Down)
-                OnTouchEventDown();
-            else
-                OnTouchEventUp();
         }
     }
 

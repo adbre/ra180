@@ -23,6 +23,10 @@ namespace Ra180.UI
         private HotArea _vredMod;
         private HotArea _vredVolym;
 
+        private Ra180Channel _channel = Ra180Channel.Channel1;
+        private Dart380Mod _mod = Dart380Mod.FR;
+        private Ra180Volume _volume = Ra180Volume.Volume4;
+
         private readonly Dictionary<Ra180Channel, string> _channelVredResourceMap = new Dictionary<Ra180Channel, string>
         {
             {Ra180Channel.Channel1, Drawables.Vred1},
@@ -69,16 +73,63 @@ namespace Ra180.UI
             _largeDisplay = new Dart380Control(491, 95, 379, 29);
             _smallDisplay = new Dart380Control(911, 95, 294, 29);
 
-            _vredKanal = new HotArea(1229, 400, 94, 94, () => _dart380.Channel = Next(_dart380.Channel));
-            _vredMod = new HotArea(1229, 610, 94, 94, () => _dart380.Mod = Next(_dart380.Mod));
-            _vredVolym = new HotArea(1229, 820, 94, 94, () => _dart380.Volume = Next(_dart380.Volume));
+            _vredKanal = new HotArea(1229, 400, 94, 94, () =>
+            {
+                _channel = Next(_channel);
+                _dart380.SendKey(Ra180Key.From(_channel));
+            });
+            _vredMod = new HotArea(1229, 610, 94, 94, () =>
+            {
+                _mod = Next(_mod);
+                _dart380.SendKey(Dart380Key.From(_mod));
+            });
+            _vredVolym = new HotArea(1229, 820, 94, 94, () =>
+            {
+                _volume = Next(_volume);
+                _dart380.SendKey(Ra180Key.From(_volume));
+            });
+
+            _hotAreas.Add(new Dart380Button(Ra180Key.Channel1, 1219, 893, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Channel2, 1208, 855, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Channel3, 1220, 819, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Channel4, 1252, 796, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Channel5, 1291, 796, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Channel6, 1323, 819, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Channel7, 1335, 857, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Channel8, 1323, 895, 12, 26));
+
+            _hotAreas.Add(new Dart380Button(Dart380Key.ModFRÅN, 1207, 683, 41, 26));
+            _hotAreas.Add(new Dart380Button(Dart380Key.ModTE,   1196, 645, 24, 26));
+            _hotAreas.Add(new Dart380Button(Dart380Key.ModKLAR, 1189, 599, 62, 26));
+            _hotAreas.Add(new Dart380Button(Dart380Key.ModSKYDD,1209, 577, 74, 26));
+            _hotAreas.Add(new Dart380Button(Dart380Key.ModDRELÄ,1287, 577, 66, 26));
+            _hotAreas.Add(new Dart380Button(Dart380Key.ModTD,   1323, 609, 34, 26));
+            _hotAreas.Add(new Dart380Button(Dart380Key.ModNG,   1333, 647, 30, 26));
+            _hotAreas.Add(new Dart380Button(Dart380Key.ModFmP,  1323, 685, 40, 26));
+
+            _hotAreas.Add(new Dart380Button(Ra180Key.Volume1, 1219, 473, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Volume2, 1208, 435, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Volume3, 1220, 398, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Volume4, 1252, 376, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Volume5, 1291, 376, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Volume6, 1323, 399, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Volume7, 1335, 437, 12, 26));
+            _hotAreas.Add(new Dart380Button(Ra180Key.Volume8, 1323, 475, 12, 26));
 
             _hotAreas.Add(_vredKanal);
             _hotAreas.Add(_vredMod);
             _hotAreas.Add(_vredVolym);
 
-            _hotAreas.AddRange(GetButtonHotAreas());
+            _hotAreas.AddRange(GetButtons());
+
+            foreach (var btn in _hotAreas.OfType<Dart380Button>())
+            {
+                var btnCache = btn;
+                btn.Clicked += (sender, args) => OnButtonDown(btnCache);
+            }
         }
+
+        public bool HighlightHotAreas { get; set; }
 
         public void OnDraw(ICanvas canvas)
         {
@@ -93,17 +144,18 @@ namespace Ra180.UI
                 canvas.DrawRectangle(btn.Rectangle, fgColor);
             }
 
-            foreach (var btn in _hotAreas)
+            if (HighlightHotAreas)
             {
-                canvas.DrawRectangle(btn.Rectangle, fgColor);
+                foreach (var btn in _hotAreas)
+                    canvas.DrawRectangle(btn.Rectangle, fgColor);
             }
 
             DrawDisplay(_dart380.LargeDisplay, _largeDisplay.Rectangle, fgColor, canvas);
             DrawDisplay(_dart380.SmallDisplay, _smallDisplay.Rectangle, fgColor, canvas);
 
-            DrawBitmap(_channelVredResourceMap[_dart380.Channel], _vredKanal.Rectangle, canvas);
-            DrawBitmap(_modVredResourceMap[_dart380.Mod], _vredMod.Rectangle, canvas);
-            DrawBitmap(_volumeVredResourceMap[_dart380.Volume], _vredVolym.Rectangle, canvas);
+            DrawBitmap(_channelVredResourceMap[_channel], _vredKanal.Rectangle, canvas);
+            DrawBitmap(_modVredResourceMap[_mod], _vredMod.Rectangle, canvas);
+            DrawBitmap(_volumeVredResourceMap[_volume], _vredVolym.Rectangle, canvas);
         }
 
         private void DrawBitmap(string id, Rectangle rectangle, ICanvas canvas)
@@ -114,8 +166,19 @@ namespace Ra180.UI
 
         public void OnTouchEvent(MotionEventArgs e)
         {
+            var handledDownEvent = false;
             foreach (var btn in _hotAreas)
-                btn.OnTouchEvent(e);
+            {
+                if (e.Action == MotionEventActions.Down && !handledDownEvent && btn.Rectangle.Contains(e.X, e.Y))
+                {
+                    btn.OnTouchEventDown();
+                    handledDownEvent = true;
+                }
+                else
+                {
+                    btn.OnTouchEventUp();
+                }
+            }
         }
 
         public void SizeChanged(SizeChangedEventArgs e)
@@ -190,16 +253,6 @@ namespace Ra180.UI
             canvas.DrawText(underscore.ToString(), rect.Left, rect.Bottom + rect.Height / 2, textSize, fgColor);
         }
 
-        private IEnumerable<HotArea> GetButtonHotAreas()
-        {
-            return GetButtons()
-                .Select(btn =>
-                {
-                    btn.Callback = () => OnButtonDown(btn);
-                    return btn;
-                });
-        }
-
         private void OnButtonDown(Dart380Button button)
         {
             var shiftKey = _hotAreas
@@ -220,6 +273,18 @@ namespace Ra180.UI
                 }
                 shiftKey.IsPressed = false;
             }
+
+            Ra180Channel channel;
+            if (Ra180Key.TryParseChannel(key, out channel))
+                _channel = channel;
+
+            Dart380Mod mod;
+            if (Dart380Key.TryParseMod(key, out mod))
+                _mod = mod;
+
+            Ra180Volume volume;
+            if (Ra180Key.TryParseVolume(key, out volume))
+                _volume = volume;
 
             _dart380.SendKey(key);
         }

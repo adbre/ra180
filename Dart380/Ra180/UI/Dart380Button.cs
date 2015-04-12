@@ -26,7 +26,7 @@
         public bool IsPressed { get; set; }
         public ButtonStyle Style { get; set; }
 
-        protected override void OnTouchEventDown()
+        public override void OnTouchEventDown()
         {
             base.OnTouchEventDown();
 
@@ -36,7 +36,7 @@
                 IsPressed = !IsPressed;
         }
 
-        protected override void OnTouchEventUp()
+        public override void OnTouchEventUp()
         {
             base.OnTouchEventUp();
             if (Style == ButtonStyle.Normal)

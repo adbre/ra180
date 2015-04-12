@@ -16,24 +16,6 @@ namespace Ra180
 			_smallDisplay = new Ra180Display (8);
 		}
 
-	    public virtual Ra180Channel Channel
-	    {
-	        get { return _channel; }
-	        set { _channel = value; }
-	    }
-
-	    public virtual Dart380Mod Mod
-	    {
-	        get { return _mod; }
-	        set { _mod = value; }
-	    }
-
-	    public virtual Ra180Volume Volume
-	    {
-	        get { return _volume; }
-	        set { _volume = value; }
-	    }
-
 	    public Ra180Display LargeDisplay
 		{
 			get { return _largeDisplay; }
