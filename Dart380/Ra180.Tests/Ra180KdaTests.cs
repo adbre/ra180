@@ -225,7 +225,7 @@ namespace Ra180.Tests
         [Test]
         public void should_allow_modification_of_SYNK_when_in_sync()
         {
-            _network.Raise(m => m.ReceivedSynk += null, EventArgs.Empty);
+            _network.Raise(m => m.Received += null, new MessageEventArgs(""));
             _ra180.SendKey("4");
             _ra180.SendKey(Ra180Key.ENT);
             _ra180.SendKey(Ra180Key.ENT);

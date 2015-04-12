@@ -8,26 +8,34 @@ namespace Ra180.Client.WinForms
 {
     public partial class Dart380Control : UserControl
     {
-        private readonly Dart380Drawable _drawable;
-        private readonly DelayedSynchronizationContext _synchronizationContext = new DelayedSynchronizationContext();
+        private readonly DelayedSynchronizationContext _synchronizationContext;
+        private Dart380Drawable _drawable;
         private IDart380 _dart;
 
         public Dart380Control()
         {
             InitializeComponent();
 
-            _dart = new Dart380(_synchronizationContext);
-            _drawable = new Dart380Drawable(new WinFormsGraphic(this), _dart);
+            _synchronizationContext = new DelayedSynchronizationContext();
+            Dart380 = new Dart380(_synchronizationContext);
         }
 
         public IDart380 Dart380
         {
             get { return _dart; }
+            set
+            {
+                _dart = value;
+                _drawable = new Dart380Drawable(new WinFormsGraphic(this), _dart);
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+
+            if (_drawable == null)
+                return;
 
             using (var canvas = new WinFormsCanvas(e.Graphics, ClientRectangle))
                 _drawable.OnDraw(canvas);
@@ -37,6 +45,9 @@ namespace Ra180.Client.WinForms
         {
             base.OnSizeChanged(e);
 
+            if (_drawable == null)
+                return;
+
             if (_drawable != null)
                 _drawable.SizeChanged(new SizeChangedEventArgs(ClientRectangle.Width, ClientRectangle.Height));
         }
@@ -44,6 +55,9 @@ namespace Ra180.Client.WinForms
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
+
+            if (_drawable == null)
+                return;
 
             if (_drawable != null)
                 _drawable.OnTouchEvent(new MotionEventArgs(e.X, e.Y, MotionEventActions.Down));
@@ -53,6 +67,9 @@ namespace Ra180.Client.WinForms
         {
             base.OnMouseDown(e);
 
+            if (_drawable == null)
+                return;
+
             if (_drawable != null)
                 _drawable.OnTouchEvent(new MotionEventArgs(e.X, e.Y, MotionEventActions.Up));
         }
@@ -61,13 +78,20 @@ namespace Ra180.Client.WinForms
         {
             base.OnKeyPress(e);
 
+            if (_drawable == null)
+                return;
+
             if (_drawable != null)
                 _drawable.OnKeyPress(e.KeyChar);
         }
 
         private void synchronizationContextTimer_Tick(object sender, System.EventArgs e)
         {
-            _synchronizationContext.Tick(synchronizationContextTimer.Interval);
+            if (_synchronizationContext != null)
+                _synchronizationContext.Tick(synchronizationContextTimer.Interval);
+
+            if (_drawable == null)
+                return;
 
             if (_drawable != null)
                 _drawable.Tick();

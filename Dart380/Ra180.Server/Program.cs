@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Cors;
 using Microsoft.Owin.Hosting;
 using Owin;
@@ -14,7 +13,7 @@ namespace Ra180.Server
             // use http://*:8080 to bind to all addresses. 
             // See http://msdn.microsoft.com/en-us/library/system.net.httplistener.aspx 
             // for more information.
-            const string url = "http://+:8080/";
+            const string url = "http://localhost:8080/";
             using (WebApp.Start(url))
             {
                 Console.WriteLine("Server running on {0}", url);
@@ -29,14 +28,6 @@ namespace Ra180.Server
         {
             app.UseCors(CorsOptions.AllowAll);
             app.MapSignalR();
-        }
-    }
-
-    public class MyHub : Hub
-    {
-        public void Send(string message)
-        {
-            Clients.All.addMessage(message);
         }
     }
 }

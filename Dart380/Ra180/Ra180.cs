@@ -24,7 +24,7 @@ namespace Ra180
             if (network == null) throw new ArgumentNullException("network");
             if (synchronizationContext == null) throw new ArgumentNullException("synchronizationContext");
             _network = network;
-            _network.ReceivedSynk += (sender, args) => _data.CurrentChannelData.Synk = true;
+            _network.Received += (sender, args) => _data.CurrentChannelData.Synk = true;
             _synchronizationContext = synchronizationContext;
         }
 

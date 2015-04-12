@@ -24,9 +24,9 @@
         $(function () {
             $.connection.hub.url = "http://localhost:8080/signalr";
 
-            var chat = $.connection.myHub;
+            var chat = $.connection.ra180Hub;
 
-            chat.client.addMessage = function (message) {
+            chat.client.Receive = function (message) {
                 var encodedMsg = $('<div />').text(message).html();
                 $('#discussion').append('<pre>' + encodedMsg + '</pre>');
             };

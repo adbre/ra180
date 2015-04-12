@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Ra180.Devices.Dart380;
@@ -81,7 +82,7 @@ namespace Ra180.Programs
                 case Dart380Key.SND:
                     currentMessage = currentMessage.Clone();
                     LargeDisplay.CenterText("SÄNDER");
-                    Device.Ra180.Radio.SendDataMessage(currentMessage.ToStringArray(), () =>
+                    Device.Ra180.Radio.SendDataMessage(new MessageEventArgs(currentMessage.ToStringArray()), () =>
                     {
                         Device.Data.Messages.Avs.Add(currentMessage);
                         LargeDisplay.CenterText("SÄNT");

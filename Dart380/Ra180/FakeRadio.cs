@@ -35,7 +35,7 @@ namespace Ra180
             }
         }
 
-        public override bool SendDataMessage(string[] data, Action callback)
+        public override bool SendDataMessage(MessageEventArgs message, Action callback)
         {
             lock (_syncroot)
             {
@@ -44,14 +44,14 @@ namespace Ra180
 
                 var item = new MessageItem
                 {
-                    Data = data,
+                    Data = message,
                     Callback = callback
                 };
 
                 _messages.Enqueue(item);
             }
 
-            return base.SendDataMessage(data, callback);
+            return base.SendDataMessage(message, callback);
         }
 
         private void MarkAsSent(MessageItem message)
@@ -73,7 +73,7 @@ namespace Ra180
         {
             private readonly MessageItem _item;
             private readonly FakeRadio _radio;
-            private readonly string[] _data;
+            private readonly MessageEventArgs _data;
 
             internal Message(MessageItem item, FakeRadio radio)
             {
@@ -82,9 +82,14 @@ namespace Ra180
                 _data = item.Data;
             }
 
-            public string[] Data
+            public MessageEventArgs Args
             {
                 get { return _data; }
+            }
+
+            public string[] Data
+            {
+                get { return _data.MessageArray; }
             }
 
             public void MarkAsSent()
@@ -95,7 +100,7 @@ namespace Ra180
 
         internal class MessageItem
         {
-            public string[] Data { get; set; }
+            public MessageEventArgs Data { get; set; }
             public Action Callback { get; set; }
         }
     }
