@@ -26,8 +26,8 @@ namespace Ra180.UI
 
             _bgImage = graphic.GetDrawable(Drawables.Dart380BackgroundImage);
 
-            _largeDisplay = new Dart380Control(486, 90, 389, 39);
-            _smallDisplay = new Dart380Control(906, 90, 204, 39);
+            _largeDisplay = new Dart380Control(491, 95, 379, 29);
+            _smallDisplay = new Dart380Control(911, 95, 294, 29);
 
             _hotAreas.AddRange(GetButtonHotAreas());
         }
@@ -116,6 +116,13 @@ namespace Ra180.UI
 
             foreach (var c in display.Characters)
             {
+                if (c.IsBlinking && _blinkNow)
+                {
+                    text.Append(' ');
+                    underscore.Append(' ');
+                    continue;
+                }
+
                 text.Append(c.IsBlinking && _blinkNow ? ' ' : c.Char);
                 underscore.Append(c.HasUnderscore ? '-' : ' ');
             }

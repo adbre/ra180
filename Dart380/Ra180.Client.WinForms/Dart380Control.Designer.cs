@@ -35,6 +35,7 @@
             // synchronizationContextTimer
             // 
             this.synchronizationContextTimer.Enabled = true;
+            this.synchronizationContextTimer.Interval = 500;
             this.synchronizationContextTimer.Tick += new System.EventHandler(this.synchronizationContextTimer_Tick);
             // 
             // Dart380Control
