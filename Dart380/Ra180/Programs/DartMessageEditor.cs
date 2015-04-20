@@ -12,6 +12,11 @@ namespace Ra180.Programs
             MoveDown();
         }
 
+        public DartMessage Message
+        {
+            get { return _message; }
+        }
+
         public string CurrentLine
         {
             get { return _message.Lines[_lineIndex].ToString(); }

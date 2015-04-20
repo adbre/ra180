@@ -80,13 +80,8 @@ namespace Ra180.Programs
             switch (Key)
             {
                 case Dart380Key.SND:
-                    currentMessage = currentMessage.Clone();
-                    LargeDisplay.CenterText("SÄNDER");
-                    Device.Ra180.Radio.SendDataMessage(new MessageEventArgs(currentMessage.ToStringArray()), () =>
-                    {
-                        Device.DartData.Messages.Avs.Add(currentMessage);
-                        LargeDisplay.CenterText("SÄNT");
-                    });
+                    LargeDisplay.Reset();
+                    Device.Send(currentMessage);
                     return;
 
                 case Dart380Key.RAD:

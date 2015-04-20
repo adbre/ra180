@@ -11,7 +11,7 @@ namespace Ra180.Devices.Dart380
         private object _clearDisplayToken;
         private Dart380Mod _mod;
         private bool _isOnline;
-        private Dart380Data _data;
+        private Dart380Data _dartData;
 
         private object _anslTvåtråd;
         private object _anslData;
@@ -50,9 +50,9 @@ namespace Ra180.Devices.Dart380
             get { return _mod; }
         }
 
-        public Dart380Data Data
+        public Dart380Data DartData
         {
-            get { return _data; }
+            get { return _dartData; }
         }
 
         public override object Tvåtråd
@@ -67,7 +67,7 @@ namespace Ra180.Devices.Dart380
 
                 var ra180 = value as Ra180;
                 if (ra180 != null)
-                    _data.Operatörsmeddelanden.Add("ANSL TTR");
+                    _dartData.Operatörsmeddelanden.Add("ANSL TTR");
             }
         }
 
@@ -83,7 +83,7 @@ namespace Ra180.Devices.Dart380
 
                 var ra180 = value as Ra180;
                 if (ra180 != null)
-                    _data.Operatörsmeddelanden.Add("ANSL FTR");
+                    _dartData.Operatörsmeddelanden.Add("ANSL FTR");
             }
         }
 
@@ -109,7 +109,7 @@ namespace Ra180.Devices.Dart380
 
         protected override void OnKeyReset()
         {
-            _data = null;
+            _dartData = null;
             RunSelfTest();
         }
 
@@ -143,6 +143,27 @@ namespace Ra180.Devices.Dart380
                 return program;
 
             return null;
+        }
+
+        public void Send(DartMessage message)
+        {
+            if (message == null) throw new ArgumentNullException("message");
+
+            var ra180 = Mik2 as Ra180 ?? Tvåtråd as Ra180;
+            if (ra180 == null)
+            {
+                LargeDisplay.CenterText("EJ FJÄRR");
+                return;
+            }
+
+            message = message.Clone();
+            var args = new MessageEventArgs(message.ToStringArray());
+            LargeDisplay.CenterText("SÄNDER");
+            ra180.Radio.SendDataMessage(args, () =>
+            {
+                DartData.Messages.Avs.Add(message);
+                LargeDisplay.CenterText("SÄNT");
+            });
         }
 
         private ProgramBase CreateRa180Program(string key)
@@ -212,13 +233,13 @@ namespace Ra180.Devices.Dart380
             var selftest = new SelfTest(_synchronizationContext, SmallDisplay)
             {
                 Abort = () => _mod == Dart380Mod.FR,
-                IsNOLLST = () => _data == null,
+                IsNOLLST = () => _dartData == null,
                 Complete = () =>
                 {
                     RefreshDisplay();
                     _isOnline = true;
-                    _data = new Dart380Data();
-                    _data.Operatörsmeddelanden.ItemAdded += (sender, args) => PlayOPM();
+                    _dartData = new Dart380Data();
+                    _dartData.Operatörsmeddelanden.ItemAdded += (sender, args) => PlayOPM();
 
                     Tvåtråd = Tvåtråd;
                     Mik1 = Mik1;
@@ -231,7 +252,7 @@ namespace Ra180.Devices.Dart380
 
         private void PlayOPM()
         {
-            if (!_data.Operatörsmeddelandeton)
+            if (!_dartData.Operatörsmeddelandeton)
                 return;
 
             Play(AudioFile.OPM);

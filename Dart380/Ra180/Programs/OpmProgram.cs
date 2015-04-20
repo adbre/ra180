@@ -56,7 +56,7 @@ namespace Ra180.Programs
         private void ReadNextMessage()
         {
             _opm = _messages.Dequeue();
-            Device.Data.Operatörsmeddelanden.Remove(_opm);
+            Device.DartData.Operatörsmeddelanden.Remove(_opm);
         }
 
         private void ReadLastMessage()
@@ -66,7 +66,7 @@ namespace Ra180.Programs
 
         private void LoadMessages()
         {
-            _messages = new Queue<Operatörsmeddelande>(Device.Data.Operatörsmeddelanden);
+            _messages = new Queue<Operatörsmeddelande>(Device.DartData.Operatörsmeddelanden);
             var ra180 = Device.Mik2 as Ra180;
             var isFtr = true;
             if (ra180 == null)

@@ -77,6 +77,11 @@ namespace Ra180.Programs
                     case Ra180Key.ÄND:
                         Next(EditMsg);
                         return;
+
+                    case Dart380Key.SND:
+                        Device.Send(_msgEditor.Message);
+                        LargeDisplay.Reset();
+                        return;
                 }
             }
 

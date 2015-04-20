@@ -12,6 +12,11 @@ namespace Ra180.Programs
             _display = display;
         }
 
+        public void Reset()
+        {
+            _current = null;
+        }
+
         public void Clear()
         {
             _current = "";
@@ -20,6 +25,7 @@ namespace Ra180.Programs
 
         public void Append(string s)
         {
+            if (_current == null) _current = "";
             _current += s;
             Refresh();
         }
@@ -32,6 +38,7 @@ namespace Ra180.Programs
 
         public void Refresh()
         {
+            if (_current == null) return;
             _display.SetText(_current);
         }
 
