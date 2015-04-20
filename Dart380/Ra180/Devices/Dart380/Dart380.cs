@@ -1,4 +1,7 @@
-﻿using Ra180.Programs;
+﻿using System;
+using System.Collections.Generic;
+using Ra180.Programs;
+using Ra180.UI;
 
 namespace Ra180.Devices.Dart380
 {
@@ -9,6 +12,11 @@ namespace Ra180.Devices.Dart380
         private Dart380Mod _mod;
         private bool _isOnline;
         private Dart380Data _data;
+
+        private object _anslTvåtråd;
+        private object _anslData;
+        private object _anslMik2;
+        private object _anslMik1; 
 
         public Dart380(ISynchronizationContext synchronizationContext)
         {
@@ -45,6 +53,32 @@ namespace Ra180.Devices.Dart380
         public Dart380Data Data
         {
             get { return _data; }
+        }
+
+        public override object Tvåtråd
+        {
+            get { return _anslTvåtråd; }
+            set
+            {
+                _anslTvåtråd = value;
+
+                var ra180 = value as Ra180;
+                if (ra180 != null && IsOnline)
+                    _data.Operatörsmeddelanden.Add("ANSL TTR");
+            }
+        }
+
+        public override object Mik2
+        {
+            get { return _anslMik2; }
+            set
+            {
+                _anslMik2 = value;
+
+                var ra180 = value as Ra180;
+                if (ra180 != null && IsOnline)
+                    _data.Operatörsmeddelanden.Add("ANSL FTR");
+            }
         }
 
         protected override void OnKeyBEL()
@@ -95,6 +129,7 @@ namespace Ra180.Devices.Dart380
                 case Dart380Key.DDA: return new Dart380DdaProgram(this, SmallDisplay);
                 case Dart380Key.FMT: return new FmtProgram(this);
                 case Dart380Key.ISK: return new IskProgram(this);
+                case Dart380Key.OPM: return new OpmProgram(this);
             }
 
             var program = CreateRa180Program(key);
@@ -177,10 +212,31 @@ namespace Ra180.Devices.Dart380
                     RefreshDisplay();
                     _isOnline = true;
                     _data = new Dart380Data();
+                    _data.Operatörsmeddelanden.ItemAdded += (sender, args) => PlayOPM();
                 }
             };
 
             selftest.Start();
+        }
+
+        private void PlayOPM()
+        {
+            if (!_data.Operatörsmeddelandeton)
+                return;
+
+            Play(AudioFile.OPM);
+        }
+
+        private void Play(AudioFile file)
+        {
+            var mik1 = Mik1 as IAudio;
+            var mik2 = Mik2 as IAudio;
+
+            if (mik1 != null)
+                mik1.Play(file);
+
+            if (mik2 != null)
+                mik2.Play(file);
         }
 
         private void Shutdown()

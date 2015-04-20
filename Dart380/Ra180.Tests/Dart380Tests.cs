@@ -1,5 +1,3 @@
-using System;
-using Moq;
 using NUnit.Framework;
 using Ra180.Devices.Dart380;
 

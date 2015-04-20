@@ -53,6 +53,7 @@
     <Compile Include="Dart380TidTests.cs" />
     <Compile Include="Dart380_SelfTestTests.cs" />
     <Compile Include="DartMessageTests.cs" />
+    <Compile Include="DartOpmTests.cs" />
     <Compile Include="DelayedSynchronizationContextTests.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="InstantSynchronizationContextTests.cs" />

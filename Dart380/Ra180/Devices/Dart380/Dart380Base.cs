@@ -1,4 +1,5 @@
-﻿using Ra180.Programs;
+﻿using System;
+using Ra180.Programs;
 
 namespace Ra180
 {
@@ -26,7 +27,17 @@ namespace Ra180
 			get { return _smallDisplay; }
 		}
 
-        public Ra180 Ra180 { get; set; }
+        public virtual object Tvåtråd { get; set; }
+        public virtual object Data { get; set; }
+        public virtual object Mik2 { get; set; }
+        public virtual object Mik1 { get; set; }
+
+        [Obsolete]
+	    public Ra180 Ra180
+	    {
+            get { return Mik2 as Ra180 ?? Tvåtråd as Ra180; }
+	        set { Mik2 = value; }
+	    }
 
 	    protected override void ClearDisplay()
 	    {
