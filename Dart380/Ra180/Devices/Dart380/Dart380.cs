@@ -62,8 +62,11 @@ namespace Ra180.Devices.Dart380
             {
                 _anslTvåtråd = value;
 
+                if (!IsOnline)
+                    return;
+
                 var ra180 = value as Ra180;
-                if (ra180 != null && IsOnline)
+                if (ra180 != null)
                     _data.Operatörsmeddelanden.Add("ANSL TTR");
             }
         }
@@ -75,8 +78,11 @@ namespace Ra180.Devices.Dart380
             {
                 _anslMik2 = value;
 
+                if (!IsOnline)
+                    return;
+
                 var ra180 = value as Ra180;
-                if (ra180 != null && IsOnline)
+                if (ra180 != null)
                     _data.Operatörsmeddelanden.Add("ANSL FTR");
             }
         }
@@ -213,6 +219,10 @@ namespace Ra180.Devices.Dart380
                     _isOnline = true;
                     _data = new Dart380Data();
                     _data.Operatörsmeddelanden.ItemAdded += (sender, args) => PlayOPM();
+
+                    Tvåtråd = Tvåtråd;
+                    Mik1 = Mik1;
+                    Mik2 = Mik2;
                 }
             };
 

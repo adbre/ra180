@@ -17,7 +17,7 @@ namespace Ra180.Programs
 
         protected List<DartMessage> Messages
         {
-            get { return Device.Data.Messages.Isk; }
+            get { return Device.DartData.Messages.Isk; }
         }
 
         protected DartMessage CurrentMessage
@@ -84,7 +84,7 @@ namespace Ra180.Programs
                     LargeDisplay.CenterText("SÄNDER");
                     Device.Ra180.Radio.SendDataMessage(new MessageEventArgs(currentMessage.ToStringArray()), () =>
                     {
-                        Device.Data.Messages.Avs.Add(currentMessage);
+                        Device.DartData.Messages.Avs.Add(currentMessage);
                         LargeDisplay.CenterText("SÄNT");
                     });
                     return;

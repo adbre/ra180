@@ -15,10 +15,10 @@ namespace Ra180.Programs
                 SaveInput = value =>
                 {
                     if (string.IsNullOrEmpty(value)) return false;
-                    Device.Data.Address = value;
+                    Device.DartData.Address = value;
                     return true;
                 },
-                GetValue = () => Device.Data.Address
+                GetValue = () => Device.DartData.Address
             });
 
             AddChild(new Ra180ComboBoxEditMenuItem("MAN","MOT","ALLA","AVS")
@@ -27,21 +27,21 @@ namespace Ra180.Programs
                 OnSelectedValue = value =>
                 {
                     if (value == "ALLA")
-                        Device.Data.Printer = Dart380PrinterOption.All;
+                        Device.DartData.Printer = Dart380PrinterOption.All;
                     else if (value == "MOT")
-                        Device.Data.Printer = Dart380PrinterOption.Received;
+                        Device.DartData.Printer = Dart380PrinterOption.Received;
                     else if (value == "AVS")
-                        Device.Data.Printer = Dart380PrinterOption.Transmitted;
+                        Device.DartData.Printer = Dart380PrinterOption.Transmitted;
                     else
-                        Device.Data.Printer = Dart380PrinterOption.Manual;
+                        Device.DartData.Printer = Dart380PrinterOption.Manual;
                 },
                 GetSelectedValue = () =>
                 {
-                    if (Device.Data.Printer.HasFlag(Dart380PrinterOption.All))
+                    if (Device.DartData.Printer.HasFlag(Dart380PrinterOption.All))
                         return "ALLA";
-                    if (Device.Data.Printer.HasFlag(Dart380PrinterOption.Received))
+                    if (Device.DartData.Printer.HasFlag(Dart380PrinterOption.Received))
                         return "MOT";
-                    if (Device.Data.Printer.HasFlag(Dart380PrinterOption.Transmitted))
+                    if (Device.DartData.Printer.HasFlag(Dart380PrinterOption.Transmitted))
                         return "AVS";
 
                     return "MAN";
@@ -53,9 +53,9 @@ namespace Ra180.Programs
                 Prefix = () => "OPMTN",
                 OnSelectedValue = value =>
                 {
-                    Device.Data.Operatörsmeddelandeton = value != "AV";
+                    Device.DartData.Operatörsmeddelandeton = value != "AV";
                 },
-                GetSelectedValue = () => Device.Data.Operatörsmeddelandeton ? "PÅ" : "AV"
+                GetSelectedValue = () => Device.DartData.Operatörsmeddelandeton ? "PÅ" : "AV"
             });
 
             AddChild(new Ra180ComboBoxEditMenuItem("FRÅN", "TILL")
@@ -63,9 +63,9 @@ namespace Ra180.Programs
                 Prefix = () => "SUM",
                 OnSelectedValue = value =>
                 {
-                    Device.Data.Summer = value != "FRÅN";
+                    Device.DartData.Summer = value != "FRÅN";
                 },
-                GetSelectedValue = () => Device.Data.Summer ? "TILL" : "FRÅN"
+                GetSelectedValue = () => Device.DartData.Summer ? "TILL" : "FRÅN"
             });
 
             AddChild(new Ra180ComboBoxEditMenuItem("FRÅN", "TILL")
@@ -73,9 +73,9 @@ namespace Ra180.Programs
                 Prefix = () => "TKL",
                 OnSelectedValue = value =>
                 {
-                    Device.Data.Tangentklick = value != "FRÅN";
+                    Device.DartData.Tangentklick = value != "FRÅN";
                 },
-                GetSelectedValue = () => Device.Data.Tangentklick ? "TILL" : "FRÅN"
+                GetSelectedValue = () => Device.DartData.Tangentklick ? "TILL" : "FRÅN"
             });
 
             AddChild(new Ra180EditMenuItem

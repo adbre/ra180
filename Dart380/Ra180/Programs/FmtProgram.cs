@@ -24,7 +24,7 @@ namespace Ra180.Programs
 
             if (Key == Ra180Key.ENT)
             {
-                if (_inputBuffer.All(Char.IsDigit) && (_fmt = Device.Data.Format.GetFormat(_inputBuffer)) != null)
+                if (_inputBuffer.All(Char.IsDigit) && (_fmt = Device.DartData.Format.GetFormat(_inputBuffer)) != null)
                 {
                     Next(DisplayFmt);
                     return;
@@ -35,7 +35,7 @@ namespace Ra180.Programs
                 _inputBuffer += Key;
 
             LargeDisplay.SetText(string.Format("FORMAT:{0}", _inputBuffer));
-            SmallDisplay.SetText(Device.Data.Format.GetShortName(_inputBuffer));
+            SmallDisplay.SetText(Device.DartData.Format.GetShortName(_inputBuffer));
         }
 
         private void DisplayFmt()
@@ -49,10 +49,10 @@ namespace Ra180.Programs
             if (Key == Ra180Key.ENT)
             {
                 var msg = new DartMessage(_fmt);
-                msg.Sender = Device.Data.Address;
+                msg.Sender = Device.DartData.Address;
                 msg.Timestamp = string.Format("{0:00}{1:00}{2:00}", Device.Ra180.Clock.Day, Device.Ra180.Clock.Hour, Device.Ra180.Clock.Minute);
 
-                Device.Data.Messages.Isk.Add(msg);
+                Device.DartData.Messages.Isk.Add(msg);
 
                 _msgEditor = new DartMessageEditor(msg);
 

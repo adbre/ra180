@@ -45,6 +45,24 @@ namespace Ra180.Tests
         }
 
         [Test]
+        public void OPM_NyOPMVidOmstart()
+        {
+            _dart.SendKey(Dart380Key.ModFRÅN);
+
+            _dart.Mik2 = _ra180;
+
+            _dart.SendKey(Dart380Key.ModKLAR);
+            _synchronizationContext.Tick(Ra180.SELFTEST_INTERVAL);
+            _synchronizationContext.Tick(Ra180.SELFTEST_INTERVAL);
+            _synchronizationContext.Tick(Ra180.SELFTEST_INTERVAL);
+
+            _dart.SendKey(Dart380Key.OPM);
+            Assert.That(_dart.SmallDisplay.ToString(), Is.EqualTo("ANSL FTR"));
+            _dart.SendKey(Dart380Key.OPM);
+            Assert.That(_dart.SmallDisplay.ToString(), Is.EqualTo("ST=FTR/F"));
+        }
+
+        [Test]
         [TestCase(Dart380Key.ModTE)]
         public void OPM_Flertråd_TerminalMod(string mod)
         {

@@ -121,6 +121,18 @@
   <data name="Dart380_1363x1018" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Dart380_1363x1018.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="fmt103" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fmt103.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="fmt103_med_opm" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fmt103_med_opm.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="fmt103_utan_opm" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\fmt103_utan_opm.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="opm" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\opm.wav;System.IO.MemoryStream, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="Vred_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Vred-1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

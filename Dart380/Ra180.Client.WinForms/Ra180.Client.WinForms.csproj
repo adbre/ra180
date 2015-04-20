@@ -160,6 +160,18 @@
   <ItemGroup>
     <None Include="Resources\Vred-8.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fmt103.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fmt103_med_opm.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fmt103_utan_opm.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\opm.wav" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
