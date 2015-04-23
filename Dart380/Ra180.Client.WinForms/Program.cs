@@ -1,10 +1,7 @@
 ﻿using System;
-using System.IO;
-using System.Media;
 using System.Windows.Forms;
 using Ra180.Devices.Dart380;
 using Ra180.Transports;
-using Ra180.UI;
 
 namespace Ra180.Client.WinForms
 {
@@ -35,42 +32,6 @@ namespace Ra180.Client.WinForms
                 Application.SetCompatibleTextRenderingDefault(false);
                 Application.Run(new Dart380Form { Dart380 = dart380 });
             }
-        }
-    }
-
-    internal class WinFormsAudioPlayer : IAudio, IDisposable
-    {
-        private readonly SoundPlayer _soundPlayer = new SoundPlayer();
-
-        public void Play(AudioFile file)
-        {
-            switch (file)
-            {
-                case AudioFile.Data:
-                    Play(Properties.Resources.fmt103);
-                    break;
-
-                case AudioFile.OPM:
-                    Play(Properties.Resources.opm);
-                    break;
-            }
-        }
-
-        public void Play(Stream stream)
-        {
-            _soundPlayer.Stop();
-
-            var currentStream = _soundPlayer;
-            if (currentStream != null)
-                currentStream.Dispose();
-
-            _soundPlayer.Stream = stream;
-            _soundPlayer.Play();
-        }
-
-        public void Dispose()
-        {
-            _soundPlayer.Dispose();
         }
     }
 }

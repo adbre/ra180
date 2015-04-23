@@ -88,6 +88,7 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TimerSynchronizationContext.cs" />
+    <Compile Include="WinFormsAudioPlayer.cs" />
     <Compile Include="WinFormsBitmap.cs" />
     <Compile Include="WinFormsCanvas.cs" />
     <Compile Include="WinFormsGraphic.cs" />

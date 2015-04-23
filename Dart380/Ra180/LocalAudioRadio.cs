@@ -1,12 +1,13 @@
 using System;
+using System.Threading.Tasks;
 using Ra180.UI;
 
 namespace Ra180
 {
-    public class LocalAudioRadio : IRadio
+    public class LocalAudioRadio : IRadio, IDisposable
     {
         private readonly IRadio _radio;
-        private readonly IAudio _audio;
+        private readonly IAudio _audio; 
 
         public LocalAudioRadio(IRadio radio, IAudio audio)
         {
@@ -27,8 +28,19 @@ namespace Ra180
 
         public bool SendDataMessage(MessageEventArgs message, Action callback)
         {
-            PlayDataAudio();
-            return _radio.SendDataMessage(message, callback);
+            var networkComplete = false;
+            Task.Run(() =>
+            {
+                _audio.PlaySync(AudioFile.Data);
+
+                while (!networkComplete)
+                {
+                    Task.Delay(200);
+                }
+
+                callback();
+            });
+            return _radio.SendDataMessage(message, () => networkComplete = true);
         }
 
         protected virtual void OnReceived(MessageEventArgs args)
@@ -45,7 +57,18 @@ namespace Ra180
 
         private void PlayDataAudio()
         {
-            _audio.Play(AudioFile.Data);
+            _audio.PlaySync(AudioFile.Data);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            throw new NotImplementedException();
         }
     }
 }

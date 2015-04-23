@@ -6,7 +6,8 @@ namespace Ra180.Server
     {
         public void Send(string message)
         {
-            Clients.All.Receive(message);
+            Clients.Others.Receive(message);
+            //Clients.All.Receive(message);
         }
     }
 }
