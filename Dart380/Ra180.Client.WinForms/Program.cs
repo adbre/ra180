@@ -20,8 +20,15 @@ namespace Ra180.Client.WinForms
                 synchronizationContext.Start();
                 signalR.StartAsync();
 
+                var signalRFactory = new SimpleRadioFactory(() =>
+                {
+                    var settings = Properties.Settings.Default;
+                    settings.Reload();
+                    return new SignalRTransport(settings.Server);
+                });
+
                 var transport = new LocalAudioRadio(signalR, soundPlayer);
-                var ra180 = new Ra180(transport, synchronizationContext);
+                var ra180 = new Ra180(signalRFactory, synchronizationContext);
                 ra180.SendKey(Ra180Key.ModKLAR);
 
                 var dart380 = new Dart380(synchronizationContext);

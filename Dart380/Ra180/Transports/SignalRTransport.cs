@@ -34,6 +34,16 @@ namespace Ra180.Transports
             return true;
         }
 
+        public void Start()
+        {
+            _connection.Start();
+        }
+
+        public void Stop()
+        {
+            _connection.Stop();
+        }
+
         public void SetChannelData(Ra180ChannelData channelData, DateTime dateTime)
         {
             

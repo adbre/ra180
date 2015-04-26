@@ -35,6 +35,11 @@ namespace Ra180
             }
         }
 
+        public void RaiseReceivedEvent(MessageEventArgs message)
+        {
+            OnReceived(message);
+        }
+
         public override bool SendDataMessage(MessageEventArgs message, Action callback)
         {
             lock (_syncroot)

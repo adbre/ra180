@@ -9,12 +9,14 @@ namespace Ra180.Tests
         private Dart380 _dart;
         private Ra180 _ra180;
         private DelayedSynchronizationContext _synchronizationContext;
+        private EmptyRadio _radio;
 
         [SetUp]
         public void SetUp()
         {
+            _radio = new EmptyRadio();
             _synchronizationContext = new DelayedSynchronizationContext();
-            _ra180 = new Ra180(new EmptyRadio(), _synchronizationContext);
+            _ra180 = new Ra180(_radio, _synchronizationContext);
             _dart = new Dart380(_synchronizationContext) {Ra180 = _ra180};
 
             _dart.SendKey(Ra180Key.ModKLAR);

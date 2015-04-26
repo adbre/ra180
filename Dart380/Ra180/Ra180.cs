@@ -1,5 +1,6 @@
 using System;
 using Ra180.Programs;
+using Ra180.UI;
 
 namespace Ra180
 {
@@ -8,7 +9,7 @@ namespace Ra180
         internal const int SELFTEST_INTERVAL = SelfTest.INTERVAL;
         internal const int SELFTEST = SELFTEST_INTERVAL * 4;
 
-        private readonly IRadio _network;
+        private readonly IRadioFactory _radioFactory;
         private readonly ISynchronizationContext _synchronizationContext;
         private readonly Ra180Display _display = new Ra180Display(8);
 
@@ -19,16 +20,23 @@ namespace Ra180
         private Ra180Clock _clock;
         private readonly Ra180Data _data = new Ra180Data();
 
-        public Ra180(IRadio network, ISynchronizationContext synchronizationContext)
+        public Ra180(IRadio radio, ISynchronizationContext synchronizationContext)
+            : this(new SimpleRadioFactory(() => radio), synchronizationContext)
         {
-            if (network == null) throw new ArgumentNullException("network");
+            
+        }
+
+        public Ra180(IRadioFactory radioFactory, ISynchronizationContext synchronizationContext)
+        {
+            if (radioFactory == null) throw new ArgumentNullException("radioFactory");
             if (synchronizationContext == null) throw new ArgumentNullException("synchronizationContext");
-            _network = network;
-            _network.Received += (sender, args) => _data.CurrentChannelData.Synk = true;
+            _radioFactory = radioFactory;
             _synchronizationContext = synchronizationContext;
         }
 
         public Ra180Display Display { get { return _display; } }
+
+        public event EventHandler<AudioFile> PlayingAudio;
 
         public override bool IsOnline
         {
@@ -65,10 +73,7 @@ namespace Ra180
 
         internal Ra180Data Data { get { return _data; } }
 
-        public IRadio Radio
-        {
-            get { return _network; }
-        }
+        public IRadio Radio { get; private set; }
 
         protected override void OnKeyBEL()
         {
@@ -155,25 +160,86 @@ namespace Ra180
             Display.Clear();
             _mod = Ra180Mod.FR;
             _online = false;
+            OnShutdown();
         }
 
         private void RunSelfTest()
         {
             _online = false;
 
-            var selftest = new SelfTest(_synchronizationContext, Display)
+            var selftest = new SelfTest(_synchronizationContext, _display)
             {
                 Abort = () => _mod == Ra180Mod.FR,
+                Test = () =>
+                {
+                    StartRadio();
+                },
                 IsNOLLST = () => _data.IsNOLLST,
                 Complete = () =>
                 {
                     Display.Clear();
                     ResumeClock();
                     _online = true;
+                    OnStarted();
                 }
             };
 
             selftest.Start();
+        }
+
+        private void OnShutdown()
+        {
+            var radio = Radio;
+            if (radio != null)
+            {
+                radio.Stop();
+                radio.Dispose();
+            }
+        }
+
+        private void OnStarted()
+        {
+            Radio.Received += OnReceived;
+        }
+
+        private void OnReceived(object sender, MessageEventArgs args)
+        {
+            _data.CurrentChannelData.Synk = true;
+            PlayAudio(AudioFile.Data);
+        }
+
+        public void PlayAudio(AudioFile audioFile)
+        {
+            OnPlayingAudio(audioFile);
+        }
+
+        internal void SendMessage(MessageEventArgs message, Action callback)
+        {
+            Radio.SendDataMessage(message, callback);
+        }
+
+        protected virtual void OnPlayingAudio(AudioFile audioFile)
+        {
+            var handler = PlayingAudio;
+            if (handler != null) handler(this, audioFile);
+        }
+
+        private void StartRadio()
+        {
+            IRadio radio = null;
+            try
+            {
+                radio = _radioFactory.Create();
+                radio.Start();
+                Radio = radio;
+            }
+            catch
+            {
+                if (radio != null)
+                    radio.Dispose();
+
+                throw;
+            }
         }
 
         private void ResumeClock()

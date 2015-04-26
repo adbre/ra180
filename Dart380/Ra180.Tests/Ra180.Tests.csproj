@@ -64,6 +64,7 @@
     <Compile Include="Ra180DtmTests.cs" />
     <Compile Include="Ra180KdaTests.cs" />
     <Compile Include="Ra180NykTests.cs" />
+    <Compile Include="Ra180RadioTests.cs" />
     <Compile Include="Ra180RdaTests.cs" />
     <Compile Include="Ra180TidTests.cs" />
     <Compile Include="Ra180_SelfTests.cs" />

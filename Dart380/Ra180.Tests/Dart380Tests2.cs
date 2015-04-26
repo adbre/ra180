@@ -1,6 +1,7 @@
 using Moq;
 using NUnit.Framework;
 using Ra180.Devices.Dart380;
+using Ra180.UI;
 
 namespace Ra180.Tests
 {
@@ -27,6 +28,39 @@ namespace Ra180.Tests
             _synchronizationContext.Tick(Ra180.SELFTEST_INTERVAL);
 
             Dart380Helper.SetUp(_dart);
+        }
+
+        [Test]
+        public void SpelarLjudVidMottagning()
+        {
+            var message = new MessageEventArgs(new[]
+            {
+                "TILL:CR         ",
+                "                ",
+                "291504*FR:JA    ",
+                "                ",
+                "FRÅN:     *U:   ",
+                "TEXT:FÖRBERED RÖ", // 1
+                "K 10 LAG        ", // 2
+                "                ", // 3
+                "                ", // 4
+                "                ", // 5
+                "                ", // 6
+                "                ", // 7
+                "                ", // 8
+                "                ", // 9
+                "                ", // 10
+                "                ", // 11
+                "                ", // 12
+                "------SLUT------",
+            });
+
+            var audio = new Mock<IAudio>();
+
+            _dart.Mik1 = audio.Object;
+            _radio.RaiseReceivedEvent(message);
+
+            audio.Verify(m => m.Play(AudioFile.Data), Times.Once);
         }
 
         [Test]

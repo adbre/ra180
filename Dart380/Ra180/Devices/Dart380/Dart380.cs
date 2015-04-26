@@ -67,7 +67,7 @@ namespace Ra180.Devices.Dart380
 
                 var ra180 = value as Ra180;
                 if (ra180 != null)
-                    _dartData.Operatörsmeddelanden.Add("ANSL TTR");
+                    OnRa180Connected(ra180, Fjärranslutning.Tvåtråd);
             }
         }
 
@@ -83,8 +83,28 @@ namespace Ra180.Devices.Dart380
 
                 var ra180 = value as Ra180;
                 if (ra180 != null)
-                    _dartData.Operatörsmeddelanden.Add("ANSL FTR");
+                    OnRa180Connected(ra180, Fjärranslutning.Flertråd);
             }
+        }
+
+        private enum Fjärranslutning
+        {
+            Flertråd,
+            Tvåtråd
+        }
+
+        private void OnRa180Connected(Ra180 ra180, Fjärranslutning anslutning)
+        {
+            ra180.PlayingAudio += Ra180OnPlayingAudio;
+
+            _dartData.Operatörsmeddelanden.Add(anslutning == Fjärranslutning.Tvåtråd
+                ? "ANSL TTR"
+                : "ANSL FTR");
+        }
+
+        private void Ra180OnPlayingAudio(object sender, AudioFile audioFile)
+        {
+            PlayLocal(audioFile);
         }
 
         protected override void OnKeyBEL()
@@ -259,6 +279,15 @@ namespace Ra180.Devices.Dart380
         }
 
         private void Play(AudioFile file)
+        {
+            var ra180 = Ra180;
+            if (ra180 != null)
+                ra180.PlayAudio(file);
+            else
+                PlayLocal(file);
+        }
+
+        private void PlayLocal(AudioFile file)
         {
             var mik1 = Mik1 as IAudio;
             var mik2 = Mik2 as IAudio;

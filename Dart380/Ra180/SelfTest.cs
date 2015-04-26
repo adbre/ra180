@@ -20,10 +20,30 @@ namespace Ra180
         public Func<bool> Abort { get; set; }
         public Func<bool> IsNOLLST { get; set; } 
         public Action Complete { get; set; }
+        public Action Test { get; set; }
 
         public void Start()
         {
             _display.SetText("TEST");
+
+            var test = Test;
+            if (test != null)
+            {
+                try
+                {
+                    test();
+                }
+                catch (Ra180Exception ex)
+                {
+                    var message = ex.Message ?? string.Empty;
+                    if (message.Length > _display.Length)
+                        message = message.Substring(0, _display.Length);
+
+                    _display.SetText(message);
+                    return;
+                }
+            }
+
             _synchronizationContext.Schedule(TestCompleted, INTERVAL);
         }
 
@@ -54,6 +74,13 @@ namespace Ra180
         {
             _display.Clear();
             Complete();
+        }
+    }
+
+    public class Ra180Exception : Exception
+    {
+        public Ra180Exception(string message) : base(message)
+        {
         }
     }
 }

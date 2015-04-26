@@ -4,7 +4,7 @@ using Ra180.UI;
 
 namespace Ra180
 {
-    public class LocalAudioRadio : IRadio, IDisposable
+    public class LocalAudioRadio : IRadio
     {
         private readonly IRadio _radio;
         private readonly IAudio _audio; 
@@ -17,6 +17,16 @@ namespace Ra180
             _audio = audio;
 
             _radio.Received += RadioOnReceived;
+        }
+
+        public void Start()
+        {
+            _radio.Start();
+        }
+
+        public void Stop()
+        {
+            _radio.Stop();
         }
 
         public void SetChannelData(Ra180ChannelData channelData, DateTime dateTime)
@@ -68,7 +78,10 @@ namespace Ra180
 
         private void Dispose(bool disposing)
         {
-            throw new NotImplementedException();
+            if (disposing)
+            {
+                _radio.Dispose();
+            }
         }
     }
 }
