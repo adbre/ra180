@@ -1,4 +1,7 @@
-﻿function Ra180ViewModel(
+import ko from 'knockout';
+import { Ra180PnyCalculator } from './Ra180PnyCalculator.js';
+
+function Ra180ViewModel(
 	synchronizationContext,
 	rtcRadio
 ) {
@@ -1261,3 +1264,5 @@
 		me.nextSubmenu();
 	}
 }
+
+export { Ra180ViewModel };

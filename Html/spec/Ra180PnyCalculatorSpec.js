@@ -1,3 +1,5 @@
+import { Ra180PnyCalculator } from '../src/Ra180PnyCalculator.js';
+
 describe("Ra180 PNY Calculator", function () {
 	var calc;
 

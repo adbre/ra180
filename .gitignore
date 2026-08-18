@@ -20,7 +20,6 @@ _ReSharper.*
 *.dll
 *.pdb
 *.exe
-*.user
 *.orig
 *.class
 *.MF
@@ -51,3 +50,6 @@ StyleCop.cache
 deploy-to-dev.ps1
 
 /Build/winscp/WinSCP.ini
+node_modules/
+Html/dist/
+.claude/

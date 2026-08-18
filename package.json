@@ -1,0 +1,20 @@
+{
+  "name": "ra180",
+  "version": "0.2.0",
+  "description": "Ra180 simulation lab",
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --watch",
+    "test": "vitest run"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.25.10",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "jquery": "^3.7.1",
+    "knockout": "^3.5.1"
+  }
+}

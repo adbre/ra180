@@ -14,14 +14,7 @@ function DelayedFunctionScheduler() {
     };
 
     self.scheduleFunction = function(funcToCall, millis, params, recurring, timeoutKey, runAtMillis) {
-      var f;
-      if (typeof(funcToCall) === 'string') {
-        /* jshint evil: true */
-        f = function() { return eval(funcToCall); };
-        /* jshint evil: false */
-      } else {
-        f = funcToCall;
-      }
+      var f = funcToCall;
 
       millis = millis || 0;
       timeoutKey = timeoutKey || ++delayedFnCount;
@@ -192,3 +185,10 @@ function MockSynchronizationContext() {
       return Array.prototype.slice.call(argsObj, 2);
     }
 }
+
+export {
+	DelayedFunctionScheduler,
+	SynchronizationContext,
+	InstantSynchronizationContext,
+	MockSynchronizationContext,
+};

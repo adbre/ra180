@@ -48,8 +48,7 @@ function Ra180PnyCalculator() {
 			checksums.push(checksum);
 		}
 
-		return result = checksums.join("");
-		return result;
+		return checksums.join("");
 	};
 	var random = function () {
 		var min = 0, max = 7;
@@ -72,3 +71,5 @@ function Ra180PnyCalculator() {
 		};
 	};
 }
+
+export { Ra180PnyCalculator };

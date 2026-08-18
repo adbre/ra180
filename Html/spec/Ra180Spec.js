@@ -1,4 +1,7 @@
-﻿function MockRtcRadio() {
+import { Ra180ViewModel } from '../src/Ra180.js';
+import { InstantSynchronizationContext, MockSynchronizationContext } from '../src/SynchronizationContext.js';
+
+function MockRtcRadio() {
 	var isEnabled = false;
 	var currentCtx;
 	this.changeContext = function (ctx) {

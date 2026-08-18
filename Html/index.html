@@ -1,26 +1,16 @@
 <html>
 	<head>
+		<meta charset="utf-8" />
 		<title>Ra180</title>
 
 		<link rel="stylesheet" href="assets/css/ra180.css" />
 		
-		<script src="lib/jquery/jquery-2.1.0.min.js"></script>
-		<script src="lib/knockout/knockout-3.0.0.debug.js"></script>
-
-		<script src="lib/xsockets/XSockets.latest.js"></script>
-		<script src="lib/xsockets/XSockets.WebRTC.latest.js"></script>
-		
-		<script type="text/javascript" src="src/SynchronizationContext.js"></script>
-		<script type="text/javascript" src="src/Ra180PnyCalculator.js"></script>
-		<script type="text/javascript" src="src/Ra180.js"></script>
-		<script type="text/javascript" src="src/RtcRadio.js"></script>
-
-		<script>
-			var brokerUri = "ws://malinrocks.cloudapp.net:4502/CustomBroker";
-		</script>
+		<script defer src="dist/app.js"></script>
+		<!-- live reload, served only by `npm run dev` -->
+		<script>new EventSource('/esbuild').addEventListener('change', () => location.reload());</script>
 	</head>
 	<body>
-		<div class="container">
+		<div class="page-heading">
 			<h1>Ra180 Simulering</h1>
 		</div>
 		<div id="ra180" class="ra180">
@@ -67,7 +57,7 @@
 					<button id="key-0" title="0"       data-bind="click: sendKey0">0</button>
 					<button id="key-hashtag" title="#" data-bind="click: sendKeyHashtag">#</button>
 				</div>
-				<button id="reset" title="NOLLSTÄLLN" data-bind="click: sendKeyReset">NOLLSTÄLLN</button>
+				<button id="reset" title="NOLLSTÃ„LLN" data-bind="click: sendKeyReset">NOLLSTÃ„LLN</button>
 			</div>
 			<div class="ra180-fnpad">
 				<div>
@@ -124,15 +114,4 @@
 			</div>
 		</div>
 	</body>
-	<script type="text/javascript">
-		$(function() {
-			var syncContext = new SynchronizationContext();
-			var radio = new RtcRadio(brokerUri);
-			var ra180 = new Ra180ViewModel(syncContext, radio);
-
-			ko.applyBindings(ra180, $("#ra180")[0]);
-			ko.applyBindings(radio, $("#webrtc-radio")[0]);
-			radio.initialize();
-		});
-	</script>
 </html>

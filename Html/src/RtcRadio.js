@@ -1,3 +1,6 @@
+import $ from 'jquery';
+import ko from 'knockout';
+
 function RtcRadio(options) {
 	var me = this;
 	var peerBroker, rtc, myCtx, mainCtx = "ee58a08bf68043539ef41d7c0ed0c553";
@@ -50,7 +53,7 @@ function RtcRadio(options) {
 		console.log("Conext changed", context);
 	};
 
-	me.brokerUri = brokerUri;	
+	me.brokerUri = options;
 	me.audio = ko.observableArray([]);
 	me.isTransmitting = ko.observable(false);
 	me.isEnabled = ko.observable(false);
@@ -102,6 +105,15 @@ function RtcRadio(options) {
 	};
 
 	me.initialize = function () {
+		// XSockets.NET is dead and the old broker is gone, so voice stays off
+		// unless something puts a compatible client on the page. Everything else
+		// on the radio works without it.
+		var XSockets = window.XSockets;
+		if (!XSockets || !me.brokerUri) {
+			console.info('RtcRadio: no XSockets client or broker uri, voice disabled.');
+			return;
+		}
+
 		peerBroker = new XSockets.WebSocket(me.brokerUri);
 		peerBroker.on(XSockets.Events.open, function (brokerClient) {
 			console.log("brokerClient", brokerClient);
@@ -160,3 +172,5 @@ function RtcRadio(options) {
 		});
 	}
 }
+
+export { RtcRadio };
